@@ -1,0 +1,49 @@
+<div class="load-stats-here"></div>
+<div class="dashboard-grid">
+    
+    <div class="center-panel">
+        <div class="card">
+            <div class="card-header flex-between">
+                <h3><i class="fa-solid fa-network-wired"></i> نظرة عامة على الشاشات</h3>
+                <button class="btn btn-primary" onclick="loadModule('screens')" style="padding: 5px 10px; font-size: 12px;">إدارة الكل</button>
+            </div>
+            <div class="table-responsive">
+                <table class="clean-table">
+                    <thead><tr><th>ID الجهاز</th><th>حالة الاتصال</th><th>التصريح</th><th>حالة العرض</th></tr></thead>
+                    <tbody id="screensList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="side-panel">
+        <div class="card">
+            <div class="card-header flex-between">
+                <h3><i class="fa-solid fa-bullhorn"></i> التحكم بشريط الأخبار</h3>
+                <label class="toggle-switch" title="إظهار/إخفاء الشريط">
+                    <input type="checkbox" id="tickerToggle" onchange="toggleTickerVisibilityDashboard()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="form-group">
+                <textarea id="newsInput" rows="3" placeholder="اكتب الخبر العاجل هنا..."></textarea>
+            </div>
+            <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <div class="form-group">
+                    <label style="font-size: 11px; font-weight: bold;">لون الخلفية</label>
+                    <input type="color" id="tickerBgColor" value="#000000" style="width: 100%; height: 35px; cursor: pointer; border: none; padding: 0;">
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 11px; font-weight: bold;">لون النص</label>
+                    <input type="color" id="tickerTextColor" value="#ffffff" style="width: 100%; height: 35px; cursor: pointer; border: none; padding: 0;">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label style="font-size: 11px; font-weight: bold;">سرعة الحركة</label>
+                    <input type="number" id="tickerSpeed" value="50" min="10" max="200" style="padding: 8px;">
+                </div>
+            </div>
+            <button class="btn btn-warning btn-block" onclick="updateAdvancedTickerDashboard()"><i class="fa-solid fa-satellite-dish"></i> تحديث وبث للشاشات</button>
+        </div>
+    </div>
+
+</div>
