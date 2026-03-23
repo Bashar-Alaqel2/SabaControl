@@ -1,5 +1,5 @@
 // ==========================================
-// 🎨 modules/settings/settings.js - الإعدادات والمظهر (النسخة المكتملة والمصححة)
+// 🎨 modules/settings/settings.js - الإعدادات والمظهر (النسخة المتزامنة)
 // ==========================================
 
 function initSettings() {
@@ -7,10 +7,14 @@ function initSettings() {
     attachColorListeners();
     // 🟢 إظهار وجلب قسم المستخدمين إذا كان الشخص مديراً
     if (window.currentUserRole === 'admin') {
-        document.getElementById('adminUsersSection').style.display = 'block';
+        const usersSection = document.getElementById('adminUsersSection');
+        if (usersSection) usersSection.style.display = 'block';
         fetchUsersList();
-    }
 
+        // 🟢 إظهار إعدادات شريط الأخبار للمدير فقط
+        const settingsTicker = document.getElementById('adminSettingsTicker');
+        if (settingsTicker) settingsTicker.style.display = 'block';
+    }
 }
 
 async function fetchSettings() {
@@ -125,6 +129,7 @@ async function toggleTickerVisibility(source) {
     } catch (err) { console.error(err); }
 }
 
+// 🟢 دالة التحديث مع ميزة التزامن مع لوحة القيادة
 async function saveAdvancedTicker() {
     const text = document.getElementById('settingsNewsInput')?.value || '';
     const bgColor = document.getElementById('settingsTickerBgColor')?.value || '#000000';
@@ -137,11 +142,20 @@ async function saveAdvancedTicker() {
             { key: 'ticker_color', value: txtColor },
             { key: 'ticker_speed', value: speed }
         ]);
+        
+        // التزامن اليدوي لحقول لوحة القيادة (إذا كانت موجودة في الـ DOM حالياً)
         if(document.getElementById('newsInput')) document.getElementById('newsInput').value = text;
         if(document.getElementById('tickerBgColor')) document.getElementById('tickerBgColor').value = bgColor;
         if(document.getElementById('tickerTextColor')) document.getElementById('tickerTextColor').value = txtColor;
         if(document.getElementById('tickerSpeed')) document.getElementById('tickerSpeed').value = speed;
+        
         alert('تم التحديث! وتزامنت لوحة القيادة بنجاح 📡');
+        
+        // التزامن عبر استدعاء دالة لوحة القيادة (كطبقة أمان إضافية)
+        if (typeof fetchTickerSettingsForDashboard === 'function') {
+            fetchTickerSettingsForDashboard();
+        }
+
     } catch (err) { alert('حدث خطأ: ' + err.message); }
 }
 
@@ -205,6 +219,7 @@ function attachColorListeners() {
         });
     });
 }
+
 // ==========================================
 // 👥 قسم إدارة المستخدمين (للمدراء فقط)
 // ==========================================
@@ -270,5 +285,6 @@ async function toggleUserStatus(userId, isCurrentlyActive) {
         fetchUsersList(); // تحديث الجدول فوراً
     }
 }
+
 // تشغيل النظام للقسم عند التحميل
 initSettings();

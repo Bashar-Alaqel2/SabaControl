@@ -1,5 +1,5 @@
 // ==========================================
-// core/app.js - العقل المدبر للنظام (النسخة المدعومة بالصلاحيات)
+// core/app.js - العقل المدبر للنظام (النسخة المدعومة بالصلاحيات والمزامنة)
 // ==========================================
 
 // متغير عالمي لحفظ صلاحية المستخدم الحالي
@@ -145,10 +145,72 @@ async function loadUserProfile() {
 }
 
 // ==========================================
+// 🎨 4. جلب المظهر الأساسي عند تحديث/فتح الصفحة
+// ==========================================
+async function applyInitialTheme() {
+    try {
+        const { data, error } = await window.sb.from('settings').select('key, value');
+        if (data && !error) {
+            const sysName = data.find(item => item.key === 'system_name')?.value || 'SabaPost';
+            const primaryColor = data.find(item => item.key === 'theme_primary')?.value || '#5c6bc0';
+            const sidebarColor = data.find(item => item.key === 'theme_sidebar')?.value || '#2b2b44';
+            const bgColor = data.find(item => item.key === 'theme_bg')?.value || '#f4f7fa';
+            const cardBgColor = data.find(item => item.key === 'theme_card_bg')?.value || '#ffffff';
+            const textColor = data.find(item => item.key === 'theme_text')?.value || '#333333';
+
+            document.documentElement.style.setProperty('--primary', primaryColor);
+            document.documentElement.style.setProperty('--sidebar-bg', sidebarColor);
+            document.documentElement.style.setProperty('--bg-color', bgColor);
+            document.documentElement.style.setProperty('--card-bg', cardBgColor);
+            document.documentElement.style.setProperty('--text-color', textColor);
+
+            document.querySelectorAll('.brand span').forEach(el => el.innerText = sysName);
+        }
+    } catch (err) {
+        console.error("لم يتمكن النظام من جلب المظهر الأولي:", err);
+    }
+}
+
+// ==========================================
+// 📡 5. نظام المزامنة الحية (Realtime Theme Sync)
+// ==========================================
+function startRealtimeThemeSync() {
+    window.sb
+        .channel('public:settings')
+        .on(
+            'postgres_changes', 
+            { event: 'UPDATE', schema: 'public', table: 'settings' }, 
+            (payload) => {
+                const key = payload.new.key;
+                const value = payload.new.value;
+
+                if (key === 'theme_primary') document.documentElement.style.setProperty('--primary', value);
+                if (key === 'theme_sidebar') document.documentElement.style.setProperty('--sidebar-bg', value);
+                if (key === 'theme_bg') document.documentElement.style.setProperty('--bg-color', value);
+                if (key === 'theme_card_bg') document.documentElement.style.setProperty('--card-bg', value);
+                if (key === 'theme_text') document.documentElement.style.setProperty('--text-color', value);
+
+                if (key === 'system_name') {
+                    document.querySelectorAll('.brand span').forEach(el => el.innerText = value);
+                }
+                console.log(`🔄 تم تحديث المظهر تلقائياً: ${key}`);
+            }
+        )
+        .subscribe();
+}
+
+// ==========================================
 // 🚀 بدء التشغيل التلقائي للنظام
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. تطبيق المظهر المحفوظ أولاً (يحل مشكلة التحديث)
+    applyInitialTheme();
+
+    // 2. تشغيل الرادار لمراقبة التغييرات القادمة
+    startRealtimeThemeSync();
+
+    // 3. جلب بيانات المستخدم وتحميل لوحة القيادة
     loadUserProfile().then(() => {
-        loadModule('dashboard'); // تحميل لوحة القيادة بعد معرفة الصلاحيات
+        loadModule('dashboard'); 
     });
 });

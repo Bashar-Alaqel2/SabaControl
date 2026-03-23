@@ -17,7 +17,7 @@
     </div>
     
     <div class="side-panel">
-        <div class="card">
+       <div class="card" id="adminDashboardTicker" style="display: none;">
             <div class="card-header flex-between">
                 <h3><i class="fa-solid fa-bullhorn"></i> التحكم بشريط الأخبار</h3>
                 <label class="toggle-switch" title="إظهار/إخفاء الشريط">
@@ -25,6 +25,14 @@
                     <span class="slider"></span>
                 </label>
             </div>
+            
+            <div class="form-group" style="margin-top: 10px; margin-bottom: 15px;">
+                <label style="font-size: 11px; font-weight: bold; color: var(--primary);">🎯 استهداف الشاشة:</label>
+                <select id="tickerTargetScreen" onchange="loadSpecificScreenTicker()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="all">بث لجميع الشاشات (موحد)</option>
+                    </select>
+            </div>
+
             <div class="form-group">
                 <textarea id="newsInput" rows="3" placeholder="اكتب الخبر العاجل هنا..."></textarea>
             </div>
@@ -42,7 +50,7 @@
                     <input type="number" id="tickerSpeed" value="50" min="10" max="200" style="padding: 8px;">
                 </div>
             </div>
-            <button class="btn btn-warning btn-block" onclick="updateAdvancedTickerDashboard()"><i class="fa-solid fa-satellite-dish"></i> تحديث وبث للشاشات</button>
+            <button class="btn btn-warning btn-block" onclick="updateAdvancedTickerDashboard()"><i class="fa-solid fa-satellite-dish"></i> تحديث وبث الأخبار</button>
         </div>
     </div>
 
