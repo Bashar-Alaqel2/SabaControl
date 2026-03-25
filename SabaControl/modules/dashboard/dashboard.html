@@ -1,0 +1,118 @@
+<div class="load-stats-here"></div>
+
+<div class="dashboard-wrapper" style="display: flex; flex-direction: column; gap: 20px;">
+    
+    <div class="dashboard-top-row" style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 20px; align-items: start;">
+        
+        <div class="center-panel">
+            <div class="card shadow-sm h-100">
+                <div class="card-header flex-between bg-white py-3">
+                    <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
+                        <i class="fa-solid fa-network-wired text-primary me-2"></i> نظرة عامة على الشاشات
+                    </h3>
+                    <button class="btn btn-primary btn-sm" onclick="loadModule('screens')">إدارة الكل</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="clean-table mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>ID الجهاز</th>
+                                <th>حالة الاتصال</th>
+                                <th>التصريح</th>
+                                <th>حالة العرض</th>
+                            </tr>
+                        </thead>
+                        <tbody id="screensList">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <div class="card shadow-sm h-100" id="adminDashboardTicker" style="display: none; border-top: 3px solid var(--warning);">
+                <div class="card-header flex-between bg-white py-3">
+                    <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
+                        <i class="fa-solid fa-bullhorn text-warning me-2"></i> التحكم بالشريط
+                    </h3>
+                    <label class="toggle-switch" title="إظهار/إخفاء الشريط">
+                        <input type="checkbox" id="tickerToggle" onchange="toggleTickerVisibilityDashboard()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label class="small fw-bold text-muted mb-1">🎯 استهداف الشاشة:</label>
+                        <select id="tickerTargetScreen" onchange="loadSpecificScreenTicker()" class="form-select form-select-sm shadow-none">
+                            <option value="all">بث لجميع الشاشات (موحد)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <textarea id="newsInput" rows="3" class="form-control shadow-none" placeholder="اكتب الخبر العاجل هنا..." style="font-size: 14px; resize: none;"></textarea>
+                    </div>
+
+                    <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div class="form-group text-center">
+                            <label class="small d-block mb-1 fw-bold">الخلفية</label>
+                            <input type="color" id="tickerBgColor" value="#000000" class="w-100 border-0 p-0" style="height: 35px; cursor: pointer;">
+                        </div>
+                        <div class="form-group text-center">
+                            <label class="small d-block mb-1 fw-bold">الخط</label>
+                            <input type="color" id="tickerTextColor" value="#ffffff" class="w-100 border-0 p-0" style="height: 35px; cursor: pointer;">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="small fw-bold">سرعة الحركة (بيكسل/ثانية)</label>
+                            <input type="number" id="tickerSpeed" value="50" min="10" max="200" class="form-control form-control-sm">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-warning w-100 fw-bold" onclick="updateAdvancedTickerDashboard()">
+                        <i class="fa-solid fa-satellite-dish me-2"></i> تحديث وبث الأخبار
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-bottom-row">
+        <div class="card shadow-sm border-0" id="tickerHistoryCard" style="display:none; border-radius: 12px; overflow: hidden;">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #f8f9fa;">
+                <h5 class="mb-0" style="font-weight: 700; color: #2c3e50;">
+                    <i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> سجل عمليات البث الأخيرة (نظام المساءلة)
+                </h5>
+                <button class="btn btn-sm btn-light border shadow-sm" onclick="fetchTickerHistory()">
+                    <i class="fa-solid fa-rotate me-1"></i> تحديث البيانات
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 45%; padding: 15px;">نص الخبر المرسل</th>
+                                <th>بواسطة</th>
+                                <th>التوقيت</th>
+                                <th>الشاشة المستهدفة</th>
+                                <th class="text-center">إدارة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tickerHistoryBody">
+                            <tr><td colspan="5" class="text-center p-4">جاري مزامنة السجل من قاعدة البيانات...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .dashboard-wrapper .card { border: 1px solid rgba(0,0,0,.08); }
+    .clean-table th { font-size: 12px; color: #666; padding: 12px 15px; }
+    .table thead th { font-weight: 600; font-size: 13px; border-top: none; }
+    .badge { padding: 6px 10px; font-weight: 500; }
+    .btn-group .btn { padding: 4px 8px; }
+</style>

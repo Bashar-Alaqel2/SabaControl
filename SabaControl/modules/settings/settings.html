@@ -1,0 +1,157 @@
+<div class="dashboard-grid">
+    <div class="center-panel">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-palette"></i> هوية ومظهر لوحة التحكم (Branding)</h3>
+            </div>
+            <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>اسم النظام (يظهر في القائمة العلوية والجانبية)</label>
+                    <input type="text" id="systemName" value="SabaPost">
+                </div>
+                <div class="form-group">
+                    <label>اللون الرئيسي (للأزرار)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="color" id="primaryColor" value="#5c6bc0" style="width: 50px; padding: 0; cursor: pointer;">
+                        <input type="text" id="primaryColorText" value="#5c6bc0" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>لون القائمة الجانبية</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="color" id="sidebarColor" value="#2b2b44" style="width: 50px; padding: 0; cursor: pointer;">
+                        <input type="text" id="sidebarColorText" value="#2b2b44" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>لون خلفية النظام</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="color" id="bgColor" value="#f4f7fa" style="width: 50px; padding: 0; cursor: pointer;">
+                        <input type="text" id="bgColorText" value="#f4f7fa" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>لون خلفية الكروت</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="color" id="cardBgColor" value="#ffffff" style="width: 50px; padding: 0; cursor: pointer;">
+                        <input type="text" id="cardBgColorText" value="#ffffff" readonly>
+                    </div>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>لون النصوص العام</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="color" id="textColor" value="#333333" style="width: 50px; padding: 0; cursor: pointer;">
+                        <input type="text" id="textColorText" value="#333333" readonly>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary mt-10" onclick="saveThemeSettings()"><i class="fa-solid fa-floppy-disk"></i> حفظ وتطبيق المظهر</button>
+        </div>
+
+        <div class="card mt-20">
+            <div class="card-header flex-between">
+                <h3><i class="fa-solid fa-newspaper"></i> إعدادات شريط الأخبار (على الشاشات)</h3>
+                <label class="toggle-switch" title="إظهار/إخفاء الشريط">
+                    <input type="checkbox" id="settingsTickerToggle" onchange="toggleTickerVisibility('settings')">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>نص الشريط العاجل</label>
+                <textarea id="settingsNewsInput" rows="2" placeholder="اكتب الخبر العاجل هنا..."></textarea>
+            </div>
+            <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; align-items: end;">
+                <div class="form-group">
+                    <label>لون خلفية الشريط</label>
+                    <input type="color" id="settingsTickerBgColor" value="#000000" style="width: 100%; height: 40px; cursor: pointer;">
+                </div>
+                <div class="form-group">
+                    <label>لون النص</label>
+                    <input type="color" id="settingsTickerTextColor" value="#ffffff" style="width: 100%; height: 40px; cursor: pointer;">
+                </div>
+                <div class="form-group">
+                    <label>سرعة حركة الشريط</label>
+                    <input type="number" id="settingsTickerSpeed" value="50" min="10" max="200">
+                </div>
+            </div>
+            <button class="btn btn-warning mt-10" onclick="saveAdvancedTicker()"><i class="fa-solid fa-satellite-dish"></i> بث التحديثات للشاشات</button>
+        </div>
+
+        <!-- -->
+
+        <div class="card mt-20" id="adminUsersSection" style="display: none;">
+            <div class="card-header flex-between">
+                <h3><i class="fa-solid fa-users-gear"></i> إدارة المشرفين والمحررين</h3>
+                <button class="btn btn-primary" onclick="fetchUsersList()" style="padding: 5px 10px; font-size: 12px;">
+                    <i class="fa-solid fa-rotate-right"></i> تحديث
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table class="clean-table">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الصلاحية</th>
+                            <th>الحالة</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersListTable">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+
+    <div class="side-panel">
+        <div class="card sticky-card">
+            <div class="card-header">
+                <h3><i class="fa-regular fa-image"></i> الشعار الافتراضي (Fallback)</h3>
+            </div>
+            <div class="preview-container" style="height: 200px; margin-bottom: 15px; border: 2px dashed #ccc;">
+                <img id="currentFallbackPreview" src="" style="display: none; width: 100%; height: 100%; object-fit: contain;">
+                <div id="fallbackPlaceholder" class="preview-placeholder">
+                    <i class="fa-solid fa-image" style="font-size: 40px; color: #ccc;"></i>
+                    <p>لم يتم تعيين شعار</p>
+                </div>
+            </div>
+            <input type="file" id="fallbackInput" accept="image/*" class="file-input" style="margin-bottom: 15px; width: 100%;">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="uploadFallbackImage()">تحديث</button>
+                <button class="btn btn-danger" style="flex: 1; background-color: #d32f2f;" onclick="deleteFallbackImage()"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div id="fallbackStatus" class="status-msg"></div>
+            <!-- -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; overflow: hidden;">
+    
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid #eee;">
+        
+        <h6 class="fw-bold mb-0" style="color: #b94a8f; display: flex; align-items: center;">
+            <i class="fa-solid fa-fingerprint me-2" style="font-size: 1.2rem;"></i> 
+            إظهار معرف الجهاز (Device ID)
+        </h6>
+
+        <label class="toggle-switch mb-0" style="flex-shrink: 0;">
+            <input type="checkbox" id="showDeviceIdToggle" onchange="autoSaveSystemPreferences()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="card-body bg-white">
+        <p class="text-muted mb-0" style="font-size: 13px; line-height: 1.6; text-align: right;">
+            عند تفعيل هذا الخيار، سيظهر كود التعريف الخاص بكل شاشة في الزاوية العلوية. مفيد جداً أثناء التركيب والصيانة لمعرفة أي شاشة تتحكم بها.
+        </p>
+    </div>
+
+</div>
+
+            <!-- -->
+            
+        </div>
+        <!---->
+       
+   
+        <!---->
+    </div>
+</div>

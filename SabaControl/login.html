@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | SabaPost</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="core/main.css">
+    
+    <style>
+        body.login-page {
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, var(--primary) 100%);
+            margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-card {
+            background: var(--card-bg); padding: 40px; border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 100%; max-width: 380px;
+            text-align: center; animation: fadeIn 0.6s ease-out;
+        }
+        .login-card .brand { justify-content: center; background: transparent; color: var(--primary); border: none; margin-bottom: 10px; font-size: 36px; padding: 0; }
+        .login-card .form-group { text-align: right; margin-bottom: 20px; }
+        .login-card input { background-color: #f8f9fa; border: 1px solid #ddd; padding: 12px; font-size: 15px; }
+        .login-btn { width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; border-radius: 8px; }
+        .error-msg { color: var(--danger); font-size: 14px; margin-top: 15px; font-weight: bold; display: none; }
+        .success-msg { color: var(--success); font-size: 14px; margin-top: 15px; font-weight: bold; display: none; }
+        .toggle-link { color: var(--primary); font-size: 14px; text-decoration: none; display: inline-block; margin-top: 20px; cursor: pointer; font-weight: bold;}
+        .toggle-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="login-page">
+
+    <div class="login-card">
+        <div class="brand">
+            <i class="fa-solid fa-tv"></i> <span>SabaPost</span>
+        </div>
+        <h3 id="formTitle" style="margin-top: 0; margin-bottom: 30px; color: var(--text-dark);">بوابة وصول المشرفين</h3>
+        
+        <form id="authForm">
+            <div class="form-group" id="nameGroup" style="display: none;">
+                <label>الاسم الكامل</label>
+                <input type="text" id="fullName" placeholder="مثال: أحمد محمد">
+            </div>
+
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="email" required placeholder="user@sabapost.com" dir="ltr">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="password" required placeholder="••••••••" dir="ltr">
+            </div>
+            
+            <button type="submit" class="btn btn-primary login-btn" id="submitBtn">
+                <i class="fa-solid fa-right-to-bracket"></i> دخول للنظام
+            </button>
+            
+            <div id="errorMsg" class="error-msg"><i class="fa-solid fa-triangle-exclamation"></i> حدث خطأ، يرجى المحاولة.</div>
+            <div id="successMsg" class="success-msg"><i class="fa-solid fa-circle-check"></i> تم إنشاء الحساب بنجاح! جاري الدخول...</div>
+        </form>
+
+        <a id="toggleModeBtn" class="toggle-link" onclick="toggleAuthMode()">ليس لديك حساب؟ تسجيل مستخدم جديد</a>
+    </div>
+
+    <script src="core/db.js"></script>
+    <script src="core/auth.js"></script>
+</body>
+</html>

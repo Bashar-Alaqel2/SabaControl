@@ -1,0 +1,48 @@
+<div class="dashboard-grid">
+    <div class="center-panel">
+        <div class="card">
+            <div class="card-header"><h3><i class="fa-solid fa-cloud-arrow-up"></i> رفع محتوى جديد للمكتبة</h3></div>
+            <div class="drag-drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p id="fileNameDisplay">اسحب الملف هنا أو <span>اضغط للاستعراض</span></p>
+                <input type="file" id="fileInput" accept="image/*,video/*" hidden>
+            </div>
+            <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div class="form-group"><label>نوع المحتوى</label><select id="fileType"><option value="image">صورة</option><option value="video">فيديو</option></select></div>
+                <div class="form-group"><label>مدة العرض</label><input type="number" id="duration" value="10000"></div>
+                <div class="form-group">
+                    <label style="color: #2e7d32; font-weight: bold;"><i class="fa-solid fa-calendar-check"></i> يبدأ العرض في:</label>
+                    <input type="datetime-local" id="startsAt" required>
+                </div>
+                <div class="form-group">
+                    <label style="color: #e53935; font-weight: bold;"><i class="fa-regular fa-clock"></i> ينتهي العرض في:</label>
+                    <input type="datetime-local" id="expiresAt" required>
+                </div>
+                <div class="form-group"><label>تخصيص الشاشة</label><select id="targetScreen"><option value="all">كل الشاشات</option></select></div>
+            </div>
+            <button class="btn btn-primary btn-block mt-10" onclick="uploadContent()"><i class="fa-solid fa-rocket"></i> رفع ونشر</button>
+            
+            <div class="progress-container" id="progressContainer" style="display: none; width: 100%; background-color: #e0e0e0; border-radius: 5px; margin-top: 15px; overflow: hidden;">
+                <div id="progressBar" style="width: 0%; height: 10px; background-color: #2e7d32; transition: width 0.3s;"></div>
+            </div>
+            <div id="progressText" style="text-align: center; font-size: 12px; margin-top: 5px; font-weight: bold; color: var(--text-color); display: none;">0%</div>
+            <div id="uploadStatus" class="status-msg mt-10"></div>
+        </div>
+        
+        <div class="card mt-20">
+            <div class="card-header"><h3><i class="fa-solid fa-photo-film"></i> مكتبة الوسائط</h3></div>
+            <div class="media-grid" id="mediaGallery"></div>
+        </div>
+    </div>
+
+    <div class="side-panel">
+        <div class="card sticky-card">
+            <div class="card-header"><h3><i class="fa-solid fa-display"></i> المعاينة المباشرة</h3></div>
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-placeholder" id="previewPlaceholder"><i class="fa-solid fa-clapperboard"></i><p>اختر ملفاً للعرض</p></div>
+                <img id="imagePreview" src="" style="display: none;">
+                <video id="videoPreview" src="" controls style="display: none;" muted></video>
+            </div>
+        </div>
+    </div>
+</div>
