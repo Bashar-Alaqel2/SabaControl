@@ -5,42 +5,50 @@
 function initScreens() {
     loadComponents(); // نحمل الإحصائيات هنا أيضاً
     fetchScreens();
+    //  تفعيل التحديث اللحظي (Realtime)
+    // نضعه هنا ليعمل مرة واحدة عند تشغيل المودول
+    window.sb.channel('screens-realtime-changes')
+      .on('postgres_changes', 
+          { event: '*', schema: 'public', table: 'screens' }, 
+          (payload) => {
+            console.log('🔄 تحديث لحظي في الشاشات:', payload);
+            fetchScreens(); // إعادة جلب البيانات فور حدوث أي تغيير (إضافة، حذف، تحديث)
+          })
+      .subscribe();
 }
 
 async function fetchScreens() {
     try {
-        // 1. جلب معرف المستخدم الحالي
-        const { data: { user } } = await window.sb.auth.getUser();
-        const myUserId = user?.id;
-
-        // 2. التأكد من صلاحية المستخدم (مدير أم محرر) من قاعدة البيانات مباشرة لتجنب التأخير
-        let myRole = 'editor';
-        if (myUserId) {
-            const { data: profile } = await window.sb.from('profiles').select('role').eq('id', myUserId).single();
-            if (profile) {
-                myRole = profile.role;
-            }
+        // 1. إظهار "مؤشر تحميل" بسيط (اختياري لكنه يحسن تجربة المستخدم)
+        const tbodyDashboard = document.getElementById('screensList');
+        if (tbodyDashboard && tbodyDashboard.innerHTML === '') {
+            tbodyDashboard.innerHTML = '<tr><td colspan="4" class="text-center">جاري جلب البيانات...</td></tr>';
         }
 
-        // 3. جلب الشاشات مع اسم المالك (الآن سيعمل الربط بنجاح)
-        const { data, error } = await window.sb
-            .from('screens')
-            .select('*, profiles(full_name)') 
-            .order('last_ping', { ascending: false });
-            
-        if (error) {
-            console.error("خطأ من قاعدة البيانات:", error.message);
-            throw error;
-        }
+        // 2. تنفيذ الطلبات بالتوازي (Parallel) لتقليل وقت الانتظار
+        // نستخدم Promise.all لجلب المستخدم والبيانات في آن واحد
+        const [userRes, screensRes] = await Promise.all([
+            window.sb.auth.getUser(),
+            window.sb.from('screens').select('*, profiles(full_name, role)').order('last_ping', { ascending: false })
+        ]);
+
+        const user = userRes.data?.user;
+        const screens = screensRes.data || [];
         
-        const screens = data || [];
-        
-        // 4. تمرير البيانات لدالة الرسم
+        if (screensRes.error) throw screensRes.error;
+
+        // 3. استخراج الصلاحية مباشرة من أول سجل أو من بيانات المستخدم
+        // بدلاً من عمل طلب إضافي لجدول profiles، نستخدم currentUserRole المخزن عالمياً أو نجلب من الـ Join
+        let myUserId = user?.id;
+        let myRole = window.currentUserRole || 'editor'; 
+
+        // 4. تمرير البيانات لدالة الرسم فوراً
         renderScreens(screens, myUserId, myRole);
+        
         if(typeof updateTargetSelect === 'function') updateTargetSelect(screens);
         
     } catch (err) {
-        console.error('Error fetching screens:', err);
+        console.error('Error fetching screens fast:', err);
     }
 }
 
@@ -196,6 +204,37 @@ async function submitNewScreen() {
         alert('تم ربط الشاشة بنجاح! ستتحول الشاشة للعمل فوراً. 🚀');
         fetchScreens(); 
     } catch (err) { alert('حدث خطأ أثناء إضافة الشاشة: ' + err.message); }
+}
+
+// ==========================================
+// 🔄 مراقب التحديثات اللحظية (Realtime Watcher)
+// يوضع في أسفل ملف screens.js
+// ==========================================
+
+// 1. الاستماع لتغييرات قاعدة البيانات (تفعيل التحديث التلقائي)
+window.sb.channel('db-screens-changes')
+    .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'screens' 
+    }, (payload) => {
+        console.log('🔔 تغيير مكتشف في الشاشات:', payload.eventType);
+        fetchScreens(); // استدعاء دالتك الذكية لتحديث الجداول والإحصائيات فوراً
+    })
+    .subscribe();
+
+// 2. تحديث دوري (كل دقيقة) لضمان دقة حالة الـ Online/Offline
+// لأن حالة الـ "مفصول" تعتمد على مرور الوقت وليس فقط على تغيير في القاعدة
+setInterval(() => {
+    console.log('⏱️ تحديث دوري لحالة الاتصال...');
+    fetchScreens();
+}, 60000); 
+
+// 3. تشغيل الدالة لأول مرة عند تحميل الملف
+initScreensModule();
+
+function initScreensModule() {
+    fetchScreens();
 }
 
 initScreens();

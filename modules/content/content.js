@@ -25,11 +25,40 @@ async function uploadContent() {
 
     const startsInput = document.getElementById('startsAt').value;
     const expiresInput = document.getElementById('expiresAt').value;
+    const target = document.getElementById('targetScreen').value;
 
-    if (!startsInput || !expiresInput) return alert('الرجاء تحديد تاريخ ووقت البدء والانتهاء!');
+    if (!startsInput || !expiresInput) return alert('الرجاء تحديد التاريخ والوقت!');
     if (new Date(startsInput) >= new Date(expiresInput)) return alert('خطأ: وقت الانتهاء يجب أن يكون بعد وقت البدء!');
 
+    // 🔴 [الجديد] 1. فحص التعارض قبل الرفع لتوفير الوقت والبيانات
     const statusLabel = document.getElementById('uploadStatus');
+    statusLabel.innerText = 'جاري فحص توفر الشاشات... 🔍';
+
+    const { data: conflicts } = await window.sb
+        .from('playlist')
+        .select('target_screen_id')
+        .lt('starts_at', new Date(expiresInput).toISOString())
+        .gt('expires_at', new Date(startsInput).toISOString());
+
+    const busyIds = conflicts.map(c => c.target_screen_id);
+
+    // إذا كان المستخدم اختار شاشة محددة وهي مشغولة
+    if (target !== 'all' && busyIds.includes(target)) {
+        return alert('عذراً، هذه الشاشة محجوزة بالفعل في هذا التوقيت!');
+    }
+    
+    // إذا اختار "الكل" وجميع الشاشات مشغولة
+    if (target === 'all') {
+        const { data: allScreens } = await window.sb.from('screens').select('device_id');
+        const freeScreens = allScreens.filter(s => !busyIds.includes(s.device_id));
+        if (freeScreens.length === 0) {
+            return alert('جميع الشاشات محجوزة في هذا التوقيت، لا يمكن النشر!');
+        }
+        // تخزين الشاشات المتاحة لاستخدامها في دالة Save
+        window.currentFreeScreens = freeScreens.map(s => s.device_id);
+    }
+
+    // 🟢 2. إذا اجتاز الفحص، نبدأ عملية الرفع (كودك الأصلي كما هو)
     const type = document.getElementById('fileType').value;
     
     const progressContainer = document.getElementById('progressContainer');
@@ -91,90 +120,127 @@ async function uploadContent() {
 }
 
 async function saveToDatabase(fileName, type, startsInput, expiresInput, statusLabel, fileInput) {
-    statusLabel.innerText = 'جاري الجدولة... 💾';
+  statusLabel.innerText = 'جاري الجدولة الذكية... 💾';
+    
+    // 2️⃣ جلب بيانات المستخدم مرة واحدة في البداية
+    const { data: userData } = await window.sb.auth.getUser();
+    const myUserId = userData?.user?.id;
+
+    if (!myUserId) {
+        return alert("فشل التحقق من هوية المستخدم، يرجى تسجيل الدخول مجدداً.");
+    }
+
     const { data: { publicUrl } } = sb.storage.from('media').getPublicUrl(fileName);
     const duration = document.getElementById('duration').value;
     const target = document.getElementById('targetScreen').value;
 
-    await sb.from('playlist').insert({
-        url: publicUrl, type: type, duration: parseInt(duration),
-        target_screen_id: target,
-        starts_at: new Date(startsInput).toISOString(),
-        expires_at: new Date(expiresInput).toISOString() 
-    });
+    let rowsToInsert = [];
 
-    statusLabel.innerText = 'تم الرفع والجدولة بنجاح! ✅';
-    fileInput.value = '';
-    if(document.getElementById('fileNameDisplay')) document.getElementById('fileNameDisplay').innerHTML = 'اسحب الملف هنا أو <span>اضغط للاستعراض</span>';
+    // 3️⃣ استخدام myUserId الجاهز داخل المصفوفة
+    if (target === 'all' && window.currentFreeScreens) {
+        rowsToInsert = window.currentFreeScreens.map(screenId => ({
+            url: publicUrl,
+            type: type,
+            duration: parseInt(duration),
+            target_screen_id: screenId,
+            starts_at: new Date(startsInput).toISOString(),
+            expires_at: new Date(expiresInput).toISOString(),
+            created_by: myUserId // القيمة جاهزة الآن
+        }));
+    } else {
+        rowsToInsert.push({
+            url: publicUrl,
+            type: type,
+            duration: parseInt(duration),
+            target_screen_id: target,
+            starts_at: new Date(startsInput).toISOString(),
+            expires_at: new Date(expiresInput).toISOString(),
+            created_by: myUserId // القيمة جاهزة الآن
+        });
+    }
+
+    const { error } = await sb.from('playlist').insert(rowsToInsert);
     
-    setTimeout(() => {
-        if(document.getElementById('progressContainer')) document.getElementById('progressContainer').style.display = 'none';
-        if(document.getElementById('progressText')) document.getElementById('progressText').style.display = 'none';
-    }, 3000);
-    
-    fetchPlaylist();
+    if (error) {
+        statusLabel.innerText = 'خطأ في الجدولة: ' + error.message;
+    } else {
+        statusLabel.innerText = `تم النشر بنجاح على ${rowsToInsert.length} شاشة! ✅`;
+        // تنظيف واعادة تعبئة
+        fileInput.value = '';
+        fetchPlaylist();
+    }
 }
 
 // 🟢 الدالة المحدثة: ذكية، تقرأ الصلاحية من القاعدة، وتحمي أزرار الحذف
 async function fetchPlaylist() {
     try {
-        // 1. جلب بيانات المستخدم الحالي
         const { data: { user } } = await window.sb.auth.getUser();
         const myUserId = user?.id;
 
-        // 2. التأكد من الصلاحية (مدير أو محرر) من قاعدة البيانات لتجنب أي تأخير
         let myRole = 'editor';
         if (myUserId) {
             const { data: profile } = await window.sb.from('profiles').select('role').eq('id', myUserId).single();
             if (profile) myRole = profile.role;
         }
 
-        // 3. جلب المحتوى مع اسم الناشر (يعتمد على عمود created_by الذي أنشأناه في SQL)
-        const { data, error } = await window.sb
+        // 1. جلب البيانات (سنحتاج أيضاً لجدول الشاشات لجلب أسمائها)
+        const { data: playlistData, error } = await window.sb
             .from('playlist')
-            .select('*, profiles(full_name)')
-            .order('created_at', { ascending: false });
+            .select('*, profiles(full_name)');
         
-        if (error) {
-            console.error("خطأ قاعدة البيانات:", error.message);
-            throw error;
-        }
-        
+        const { data: screensData } = await window.sb.from('screens').select('device_id, screen_name');
+
+        if (error) throw error;
+
         const gallery = document.getElementById('mediaGallery');
         if (!gallery) return;
         gallery.innerHTML = '';
-        
-        if(data && data.length > 0) {
+
+        if (playlistData && playlistData.length > 0) {
+            // 2. 🧠 منطق التجميع (Grouping Logic)
+            // نجمع السجلات التي لها نفس الـ URL ونفس وقت البدء
+            const groupedMap = {};
+
+            playlistData.forEach(item => {
+                const groupKey = `${item.url}_${item.starts_at}`;
+                if (!groupedMap[groupKey]) {
+                    groupedMap[groupKey] = { ...item, target_screens: [] };
+                }
+                
+                // البحث عن اسم الشاشة بدلاً من الـ ID
+                const screenObj = screensData?.find(s => s.device_id === item.target_screen_id);
+                const screenName = screenObj?.screen_name || `شاشة (${item.target_screen_id})`;
+                groupedMap[groupKey].target_screens.push(screenName);
+            });
+
             const now = new Date();
-            data.forEach(item => {
-                const startDate = item.starts_at ? new Date(item.starts_at) : new Date(0);
+            
+            // 3. عرض الكروت المجمعة
+            Object.values(groupedMap).forEach(item => {
+                const startDate = new Date(item.starts_at);
                 const expDate = item.expires_at ? new Date(item.expires_at) : null;
                 
-                let statusText = 'غير معروف';
-                let statusColor = 'gray';
+                let statusText = 'نشط 🟢';
+                let statusColor = '#2e7d32';
                 let opacity = '1';
 
                 if (expDate && now > expDate) {
                     statusText = 'منتهي 🔴'; statusColor = '#e53935'; opacity = '0.6';
                 } else if (now < startDate) {
                     statusText = 'مجدول ⏳'; statusColor = '#ffa726';
-                } else {
-                    statusText = 'نشط 🟢'; statusColor = '#2e7d32';
                 }
-                
+
                 const thumb = item.type === 'image' ? `<img src="${item.url}">` : `<video src="${item.url}"></video>`;
                 const icon = item.type === 'image' ? '<i class="fa-solid fa-image"></i>' : '<i class="fa-solid fa-film"></i>';
-                
-                // ==========================================
-                // 🛡️ منطق الحماية: إظهار اسم الناشر وحماية زر الحذف
-                // ==========================================
                 const publisherName = item.profiles?.full_name || 'مجهول';
-                const isOwner = (item.created_by === myUserId) || (myRole === 'admin');
                 
-                // زر الحذف يظهر للمالك والمدير فقط، وغيرهم يرى (محمي)
+                // تحويل مصفوفة الشاشات إلى نص مقروء
+                const screensList = item.target_screens.join(', ');
+
+                const isOwner = (item.created_by === myUserId) || (myRole === 'admin');
                 const deleteButtonHtml = isOwner 
-                    ? `<button class="btn btn-danger" style="padding: 5px 10px; font-size:12px;" onclick="deleteItem('${item.id}')" title="حذف الملف"><i class="fa-solid fa-trash"></i></button>` 
-                    : `<span style="font-size: 11px; color: #888; background: #eee; padding: 4px 8px; border-radius: 4px;"><i class="fa-solid fa-lock"></i> محمية</span>`;
+                    ? `<button class="btn btn-danger" onclick="deleteGroup('${item.url}', '${item.starts_at}')" title="حذف من كل الشاشات"><i class="fa-solid fa-trash"></i> حذف الكل</button>` 
+                    : `<span class="locked-badge"><i class="fa-solid fa-lock"></i> محمي</span>`;
 
                 gallery.innerHTML += `
                     <div class="media-card" style="opacity: ${opacity};">
@@ -183,24 +249,46 @@ async function fetchPlaylist() {
                             ${thumb}
                         </div>
                         <div class="media-info">
-                            <strong style="font-size:11px; color: var(--primary);"><i class="fa-solid fa-user-pen"></i> الناشر: ${publisherName}</strong><br>
-                            <hr style="border: 0; border-top: 1px solid #eee; margin: 5px 0;">
-                            <strong style="font-size:12px;">يبدأ:</strong> <span style="font-size:11px;">${startDate.toLocaleString('ar-EG')}</span><br>
-                            <strong style="font-size:12px;">ينتهي:</strong> <span style="font-size:11px;">${expDate ? expDate.toLocaleString('ar-EG') : 'غير محدد'}</span><br>
-                            <div style="margin-top: 8px; font-weight: bold; color: ${statusColor};">${statusText}</div>
+                            <strong style="color: var(--primary);"><i class="fa-solid fa-user-pen"></i> الناشر: ${publisherName}</strong>
+                            <hr>
+                            <div class="schedule-info">
+                                <div><strong><i class="fa-regular fa-calendar"></i> يبدأ:</strong> ${startDate.toLocaleString('ar-EG')}</div>
+                                <div><strong><i class="fa-regular fa-clock"></i> ينتهي:</strong> ${expDate ? expDate.toLocaleString('ar-EG') : 'مفتوح'}</div>
+                            </div>
+                            <div class="target-info" style="margin-top:8px; padding:5px; background:#f0f7f0; border-radius:4px; font-size:11px;">
+                                <strong><i class="fa-solid fa-display"></i> يعرض على:</strong> <span style="color:#1b5e20;">${screensList}</span>
+                            </div>
+                            <div style="margin-top: 10px; font-weight: bold; color: ${statusColor}; text-align:center;">${statusText}</div>
                         </div>
                         <div class="media-actions">
-                            <button class="btn btn-warning" style="padding: 5px 10px; font-size:12px;" onclick="previewFromPlaylist('${item.url}', '${item.type}')"><i class="fa-solid fa-play"></i> عرض</button>
+                            <button class="btn btn-warning" onclick="previewFromPlaylist('${item.url}', '${item.type}')"><i class="fa-solid fa-play"></i> عرض</button>
                             ${deleteButtonHtml}
                         </div>
                     </div>
                 `;
             });
         } else {
-            gallery.innerHTML = '<p style="text-align: center; width: 100%; color: #888; margin-top: 20px;">لا توجد وسائط في المكتبة حالياً.</p>';
+            gallery.innerHTML = '<p class="empty-msg">لا توجد وسائط في المكتبة حالياً.</p>';
         }
     } catch (err) {
-        console.error("خطأ في جلب المحتوى:", err);
+        console.error("خطأ في جلب المحتوى المجمع:", err);
+    }
+}
+
+async function deleteGroup(url, starts_at) {
+    if (confirm('سيتم حذف هذا الإعلان من جميع الشاشات المرتبط بها، هل أنت متأكد؟')) {
+        try {
+            const { error } = await window.sb
+                .from('playlist')
+                .delete()
+                .eq('url', url)
+                .eq('starts_at', starts_at);
+                
+            if (error) throw error;
+            fetchPlaylist(); // إعادة تحديث القائمة
+        } catch (err) {
+            alert('عذراً، لا تملك صلاحية حذف هذه المجموعة!');
+        }
     }
 }
 

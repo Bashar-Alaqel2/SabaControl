@@ -1,100 +1,114 @@
-<div class="dashboard-grid">
+<div class="dashboard-grid" style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 20px; align-items: start;">
+    
     <div class="center-panel">
-        <div class="card">
-            <div class="card-header">
-                <h3><i class="fa-solid fa-palette"></i> هوية ومظهر لوحة التحكم (Branding)</h3>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
+                    <i class="fa-solid fa-palette text-primary me-2"></i> هوية ومظهر لوحة التحكم (Branding)
+                </h3>
             </div>
-            <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>اسم النظام (يظهر في القائمة العلوية والجانبية)</label>
-                    <input type="text" id="systemName" value="SabaPost">
-                </div>
-                <div class="form-group">
-                    <label>اللون الرئيسي (للأزرار)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="color" id="primaryColor" value="#5c6bc0" style="width: 50px; padding: 0; cursor: pointer;">
-                        <input type="text" id="primaryColorText" value="#5c6bc0" readonly>
+            <div class="card-body">
+                <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label class="small fw-bold mb-1">اسم النظام (SabaPost)</label>
+                        <input type="text" id="systemName" value="SabaPost" class="form-control shadow-none">
+                    </div>
+                    <div class="form-group">
+                        <label class="small fw-bold mb-1">اللون الرئيسي (الأزرار)</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="color" id="primaryColor" value="#5c6bc0" class="form-control form-control-color border-0" style="width: 45px; height: 38px;">
+                            <input type="text" id="primaryColorText" value="#5c6bc0" class="form-control shadow-none bg-light" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="small fw-bold mb-1">لون القائمة الجانبية</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="color" id="sidebarColor" value="#2b2b44" class="form-control form-control-color border-0" style="width: 45px; height: 38px;">
+                            <input type="text" id="sidebarColorText" value="#2b2b44" class="form-control shadow-none bg-light" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="small fw-bold mb-1">لون خلفية النظام</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="color" id="bgColor" value="#f4f7fa" class="form-control form-control-color border-0" style="width: 45px; height: 38px;">
+                            <input type="text" id="bgColorText" value="#f4f7fa" class="form-control shadow-none bg-light" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="small fw-bold mb-1">لون خلفية الكروت</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="color" id="cardBgColor" value="#ffffff" class="form-control form-control-color border-0" style="width: 45px; height: 38px;">
+                            <input type="text" id="cardBgColorText" value="#ffffff" class="form-control shadow-none bg-light" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label class="small fw-bold mb-1">لون النصوص العام</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="color" id="textColor" value="#333333" class="form-control form-control-color border-0" style="width: 45px; height: 38px;">
+                            <input type="text" id="textColorText" value="#333333" class="form-control shadow-none bg-light" readonly>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>لون القائمة الجانبية</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="color" id="sidebarColor" value="#2b2b44" style="width: 50px; padding: 0; cursor: pointer;">
-                        <input type="text" id="sidebarColorText" value="#2b2b44" readonly>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>لون خلفية النظام</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="color" id="bgColor" value="#f4f7fa" style="width: 50px; padding: 0; cursor: pointer;">
-                        <input type="text" id="bgColorText" value="#f4f7fa" readonly>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>لون خلفية الكروت</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="color" id="cardBgColor" value="#ffffff" style="width: 50px; padding: 0; cursor: pointer;">
-                        <input type="text" id="cardBgColorText" value="#ffffff" readonly>
-                    </div>
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>لون النصوص العام</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="color" id="textColor" value="#333333" style="width: 50px; padding: 0; cursor: pointer;">
-                        <input type="text" id="textColorText" value="#333333" readonly>
-                    </div>
-                </div>
+                <button class="btn btn-primary w-100 mt-3 fw-bold" onclick="saveThemeSettings()">
+                    <i class="fa-solid fa-floppy-disk me-2"></i> حفظ وتطبيق المظهر
+                </button>
             </div>
-            <button class="btn btn-primary mt-10" onclick="saveThemeSettings()"><i class="fa-solid fa-floppy-disk"></i> حفظ وتطبيق المظهر</button>
         </div>
 
-        <div class="card mt-20">
-            <div class="card-header flex-between">
-                <h3><i class="fa-solid fa-newspaper"></i> إعدادات شريط الأخبار (على الشاشات)</h3>
-                <label class="toggle-switch" title="إظهار/إخفاء الشريط">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header flex-between bg-white py-3">
+                <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
+                    <i class="fa-solid fa-newspaper text-warning me-2"></i> إعدادات شريط الأخبار (على الشاشات)
+                </h3>
+                <label class="toggle-switch">
                     <input type="checkbox" id="settingsTickerToggle" onchange="toggleTickerVisibility('settings')">
                     <span class="slider"></span>
                 </label>
             </div>
-            <div class="form-group">
-                <label>نص الشريط العاجل</label>
-                <textarea id="settingsNewsInput" rows="2" placeholder="اكتب الخبر العاجل هنا..."></textarea>
+            <div class="card-body">
+                <div class="form-group mb-3">
+                    <label class="small fw-bold mb-1">نص الشريط العاجل</label>
+                    <textarea id="settingsNewsInput" rows="2" class="form-control shadow-none" placeholder="اكتب الخبر العاجل هنا..."></textarea>
+                </div>
+                <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="small fw-bold mb-1">خلفية الشريط</label>
+                        <input type="color" id="settingsTickerBgColor" value="#000000" class="form-control form-control-color w-100 border-0" style="height: 38px;">
+                    </div>
+                    <div class="form-group">
+                        <label class="small fw-bold mb-1">لون الخط</label>
+                        <input type="color" id="settingsTickerTextColor" value="#ffffff" class="form-control form-control-color w-100 border-0" style="height: 38px;">
+                    </div>
+                    <div class="form-group">
+                        <label class="small fw-bold mb-1">السرعة</label>
+                        <input type="number" id="settingsTickerSpeed" value="50" min="10" max="200" class="form-control shadow-none">
+                    </div>
+                </div>
+                <button class="btn btn-warning w-100 mt-3 fw-bold shadow-sm" onclick="saveAdvancedTicker()">
+                    <i class="fa-solid fa-satellite-dish me-2"></i> بث التحديثات للشاشات
+                </button>
             </div>
-            <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; align-items: end;">
-                <div class="form-group">
-                    <label>لون خلفية الشريط</label>
-                    <input type="color" id="settingsTickerBgColor" value="#000000" style="width: 100%; height: 40px; cursor: pointer;">
-                </div>
-                <div class="form-group">
-                    <label>لون النص</label>
-                    <input type="color" id="settingsTickerTextColor" value="#ffffff" style="width: 100%; height: 40px; cursor: pointer;">
-                </div>
-                <div class="form-group">
-                    <label>سرعة حركة الشريط</label>
-                    <input type="number" id="settingsTickerSpeed" value="50" min="10" max="200">
-                </div>
-            </div>
-            <button class="btn btn-warning mt-10" onclick="saveAdvancedTicker()"><i class="fa-solid fa-satellite-dish"></i> بث التحديثات للشاشات</button>
         </div>
 
-        <!-- -->
-
-        <div class="card mt-20" id="adminUsersSection" style="display: none;">
-            <div class="card-header flex-between">
-                <h3><i class="fa-solid fa-users-gear"></i> إدارة المشرفين والمحررين</h3>
-                <button class="btn btn-primary" onclick="fetchUsersList()" style="padding: 5px 10px; font-size: 12px;">
-                    <i class="fa-solid fa-rotate-right"></i> تحديث
+        <div class="card shadow-sm" id="adminUsersSection" style="display: none;">
+            <div class="card-header flex-between bg-white py-3">
+                <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
+                    <i class="fa-solid fa-users-gear text-success me-2"></i> إدارة المشرفين والمحررين
+                </h3>
+                <button class="btn btn-outline-primary btn-sm rounded-pill" onclick="fetchUsersList()">
+                    <i class="fa-solid fa-rotate-right me-1"></i> تحديث
                 </button>
             </div>
             <div class="table-responsive">
-                <table class="clean-table">
-                    <thead>
+                <table class="clean-table mb-0 w-100">
+                    <thead class="bg-light">
                         <tr>
-                            <th>الاسم</th>
-                            <th>البريد الإلكتروني</th>
+                            <th class="ps-3">الاسم</th>
+                            <th>البريد</th>
                             <th>الصلاحية</th>
                             <th>الحالة</th>
-                            <th>إجراءات</th>
+                            <th class="text-center">إجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="usersListTable">
@@ -102,27 +116,60 @@
                 </table>
             </div>
         </div>
-        </div>
+
+
+        <div class="card shadow-sm mt-4" id="adminSessionsSection" style="display: none;">
+    <div class="card-header flex-between bg-white py-3">
+        <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
+            <i class="fa-solid fa-user-shield text-danger me-2"></i> الجلسات النشطة (المتصلون الآن)
+        </h3>
+        <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="fetchAllSessions()">
+            <i class="fa-solid fa-sync me-1"></i> تحديث القائمة
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="clean-table mb-0 w-100">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-3">المستخدم</th>
+                    <th>الجهاز / المتصفح</th>
+                    <th>عنوان IP</th>
+                    <th>آخر ظهور</th>
+                    <th class="text-center">إجراء</th>
+                </tr>
+            </thead>
+            <tbody id="activeSessionsTable">
+                <tr><td colspan="5" class="text-center p-4 text-muted">جاري فحص الجلسات النشطة...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+    </div>
 
     <div class="side-panel">
-        <div class="card sticky-card">
-            <div class="card-header">
-                <h3><i class="fa-regular fa-image"></i> الشعار الافتراضي (Fallback)</h3>
+        
+        <div class="card shadow-sm mb-4 sticky-card">
+            <div class="card-header bg-white py-3">
+                <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
+                    <i class="fa-regular fa-image text-danger me-2"></i> الشعار الافتراضي (Fallback)
+                </h3>
             </div>
-            <div class="preview-container" style="height: 200px; margin-bottom: 15px; border: 2px dashed #ccc;">
-                <img id="currentFallbackPreview" src="" style="display: none; width: 100%; height: 100%; object-fit: contain;">
-                <div id="fallbackPlaceholder" class="preview-placeholder">
-                    <i class="fa-solid fa-image" style="font-size: 40px; color: #ccc;"></i>
-                    <p>لم يتم تعيين شعار</p>
+            <div class="card-body">
+                <div class="preview-container mb-3" style="height: 180px; border: 2px dashed #ddd; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fafafa;">
+                    <img id="currentFallbackPreview" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
+                    <div id="fallbackPlaceholder" class="text-center">
+                        <i class="fa-solid fa-image mb-2" style="font-size: 40px; color: #ddd;"></i>
+                        <p class="small text-muted mb-0">لم يتم تعيين شعار</p>
+                    </div>
                 </div>
+                <input type="file" id="fallbackInput" accept="image/*" class="form-control form-control-sm mb-3">
+                <div class="btn-group w-100 gap-2">
+                    <button class="btn btn-primary btn-sm flex-fill fw-bold" onclick="uploadFallbackImage()">تحديث</button>
+                    <button class="btn btn-danger btn-sm px-3" onclick="deleteFallbackImage()"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <div id="fallbackStatus" class="status-msg small mt-2"></div>
             </div>
-            <input type="file" id="fallbackInput" accept="image/*" class="file-input" style="margin-bottom: 15px; width: 100%;">
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-primary" style="flex: 1;" onclick="uploadFallbackImage()">تحديث</button>
-                <button class="btn btn-danger" style="flex: 1; background-color: #d32f2f;" onclick="deleteFallbackImage()"><i class="fa-solid fa-trash"></i></button>
-            </div>
-            <div id="fallbackStatus" class="status-msg"></div>
-            <!-- -->
+            <!---->
             <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; overflow: hidden; border-top: 3px solid #b94a8f !important;">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h6 class="fw-bold mb-0" style="color: #b94a8f; display: flex; align-items: center;">
@@ -141,12 +188,28 @@
             </div>
         </div>
 
-            <!-- -->
-            
+            <!---->
         </div>
-        <!---->
-       
-   
-        <!---->
+
+        
+
     </div>
 </div>
+
+<style>
+    /* التنسيقات العامة والتحسينات البصرية */
+    .card { border: 1px solid rgba(0,0,0,.08); border-radius: 10px; }
+    .clean-table th { font-size: 11px; color: #777; padding: 12px; text-transform: uppercase; border-bottom: 2px solid #f8f9fa; }
+    .clean-table td { font-size: 13px; padding: 12px; border-bottom: 1px solid #f8f9fa; }
+    .form-control:focus { border-color: #5c6bc0; box-shadow: none; }
+    
+    /* الـ Switch الاحترافي */
+    .toggle-switch { position: relative; display: inline-block; width: 38px; height: 20px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #5c6bc0; }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    .sticky-card { position: sticky; top: 20px; }
+</style>

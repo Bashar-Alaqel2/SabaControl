@@ -1,8 +1,8 @@
 // ==========================================
-// 🔐 core/auth.js - نظام تسجيل الدخول والحماية
+// 🔐 core/auth.js - نظام تسجيل الدخول والحماية المطور
 // ==========================================
 
-let isLoginMode = true; // متغير لمعرفة حالة الواجهة الحالية (دخول أم تسجيل)
+let isLoginMode = true;
 
 // 1. التحقق من حالة تسجيل الدخول (الحارس)
 async function checkAuth() {
@@ -22,7 +22,6 @@ window.toggleAuthMode = function() {
     const toggleBtn = document.getElementById('toggleModeBtn');
     const fullNameInput = document.getElementById('fullName');
     
-    // إخفاء رسائل الخطأ عند التبديل
     document.getElementById('errorMsg').style.display = 'none';
     document.getElementById('successMsg').style.display = 'none';
 
@@ -41,7 +40,31 @@ window.toggleAuthMode = function() {
     }
 }
 
-// 3. معالجة إرسال النموذج (تسجيل دخول أو حساب جديد)
+// 3. دوال مساعدة لجلب معلومات الجهاز والـ IP
+async function getUserIP() {
+    try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        return data.ip;
+    } catch { return 'Unknown'; }
+}
+
+function getBrowserInfo() {
+    const ua = navigator.userAgent;
+    let browser = "متصفح غير معروف";
+    if (ua.includes("Chrome")) browser = "Chrome";
+    else if (ua.includes("Firefox")) browser = "Firefox";
+    else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+    else if (ua.includes("Edge")) browser = "Edge";
+    
+    return {
+        browser: browser,
+        os: navigator.platform,
+        timestamp: new Date().toISOString()
+    };
+}
+
+// 4. معالجة إرسال النموذج (تسجيل دخول أو حساب جديد)
 async function handleAuth(e) {
     e.preventDefault();
     
@@ -55,14 +78,26 @@ async function handleAuth(e) {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري المعالجة...';
     btn.disabled = true;
     errorMsg.style.display = 'none';
-    successMsg.style.display = 'none';
 
     try {
         if (isLoginMode) {
             // 🟢 عملية تسجيل الدخول
-            const { error } = await window.sb.auth.signInWithPassword({ email, password });
+            const { data, error } = await window.sb.auth.signInWithPassword({ email, password });
             if (error) throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
             
+            // تسجيل الجلسة في قاعدة البيانات للتتبع
+            const info = getBrowserInfo();
+            const ip = await getUserIP();
+            
+            await window.sb.from('user_sessions').insert([{
+                user_id: data.user.id,
+                user_email: email,
+                browser: info.browser,
+                os: info.os,
+                ip_address: ip,
+                session_id: data.session.access_token.slice(-20)
+            }]);
+
             window.location.replace('index.html');
 
         } else {
@@ -70,19 +105,15 @@ async function handleAuth(e) {
             const { data, error } = await window.sb.auth.signUp({
                 email: email,
                 password: password,
-                options: {
-                    data: { full_name: fullName } // نرسل الاسم ليقوم الزناد بتخزينه في جدول profiles
-                }
+                options: { data: { full_name: fullName } }
             });
             
             if (error) throw new Error(error.message);
 
-            // نجاح التسجيل
             successMsg.style.display = 'block';
             setTimeout(() => { window.location.replace('index.html'); }, 1500);
         }
     } catch (error) {
-        // فشل العملية
         btn.innerHTML = isLoginMode ? '<i class="fa-solid fa-right-to-bracket"></i> دخول للنظام' : '<i class="fa-solid fa-user-plus"></i> إنشاء حساب';
         btn.disabled = false;
         errorMsg.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${error.message}`;
@@ -90,17 +121,72 @@ async function handleAuth(e) {
     }
 }
 
-// 4. تسجيل الخروج
+// 5. إدارة الجلسات (للمدير)
+async function fetchAllSessions() {
+    try {
+        const { data: sessions, error } = await window.sb
+            .from('user_sessions')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const tableBody = document.getElementById('activeSessionsTable');
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        sessions.forEach(session => {
+            const isOnline = new Date() - new Date(session.created_at) < 300000; 
+
+            tableBody.innerHTML += `
+                <tr>
+                    <td class="ps-3">
+                        <div class="fw-bold">${session.user_email.split('@')[0]}</div>
+                        <div class="small text-muted">${session.user_email}</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">
+                            <i class="fa-solid fa-window-restore me-1"></i> ${session.browser}
+                        </span>
+                    </td>
+                    <td><code class="text-primary">${session.ip_address}</code></td>
+                    <td>
+                        <span class="status-dot ${isOnline ? 'bg-success' : 'bg-secondary'}"></span>
+                        ${new Date(session.created_at).toLocaleTimeString('ar-EG')}
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-danger" 
+                                onclick="terminateSession('${session.id}')">
+                            <i class="fa-solid fa-user-slash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        console.error("خطأ في جلب الجلسات:", error);
+    }
+}
+
+// 6. إنهاء الجلسة (الطرد)
+async function terminateSession(sessionId) {
+    if (confirm("هل أنت متأكد من إنهاء جلسة هذا المستخدم؟")) {
+        const { error } = await window.sb.from('user_sessions').delete().eq('id', sessionId);
+        if (!error) {
+            fetchAllSessions();
+            if (typeof showToast === 'function') showToast("تم إنهاء الجلسة", "success");
+        }
+    }
+}
+
+// 7. تسجيل الخروج
 window.logout = async function() {
     await window.sb.auth.signOut();
     window.location.replace('login.html');
 }
 
-// ربط الحدث بالنموذج إذا كنا في صفحة تسجيل الدخول
+// تشغيل الأحداث والحماية
 const authForm = document.getElementById('authForm');
-if (authForm) {
-    authForm.addEventListener('submit', handleAuth);
-}
+if (authForm) authForm.addEventListener('submit', handleAuth);
 
-// تشغيل حارس الأمن
 checkAuth();
