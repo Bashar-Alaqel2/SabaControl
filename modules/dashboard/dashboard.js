@@ -368,7 +368,7 @@ function renderDashboardScreensTable(screens, myUserId, myRole) {
         const statusClass = isLinked ? 'status-linked' : 'status-pending';
         const statusText = isLinked ? 'متصل ومفعل ✅' : 'بانتظار الموافقة ⏳';
 
-        const isPlaying = s.play_status === 'playing';
+        const isPlaying = s.play_status && s.play_status.includes('playing');
         const playBadge = isPlaying
             ? `<span style="background: #2196F3; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-top: 5px; display: inline-block;">📺 يعرض الآن</span>`
             : `<span style="background: #f44336; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-top: 5px; display: inline-block;">⚠️ شاشة فارغة</span>`;
