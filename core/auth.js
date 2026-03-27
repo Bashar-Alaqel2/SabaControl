@@ -80,27 +80,34 @@ async function handleAuth(e) {
     errorMsg.style.display = 'none';
 
     try {
-        if (isLoginMode) {
-            // 🟢 عملية تسجيل الدخول
-            const { data, error } = await window.sb.auth.signInWithPassword({ email, password });
-            if (error) throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
-            
-            // تسجيل الجلسة في قاعدة البيانات للتتبع
-            const info = getBrowserInfo();
-            const ip = await getUserIP();
-            
-            await window.sb.from('user_sessions').insert([{
-                user_id: data.user.id,
-                user_email: email,
-                browser: info.browser,
-                os: info.os,
-                ip_address: ip,
-                session_id: data.session.access_token.slice(-20)
-            }]);
+        // داخل core/auth.js في عملية تسجيل الدخول
+if (isLoginMode) {
+    const { data, error } = await window.sb.auth.signInWithPassword({ email, password });
+    if (error) throw error;
 
-            window.location.replace('index.html');
+    // ✨ تأكد من مسح أي جلسات قديمة لهذا المتصفح قبل التسجيل الجديد (إختياري)
+    const info = getBrowserInfo();
+    const ip = await getUserIP();
+    const shortToken = data.session.access_token.slice(-20);
 
-        } else {
+    // 🟢 الانتظار حتى يتم التأكد من إدخال الجلسة في قاعدة البيانات
+    const { error: sessionError } = await window.sb.from('user_sessions').insert([{
+        user_id: data.user.id,
+        user_email: email,
+        browser: info.browser,
+        os: info.os,
+        ip_address: ip,
+        session_id: shortToken
+    }]);
+
+    if (sessionError) {
+        console.error("فشل تسجيل الجلسة:", sessionError);
+        // حتى لو فشل تسجيل الجلسة الإضافي، لا نريد طرد المستخدم فوراً
+    }
+
+    // التوجيه بعد التأكد من انتهاء العمليات
+    window.location.replace('index.html');
+} else{
             // 🟢 عملية تسجيل حساب جديد
             const { data, error } = await window.sb.auth.signUp({
                 email: email,
