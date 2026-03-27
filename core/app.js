@@ -44,6 +44,16 @@ async function validateSessionIntegrity() {
     return true;
 }
 
+//يعمل زر المنيو عند الضغط عليه
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+
+
 // 4. تحميل الأقسام ديناميكياً مع حماية المسارات
 async function loadModule(moduleName) {
     const contentDiv = document.getElementById('app-content');
@@ -86,6 +96,10 @@ async function loadModule(moduleName) {
 
     } catch (error) {
         renderError(contentDiv);
+    }
+
+    if (window.innerWidth <= 768) {
+        toggleSidebar(); // إغلاق القائمة بعد الاختيار
     }
 }
 
@@ -203,6 +217,7 @@ function injectAssets(moduleName) {
     script.src = `modules/${moduleName}/${moduleName}.js`;
     document.body.appendChild(script);
 }
+
 
 // 8. تشغيل النظام
 document.addEventListener('DOMContentLoaded', async () => {
