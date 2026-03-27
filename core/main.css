@@ -563,3 +563,44 @@ input:checked + .slider::before { transform: translateX(20px); }
     .sidebar.active { transform: translateX(0); }
     .sidebar-overlay.active { display: block; }
 }
+
+
+.login-card .brand img {
+  width: 40px;   /* حجم مناسب */
+  height: auto;  /* يحافظ على النسبة */
+}
+
+.login-card .brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 36px;
+  color: var(--primary);
+}
+
+.login-card .brand span {
+  font-size: inherit;
+  color: inherit;
+}
+
+
+/* */
+body.login-page {
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, var(--primary) 100%);
+            margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-card {
+            background: var(--card-bg); padding: 40px; border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); width: 100%; max-width: 380px;
+            text-align: center; animation: fadeIn 0.6s ease-out;
+        }
+        .login-card .brand { justify-content: center; background: transparent; color: var(--primary); border: none; margin-bottom: 10px; font-size: 36px; padding: 0; }
+        .login-card .form-group { text-align: right; margin-bottom: 20px; }
+        .login-card input { background-color: #f8f9fa; border: 1px solid #ddd; padding: 12px; font-size: 15px; }
+        .login-btn { width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; border-radius: 8px; }
+        .error-msg { color: var(--danger); font-size: 14px; margin-top: 15px; font-weight: bold; display: none; }
+        .success-msg { color: var(--success); font-size: 14px; margin-top: 15px; font-weight: bold; display: none; }
+        .toggle-link { color: var(--primary); font-size: 14px; text-decoration: none; display: inline-block; margin-top: 20px; cursor: pointer; font-weight: bold;}
+        .toggle-link:hover { text-decoration: underline; }

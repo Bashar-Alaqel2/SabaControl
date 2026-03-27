@@ -47,10 +47,24 @@ async function validateSessionIntegrity() {
 // 4. تحميل الأقسام ديناميكياً مع حماية المسارات
 async function loadModule(moduleName) {
     const contentDiv = document.getElementById('app-content');
+    const pageTitle = document.getElementById('pageTitle');
 
     // التحقق من صلاحية الجلسة قبل تحميل أي مديول
     const isSessionValid = await validateSessionIntegrity();
     if (!isSessionValid) return;
+    //   تحديث نص العنوان بناءً على اسم المديول
+    const moduleTitles = {
+        'dashboard': 'الرئيسية',
+        'screens': 'إدارة الشاشات والارتباط',
+        'content': 'إدارة محتوى البث',
+        'settings': 'إعدادات النظام والألوان',
+        'tickers': 'شريط الأخبار العاجلة'
+    };
+
+    // تحديث النص في الـ Header
+    if (pageTitle) {
+        pageTitle.innerText = moduleTitles[moduleName] || 'SabaPost';
+    }
 
     // حماية صفحة الإعدادات
     if (moduleName === 'settings' && window.currentUserRole !== 'admin') {
@@ -67,7 +81,8 @@ async function loadModule(moduleName) {
         contentDiv.innerHTML = html;
 
         injectAssets(moduleName);
-        updateUI(moduleName);
+        // ملاحظة: دالة updateUI(moduleName) قد تكون لديك لتنفيذ أكواد إضافية
+        if (typeof updateUI === 'function') updateUI(moduleName);
 
     } catch (error) {
         renderError(contentDiv);
@@ -79,26 +94,47 @@ async function loadUserProfile() {
     try {
         const profile = await getSmartData('profile', async () => {
             const { data: { user } } = await window.sb.auth.getUser();
-            const { data } = await window.sb.from('profiles').select('*').eq('id', user.id).single();
+            if (!user) return null; // حماية إضافية في حال عدم وجود جلسة
+            
+            const { data, error } = await window.sb
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+                
+            if (error) throw error;
             return data;
         });
 
         if (profile) {
+            // 1. التحقق من حالة الحساب (حماية أمنية)
             if (profile.is_active === false) {
-                alert("الحساب موقوف.");
+                alert("⚠️ عذراً، هذا الحساب موقوف حالياً. يرجى مراجعة المسؤول.");
                 window.logout();
                 return;
             }
+
+            // 2. تعيين الصلاحية عالمياً للتحكم في الوصول
             window.currentUserRole = profile.role;
+
+            // 3. تحديث واجهة المستخدم (الفوتر)
             renderSidebarFooter(profile);
             
+            // 4. إخفاء التبويبات الحساسة عن غير المدراء
             if (profile.role !== 'admin') {
-                const tab = document.getElementById('tab-settings');
-                if (tab) tab.style.display = 'none';
+                const settingsTab = document.getElementById('tab-settings');
+                const adminTickers = document.getElementById('adminDashboardTicker'); // مديول شريط الأخبار
+                
+                if (settingsTab) settingsTab.style.display = 'none';
+                if (adminTickers) adminTickers.style.display = 'none';
             }
+
+            console.log(`✅ تم تسجيل الدخول بصلاحية: ${profile.role}`);
         }
     } catch (err) {
-        console.error("فشل جلب البروفايل:", err);
+        console.error("❌ فشل جلب بيانات البروفايل:", err.message);
+        // في حال فشل جلب البيانات، يفضل توجيه المستخدم لتسجيل الدخول
+        if (err.message.includes("JWT")) window.logout(); 
     }
 }
 
@@ -134,15 +170,20 @@ function renderAccessDenied(container) {
 }
 
 function renderSidebarFooter(profile) {
-    const footer = document.querySelector('.sidebar-footer');
-    if (!footer) return;
-    const roleLabel = profile.role === 'admin' ? 'مدير 👑' : 'محرر ✍️';
-    footer.innerHTML = `
-        <div class="user-info-box">
-            <b>${profile.full_name}</b>
-            <span>${roleLabel}</span>
+    const userInfoContent = document.getElementById('userInfoContent');
+    if (!userInfoContent) return;
+
+    const roleLabel = profile.role === 'admin' ? 'مدير النظام 👑' : 'محرر محتوى ✍️';
+    
+    userInfoContent.innerHTML = `
+        <div class="user-info-box" style="margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <div style="font-size: 14px; font-weight: bold; color: #fff;">${profile.full_name}</div>
+            <div style="font-size: 11px; color: #bbb; margin-top: 2px;">${roleLabel}</div>
         </div>
-        <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-power-off"></i> خروج</button>
+        <button class="logout-btn" onclick="logout()" 
+                style="font-size: 12px; padding: 8px 12px; background-color: #d32f2f; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="fa-solid fa-power-off"></i> تسجيل الخروج
+        </button>
     `;
 }
 

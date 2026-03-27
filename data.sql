@@ -460,8 +460,9 @@ CREATE POLICY "Admins can see all sessions" ON user_sessions
 USING ( auth.jwt() ->> 'role' = 'admin' );
 
 -- 1. حذف السياسة المسببة للمشكلة
-DROP POLICY IF EXISTS "Admins can see all sessions" ON user_sessions;
-
+DROP POLICY IF EXISTS "Editor can see all sessions" ON user_sessions;
+--editor
+--Admins
 -- 2. سياسة تسمح لأي مستخدم برؤية "جلسته الخاصة" فقط (ضرورية لعمل الـ Guard في app.js)
 CREATE POLICY "Users can see their own sessions" 
 ON user_sessions FOR SELECT 

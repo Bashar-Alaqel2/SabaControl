@@ -58,7 +58,7 @@ function renderScreens(screens, myUserId, myRole) {
     
     if(tbodyDashboard) tbodyDashboard.innerHTML = '';
     if(tbodyDetailed) tbodyDetailed.innerHTML = '';
-
+//
     let onlineCount = 0;
     let offlineCount = 0;
     const now = new Date();
@@ -98,11 +98,11 @@ function renderScreens(screens, myUserId, myRole) {
         // إذا كان المالك أو مدير، نجهز الأزرار كالمعتاد
         if (isOwner) {
             actionBtn = isLinked
-                ? `<button style="background: #f91616;" class="btn-delete" onclick="updateScreenStatus('${s.device_id}', 'pending')">إيقاف</button>`
-                : `<button style="background: #54dc5b;" class="btn-approve" onclick="updateScreenStatus('${s.device_id}', 'linked')" >تفعيل</button>`;
+                ? `<button style="background: #f91616;" class="btn-delete" onclick="updateScreenStatus('${s.device_id}', 'pending')"><img src="images/mode_off_on_2b.png" alt="SabaPost Logo"></button>`
+                : `<button style="background: #54dc5b;" class="btn-approve" onclick="updateScreenStatus('${s.device_id}', 'linked')" ><img src="images/mode_off_on_2b.png" alt="SabaPost Logo"></button>`;
             
-            deleteBtn = `<button class="btn-delete" style="background:#ed0707; margin-right:5px;" onclick="deleteScreen('${s.device_id}')"><i class="fa-solid fa-trash"></i></button>`;
-            renameBtn = `<button class="btn btn-warning" style="padding: 5px 10px; font-size:12px; margin-right:5px;" onclick="renameScreen('${s.device_id}', '${s.screen_name || ''}')"><i class="fa-solid fa-pen"></i></button>`;
+            deleteBtn = `<button class="btn-delete" style="background:#ed0707; margin-right:5px;" onclick="deleteScreen('${s.device_id}')"><img src="images/delete_22.png" alt="SabaPost Logo"></button>`;
+            renameBtn = `<button class="btn btn-warning" style="padding: 5px 10px; font-size:12px; margin-right:5px;" onclick="renameScreen('${s.device_id}', '${s.screen_name || ''}')"><img src="images/edit_22.png" alt="SabaPost Logo"></button>`;
         } else {
             // إذا لم يكن يملك الصلاحية، نجهز علامة القفل فقط
             protectedBadge = `<span style="font-size: 11px; color: #888; background: #eee; padding: 6px 10px; border-radius: 4px;"><i class="fa-solid fa-lock"></i> محمية</span>`;
@@ -129,7 +129,7 @@ function renderScreens(screens, myUserId, myRole) {
                     <td>
                         <strong style="font-size: 15px;">${displayName}</strong><br>
                         <small style="color: #888;">ID: ${s.device_id}</small>
-                        <div style="font-size: 11px; color: var(--primary); margin-top: 3px;"><i class="fa-solid fa-user-tie"></i> المالك: ${ownerName}</div>
+                        <div style="font-size: 11px; color: var(--primary); margin-top: 3px;"><i class="fa-solid fa-user-tie"></i> المدخل: ${ownerName}</div>
                     </td>
                     <td>${s.ip_address || '-'} <br> ${connectionBadge}</td>
                     <td>

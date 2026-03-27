@@ -181,7 +181,17 @@ async function terminateSession(sessionId) {
 
 // 7. تسجيل الخروج
 window.logout = async function() {
+    // 1. مسح الكاش البرمجي
+    if (typeof appCache !== 'undefined') {
+        appCache.profile = null;
+        appCache.settings = null;
+        appCache.lastFetch = { profile: 0, settings: 0 };
+    }
+    
+    // 2. تسجيل الخروج من Supabase
     await window.sb.auth.signOut();
+    
+    // 3. التوجيه لصفحة الدخول
     window.location.replace('login.html');
 }
 

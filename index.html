@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة تحكم شاشات سبأ | SabaPost</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.1.1/dist/tus.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.1.1/dist/tus.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="core/main.css">
@@ -17,20 +17,20 @@
     
     <aside class="sidebar">
         <div class="brand">
-            <i class="fa-solid fa-tv"></i> <span>SabaPost</span>
+             <img src="images/sabalog.png" alt="SabaPost Logo"><span>SabaPost</span>
         </div>
         <ul class="nav-links">
-            <li class="active" id="tab-dashboard"><a href="#" onclick="loadModule('dashboard')"><i class="fa-solid fa-chart-line"></i> لوحة القيادة</a></li>
-            <li id="tab-screens"><a href="#" onclick="loadModule('screens')"><i class="fa-solid fa-desktop"></i> إدارة الشاشات</a></li>
-            <li id="tab-content"><a href="#" onclick="loadModule('content')"><i class="fa-solid fa-photo-film"></i> إدارة المحتوى</a></li>
-            <li id="tab-settings"><a href="#" onclick="loadModule('settings')"><i class="fa-solid fa-gear"></i> الإعدادات</a></li>
+            <li class="active" id="tab-dashboard"><a href="#" onclick="loadModule('dashboard')"><img src="images/home.png" alt="SabaPost Logo"> الرئيسية</a></li>
+            <li id="tab-screens"><a href="#" onclick="loadModule('screens')"><img src="images/screen_con.png" alt="SabaPost Logo"> إدارة الشاشات</a></li>
+            <li id="tab-content"><a href="#" onclick="loadModule('content')"><img src="images/movie_info.png" alt="SabaPost Logo"> إدارة المحتوى</a></li>
+            <li id="tab-settings"><a href="#" onclick="loadModule('settings')"><img src="images/settings.png" alt="SabaPost Logo"> الإعدادات</a></li>
         </ul>
-        <div class="sidebar-footer">
-            <div style="margin-bottom: 12px; font-weight: bold;"><i class="fa-solid fa-user-shield"></i> لوحة المشرف</div>
-            <button class="btn btn-danger btn-block" onclick="logout()" style="font-size: 13px; padding: 8px; background-color: #d32f2f;">
-                <i class="fa-solid fa-power-off"></i> تسجيل الخروج
-            </button>
-        </div>
+       <div class="sidebar-footer">
+    <div style="margin-bottom: 12px; font-weight: bold; color: var(--primary);">
+        <i class="fa-solid fa-user-shield"></i> لوحة المشرف
+    </div>
+    <div id="userInfoContent"></div>
+</div>
         
     </aside>
 

@@ -209,20 +209,21 @@ async function fetchTickerHistory() {
             data.forEach(log => {
                 const time = new Date(log.created_at).toLocaleTimeString('ar-YE', {hour: '2-digit', minute:'2-digit'});
                 const sender = log.profiles?.full_name || 'مدير النظام';
+                const screenDisplayName = log.target_screen_id === 'all' ? 'الكل' : (log.screens?.screen_name || log.target_screen_id);
                 
                 tbody.innerHTML += `
                     <tr id="row-${log.id}">
                         <td><span id="text-${log.id}" style="font-size: 13px;">${log.message}</span></td>
                         <td class="small text-muted">${sender}</td>
                         <td class="small">${time}</td>
-                        <td><span class="badge bg-light text-dark border">${log.target_screen_id}</span></td>
+                        <td><span class="badge bg-light text-dark border">${screenDisplayName}</span></td>
                         <td>
                             <div class="btn-group">
                                 <button class="btn btn-sm btn-outline-primary" onclick="editTickerInline('${log.id}')">
-                                    <i class="fa-solid fa-pen"></i>
+                                    <img src="images/edit_square.png" alt="SabaPost Logo">
                                 </button>
                                 <button class="btn btn-sm btn-outline-danger" onclick="deleteTickerRecord('${log.id}')">
-                                    <i class="fa-solid fa-trash"></i>
+                                    <img src="images/delete_2.png" alt="SabaPost Logo">
                                 </button>
                             </div>
                         </td>
@@ -297,15 +298,15 @@ function loadComponents() {
     const statsHTML = `
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon" style="background: #e3f2fd; color: #1976d2;"><i class="fa-solid fa-tv"></i></div>
+                <div class="stat-icon" style="background: #e3f2fd; color: #1976d2;"><img src="images/Total_screens.png" alt="SabaPost Logo"></div>
                 <div class="stat-info"><h4 class="totalScreensVal">0</h4><span>إجمالي الشاشات</span></div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32;"><i class="fa-solid fa-wifi"></i></div>
+                <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32;"><img src="images/cat_connect.png" alt="SabaPost Logo"></div>
                 <div class="stat-info"><h4 class="onlineScreensVal">0</h4><span>متصلة الآن (Online)</span></div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: #ffebee; color: #c62828;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="stat-icon" style="background: #ffebee; color: #c62828;"><img src="images/Separated_screens.png" alt="SabaPost Logo"></div>
                 <div class="stat-info"><h4 class="offlineScreensVal">0</h4><span>مفصولة (Offline)</span></div>
             </div>
         </div>
@@ -395,13 +396,14 @@ function renderDashboardScreensTable(screens, myUserId, myRole) {
         let protectedBadge = '';
 
         // إذا كان المالك أو مدير، نجهز الأزرار كالمعتاد
+        // إذا كان المالك أو مدير، نجهز الأزرار كالمعتاد
         if (isOwner) {
             actionBtn = isLinked
-                ? `<button style="background: #f91616;" class="btn-delete" onclick="updateScreenStatus('${s.device_id}', 'pending')">إيقاف</button>`
-                : `<button style="background: #54dc5b;" class="btn-approve" onclick="updateScreenStatus('${s.device_id}', 'linked')" >تفعيل</button>`;
+                ? `<button style="background: #f91616;" class="btn-delete" onclick="updateScreenStatus('${s.device_id}', 'pending')"><img src="images/mode_off_on_2b.png" alt="SabaPost Logo"></button>`
+                : `<button style="background: #54dc5b;" class="btn-approve" onclick="updateScreenStatus('${s.device_id}', 'linked')" ><img src="images/mode_off_on_2b.png" alt="SabaPost Logo"></button>`;
             
-            deleteBtn = `<button class="btn-delete" style="background:#ed0707; margin-right:5px;" onclick="deleteScreen('${s.device_id}')"><i class="fa-solid fa-trash"></i></button>`;
-            renameBtn = `<button class="btn btn-warning" style="padding: 5px 10px; font-size:12px; margin-right:5px;" onclick="renameScreen('${s.device_id}', '${s.screen_name || ''}')"><i class="fa-solid fa-pen"></i></button>`;
+            deleteBtn = `<button class="btn-delete" style="background:#ed0707; margin-right:5px;" onclick="deleteScreen('${s.device_id}')"><img src="images/delete_22.png" alt="SabaPost Logo"></button>`;
+            renameBtn = `<button class="btn btn-warning" style="padding: 5px 10px; font-size:12px; margin-right:5px;" onclick="renameScreen('${s.device_id}', '${s.screen_name || ''}')"><img src="images/edit_22.png" alt="SabaPost Logo"></button>`;
         } else {
             // إذا لم يكن يملك الصلاحية، نجهز علامة القفل فقط
             protectedBadge = `<span style="font-size: 11px; color: #888; background: #eee; padding: 6px 10px; border-radius: 4px;"><i class="fa-solid fa-lock"></i> محمية</span>`;
@@ -446,6 +448,7 @@ function renderDashboardScreensTable(screens, myUserId, myRole) {
     document.querySelectorAll('.onlineScreensVal').forEach(el => el.innerText = onlineCount);
     document.querySelectorAll('.offlineScreensVal').forEach(el => el.innerText = offlineCount);
 }
+
 
 
 // ==========================================
