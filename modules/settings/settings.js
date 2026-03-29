@@ -1,26 +1,45 @@
 // ==========================================
-// 🎨 modules/settings/settings.js - الإعدادات والمظهر (النسخة المتزامنة)
+// 🎨 modules/settings/settings.js - الإعدادات والتحكم الشامل
+// النسخة الاحترافية (المزامنة + الأمان + إدارة الجلسات)
 // ==========================================
 
+/**
+ * 1. تهيئة صفحة الإعدادات عند التحميل
+ */
 function initSettings() {
     fetchSettings();
     attachColorListeners();
-    // 🟢 إظهار وجلب قسم المستخدمين إذا كان الشخص مديراً
+    
+    // 🛡️ تفعيل الخصائص الإدارية فقط للمدير (Admin)
     if (window.currentUserRole === 'admin') {
         const usersSection = document.getElementById('adminUsersSection');
-        if (usersSection) usersSection.style.display = 'block';
-        fetchUsersList();
-
-        // 🟢 إظهار إعدادات شريط الأخبار للمدير فقط
+        const sessionsSection = document.getElementById('adminSessionsSection');
         const settingsTicker = document.getElementById('adminSettingsTicker');
-        if (settingsTicker) settingsTicker.style.display = 'block';
+        
+        if (usersSection) {
+            usersSection.style.display = 'block';
+            fetchUsersList();
+        }
+        
+        if (sessionsSection) {
+            sessionsSection.style.display = 'block';
+            fetchAllSessions();
+        }
+
+        if (settingsTicker) {
+            settingsTicker.style.display = 'block';
+        }
     }
 }
 
+/**
+ * 2. جلب إعدادات المظهر والهوية من القاعدة
+ */
 async function fetchSettings() {
     try {
         const { data } = await window.sb.from('settings').select('*');
         if (data) {
+            // إعدادات شريط الأخبار
             const showSetting = data.find(item => item.key === 'show_ticker');
             const isShowing = showSetting ? (showSetting.value === 'true') : true;
             if (document.getElementById('tickerToggle')) document.getElementById('tickerToggle').checked = isShowing;
@@ -32,198 +51,80 @@ async function fetchSettings() {
                 if(document.getElementById('settingsNewsInput')) document.getElementById('settingsNewsInput').value = newsSetting.value;
             }
 
+            // إعدادات الشعار (Fallback)
             const fallbackSetting = data.find(item => item.key === 'fallback_image');
             if (fallbackSetting && fallbackSetting.value) {
-                if(document.getElementById('currentFallbackPreview')){
-                    document.getElementById('currentFallbackPreview').src = fallbackSetting.value;
-                    document.getElementById('currentFallbackPreview').style.display = 'block';
-                    if(document.getElementById('fallbackPlaceholder')) document.getElementById('fallbackPlaceholder').style.display = 'none';
+                const preview = document.getElementById('currentFallbackPreview');
+                const placeholder = document.getElementById('fallbackPlaceholder');
+                if(preview) {
+                    preview.src = fallbackSetting.value;
+                    preview.style.display = 'block';
+                    if(placeholder) placeholder.style.display = 'none';
                 }
             }
 
+            // إعدادات الألوان واسم النظام
             const sysName = data.find(item => item.key === 'system_name')?.value || 'SabaPost';
             const primaryColor = data.find(item => item.key === 'theme_primary')?.value || '#5c6bc0';
             const sidebarColor = data.find(item => item.key === 'theme_sidebar')?.value || '#2b2b44';
             const bgColor = data.find(item => item.key === 'theme_bg')?.value || '#f4f7fa';
             const cardBgColor = data.find(item => item.key === 'theme_card_bg')?.value || '#ffffff';
             const textColor = data.find(item => item.key === 'theme_text')?.value || '#333333';
-            const showIdSetting = data.find(item => item.key === 'show_device_id');
-            const isShowId = showIdSetting ? (showIdSetting.value === 'true') : true;
 
             document.querySelectorAll('.brand span').forEach(el => el.innerText = sysName);
             if(document.getElementById('systemName')) document.getElementById('systemName').value = sysName;
-            if(document.getElementById('showDeviceIdToggle')) document.getElementById('showDeviceIdToggle').checked = isShowId;
             
-            document.documentElement.style.setProperty('--primary', primaryColor);
-            document.documentElement.style.setProperty('--sidebar-bg', sidebarColor);
-            document.documentElement.style.setProperty('--bg-color', bgColor);
-            document.documentElement.style.setProperty('--card-bg', cardBgColor);
-            document.documentElement.style.setProperty('--text-color', textColor);
+            // تطبيق الألوان على المتصفح
+            const root = document.documentElement.style;
+            root.setProperty('--primary', primaryColor);
+            root.setProperty('--sidebar-bg', sidebarColor);
+            root.setProperty('--bg-color', bgColor);
+            root.setProperty('--card-bg', cardBgColor);
+            root.setProperty('--text-color', textColor);
 
+            // تحديث قيم حقول الألوان (Color Pickers)
             const themeColors = {
+                'primaryColor': primaryColor,
+                'sidebarColor': sidebarColor,
                 'bgColor': bgColor,
                 'cardBgColor': cardBgColor,
-                'textColor': textColor,
-                'primaryColor': primaryColor,
-                'sidebarColor': sidebarColor
+                'textColor': textColor
             };
 
             for (const [id, colorValue] of Object.entries(themeColors)) {
-                if(document.getElementById(id)) {
-                    document.getElementById(id).value = colorValue;
-                    if(document.getElementById(id + 'Text')) document.getElementById(id + 'Text').value = colorValue;
-                }
+                const picker = document.getElementById(id);
+                const textInput = document.getElementById(id + 'Text');
+                if(picker) picker.value = colorValue;
+                if(textInput) textInput.value = colorValue;
             }
-
-            const tBg = data.find(item => item.key === 'ticker_bg')?.value || '#000000';
-            const tColor = data.find(item => item.key === 'ticker_color')?.value || '#ffffff';
-            const tSpeed = data.find(item => item.key === 'ticker_speed')?.value || '50';
-            
-            ['tickerBgColor', 'settingsTickerBgColor'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = tBg; });
-            ['tickerTextColor', 'settingsTickerTextColor'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = tColor; });
-            ['tickerSpeed', 'settingsTickerSpeed'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = tSpeed; });
         }
     } catch (err) { console.error("خطأ في جلب الإعدادات:", err); }
 }
 
+/**
+ * 3. حفظ إعدادات المظهر (Theme)
+ */
 async function saveThemeSettings() {
-    const sysName = document.getElementById('systemName').value;
-    const primary = document.getElementById('primaryColor').value;
-    const sidebar = document.getElementById('sidebarColor').value;
-    const bg = document.getElementById('bgColor').value;
-    const cardBg = document.getElementById('cardBgColor').value;
-    const textC = document.getElementById('textColor').value;
+    const settings = [
+        { key: 'system_name', value: document.getElementById('systemName').value },
+        { key: 'theme_primary', value: document.getElementById('primaryColor').value },
+        { key: 'theme_sidebar', value: document.getElementById('sidebarColor').value },
+        { key: 'theme_bg', value: document.getElementById('bgColor').value },
+        { key: 'theme_card_bg', value: document.getElementById('cardBgColor').value },
+        { key: 'theme_text', value: document.getElementById('textColor').value }
+    ];
 
     try {
-        await window.sb.from('settings').upsert([
-            { key: 'system_name', value: sysName },
-            { key: 'theme_primary', value: primary },
-            { key: 'theme_sidebar', value: sidebar },
-            { key: 'theme_bg', value: bg },
-            { key: 'theme_card_bg', value: cardBg },
-            { key: 'theme_text', value: textC },
-        ]);
+        const { error } = await window.sb.from('settings').upsert(settings);
+        if (error) throw error;
         alert('تم حفظ وتطبيق المظهر بنجاح! 🎨');
         fetchSettings();
-    } catch (err) {
-        alert('حدث خطأ أثناء الحفظ');
-    }
+    } catch (err) { alert('حدث خطأ أثناء الحفظ'); }
 }
 
-async function autoSaveSystemPreferences() {
-    const showIdBtn = document.getElementById('showDeviceIdToggle');
-    if(!showIdBtn) return;
-    try {
-        await window.sb.from('settings').upsert([ { key: 'show_device_id', value: showIdBtn.checked.toString() } ]);
-    } catch (err) { console.error('حدث خطأ في الاتصال.'); }
-}
-
-async function toggleTickerVisibility(source) {
-    const isVisible = source === 'dashboard' 
-        ? document.getElementById('tickerToggle').checked 
-        : document.getElementById('settingsTickerToggle').checked;
-    try {
-        await window.sb.from('settings').upsert({ key: 'show_ticker', value: isVisible.toString() });
-        if(document.getElementById('tickerToggle')) document.getElementById('tickerToggle').checked = isVisible;
-        if(document.getElementById('settingsTickerToggle')) document.getElementById('settingsTickerToggle').checked = isVisible;
-    } catch (err) { console.error(err); }
-}
-
-// 🟢 دالة التحديث مع ميزة التزامن مع لوحة القيادة
-async function saveAdvancedTicker() {
-    const text = document.getElementById('settingsNewsInput')?.value || '';
-    const bgColor = document.getElementById('settingsTickerBgColor')?.value || '#000000';
-    const txtColor = document.getElementById('settingsTickerTextColor')?.value || '#ffffff';
-    const speed = document.getElementById('settingsTickerSpeed')?.value || '50';
-    try {
-        await window.sb.from('settings').upsert([
-            { key: 'news_ticker', value: text },
-            { key: 'ticker_bg', value: bgColor },
-            { key: 'ticker_color', value: txtColor },
-            { key: 'ticker_speed', value: speed }
-        ]);
-        
-        // التزامن اليدوي لحقول لوحة القيادة (إذا كانت موجودة في الـ DOM حالياً)
-        if(document.getElementById('newsInput')) document.getElementById('newsInput').value = text;
-        if(document.getElementById('tickerBgColor')) document.getElementById('tickerBgColor').value = bgColor;
-        if(document.getElementById('tickerTextColor')) document.getElementById('tickerTextColor').value = txtColor;
-        if(document.getElementById('tickerSpeed')) document.getElementById('tickerSpeed').value = speed;
-        
-        alert('تم التحديث! وتزامنت لوحة القيادة بنجاح 📡');
-        
-        // التزامن عبر استدعاء دالة لوحة القيادة (كطبقة أمان إضافية)
-        if (typeof fetchTickerSettingsForDashboard === 'function') {
-            fetchTickerSettingsForDashboard();
-        }
-
-    } catch (err) { alert('حدث خطأ: ' + err.message); }
-}
-
-async function uploadFallbackImage() {
-    const fileInput = document.getElementById('fallbackInput');
-    const file = fileInput.files[0];
-    if (!file) return alert('الرجاء اختيار صورة الشعار أولاً!');
-    const statusLabel = document.getElementById('fallbackStatus');
-    statusLabel.innerText = 'جاري رفع الشعار... ⏳';
-
-    try {
-        const fileExtension = file.name.split('.').pop();
-        const fileName = 'fallback_' + Date.now() + '.' + fileExtension;
-        const { data, error } = await window.sb.storage.from('media').upload(fileName, file);
-        if (error) throw error;
-        const { data: { publicUrl } } = window.sb.storage.from('media').getPublicUrl(fileName);
-        await window.sb.from('settings').upsert({ key: 'fallback_image', value: publicUrl });
-        statusLabel.innerText = 'تم تعيين الشعار بنجاح! ✅';
-        fileInput.value = '';
-        fetchSettings(); 
-    } catch (err) {
-        statusLabel.innerText = 'فشل الرفع: ' + err.message;
-    }
-}
-
-async function deleteFallbackImage() {
-    if (confirm('هل أنت متأكد من حذف الشعار الافتراضي؟ ستعود الشاشات لعرض رسالة "الشاشة متاحة" عند فراغها.')) {
-        const statusLabel = document.getElementById('fallbackStatus');
-        statusLabel.innerText = 'جاري الحذف... ⏳';
-        try {
-            await window.sb.from('settings').delete().eq('key', 'fallback_image');
-            if(document.getElementById('currentFallbackPreview')) {
-                document.getElementById('currentFallbackPreview').style.display = 'none';
-                if(document.getElementById('fallbackPlaceholder')) document.getElementById('fallbackPlaceholder').style.display = 'flex';
-                document.getElementById('currentFallbackPreview').src = '';
-            }
-            statusLabel.innerText = 'تم حذف الشعار بنجاح! 🗑️';
-        } catch (err) {
-            statusLabel.innerText = 'حدث خطأ أثناء الحذف.';
-        }
-    }
-}
-
-// 🔄 تحديث الألوان الحية في المتصفح
-function attachColorListeners() {
-    document.getElementById('primaryColor')?.addEventListener('input', e => {
-        if(document.getElementById('primaryColorText')) document.getElementById('primaryColorText').value = e.target.value;
-        document.documentElement.style.setProperty('--primary', e.target.value);
-    });
-
-    document.getElementById('sidebarColor')?.addEventListener('input', e => {
-        if(document.getElementById('sidebarColorText')) document.getElementById('sidebarColorText').value = e.target.value;
-        document.documentElement.style.setProperty('--sidebar-bg', e.target.value);
-    });
-
-    ['bgColor', 'cardBgColor', 'textColor'].forEach(id => {
-        document.getElementById(id)?.addEventListener('input', e => {
-            if(document.getElementById(id + 'Text')) document.getElementById(id + 'Text').value = e.target.value;
-            let cssVar = id === 'bgColor' ? '--bg-color' : (id === 'cardBgColor' ? '--card-bg' : '--text-color');
-            document.documentElement.style.setProperty(cssVar, e.target.value);
-        });
-    });
-}
-
-// ==========================================
-// 👥 قسم إدارة المستخدمين (للمدراء فقط)
-// ==========================================
-
+/**
+ * 4. إدارة المستخدمين (Profiles)
+ */
 async function fetchUsersList() {
     try {
         const { data: users, error } = await window.sb.from('profiles').select('*').order('created_at', { ascending: false });
@@ -233,58 +134,176 @@ async function fetchUsersList() {
         if (!tbody) return;
         tbody.innerHTML = '';
         
-        // جلب معرف المستخدم الحالي لكي لا يقوم المدير بإيقاف نفسه بالخطأ!
         const { data: { user: currentUser } } = await window.sb.auth.getUser();
         
         users.forEach(u => {
             const isMe = u.id === currentUser?.id;
-            
             const roleBadge = u.role === 'admin' 
-                ? '<span class="status-badge status-linked" style="background:#e3f2fd; color:#1565c0;">مدير 👑</span>' 
-                : '<span class="status-badge status-pending">محرر ✍️</span>';
+                ? '<span class="status-badge" style="background:#e3f2fd; color:#1565c0;">مدير 👑</span>' 
+                : '<span class="status-badge" style="background:#f5f5f5; color:#666;">محرر ✍️</span>';
                 
             const statusBadge = u.is_active !== false
-                ? '<span class="status-badge status-linked">نشط ✅</span>'
+                ? '<span class="status-badge" style="background:#e8f5e9; color:#2e7d32;">نشط ✅</span>'
                 : '<span class="status-badge" style="background:#ffebee; color:#c62828;">موقوف 🚫</span>';
                 
-            // أزرار التحكم (نخفيها إذا كان المستخدم هو نفسه المدير الحالي)
-            const actionButtons = isMe ? `<span style="color:#888; font-size:11px; font-weight:bold;">(حسابك الحالي)</span>` : `
-                <button class="btn btn-primary" style="padding: 5px 8px; font-size:11px;" onclick="toggleUserRole('${u.id}', '${u.role}')" title="تغيير الصلاحية"><i class="fa-solid fa-user-shield"></i></button>
-                <button class="btn ${u.is_active !== false ? 'btn-danger' : 'btn-success'}" style="padding: 5px 8px; font-size:11px;" onclick="toggleUserStatus('${u.id}', ${u.is_active !== false})" title="${u.is_active !== false ? 'إيقاف الحساب' : 'تفعيل الحساب'}"><i class="fa-solid ${u.is_active !== false ? 'fa-ban' : 'fa-check'}"></i></button>
+            const actionButtons = isMe ? `<small class="text-muted">أنت</small>` : `
+                <button class="btn btn-sm btn-outline-primary" onclick="toggleUserRole('${u.id}', '${u.role}')" title="تغيير الرتبة"><i class="fa-solid fa-user-shield"></i></button>
+                <button class="btn btn-sm ${u.is_active !== false ? 'btn-outline-danger' : 'btn-outline-success'}" onclick="toggleUserStatus('${u.id}', ${u.is_active !== false})"><i class="fa-solid ${u.is_active !== false ? 'fa-ban' : 'fa-check'}"></i></button>
             `;
 
             tbody.innerHTML += `
                 <tr>
                     <td><strong>${u.full_name || 'غير محدد'}</strong></td>
-                    <td dir="ltr" style="text-align: right; font-size:13px;">${u.email || 'غير متوفر'}</td>
+                    <td><small>${u.email}</small></td>
                     <td>${roleBadge}</td>
                     <td>${statusBadge}</td>
-                    <td><div style="display:flex; gap:5px; align-items:center;">${actionButtons}</div></td>
-                </tr>
-            `;
+                    <td><div class="d-flex gap-2">${actionButtons}</div></td>
+                </tr>`;
         });
     } catch (err) { console.error('خطأ في جلب المستخدمين:', err); }
 }
 
 async function toggleUserRole(userId, currentRole) {
     const newRole = currentRole === 'admin' ? 'editor' : 'admin';
-    const msg = currentRole === 'admin' ? 'هل أنت متأكد من سحب صلاحيات الإدارة من هذا المستخدم وإعادته كمحرر؟' : 'هل تريد ترقية هذا المحرر ليصبح مدير نظام؟';
-    
-    if(confirm(msg)) {
-        await window.sb.from('profiles').update({ role: newRole }).eq('id', userId);
-        fetchUsersList(); // تحديث الجدول فوراً
+    if(!confirm(`تغيير الرتبة إلى ${newRole}؟`)) return;
+
+    console.log("🚀 جاري محاولة الترقية للمستخدم:", userId);
+
+    try {
+        const { data, error } = await window.sb
+            .from('profiles')
+            .update({ role: newRole })
+            .eq('id', userId)
+            .select(); // سحب البيانات بعد التحديث للتأكد
+
+        if (error) {
+            console.error("❌ فشل تحديث قاعدة البيانات:", error.message);
+            alert("فشل التحديث: " + error.message);
+            return;
+        }
+
+        if (data && data.length > 0) {
+            console.log("✅ نجحت العملية في السيرفر:", data[0]);
+            alert(`تم تغيير الرتبة إلى ${newRole} بنجاح!`);
+            
+            // طرد الجلسة فوراً لضمان التفعيل
+            await window.sb.from('user_sessions').delete().eq('user_id', userId);
+            
+            fetchUsersList(); // تحديث الجدول في الواجهة
+        } else {
+            console.warn("⚠️ لم يتم العثور على السجل أو لم تتغير البيانات.");
+            alert("تنبيه: لم يتم تحديث أي سجل، تأكد من صلاحياتك كمدير.");
+        }
+    } catch (err) {
+        console.error("💥 خطأ غير متوقع:", err);
     }
 }
 
 async function toggleUserStatus(userId, isCurrentlyActive) {
-    const newStatus = !isCurrentlyActive;
-    const msg = isCurrentlyActive ? 'إيقاف الحساب؟ لن يتمكن هذا المستخدم من تسجيل الدخول للنظام نهائياً.' : 'هل تريد إعادة تفعيل هذا الحساب؟';
-    
+    const msg = isCurrentlyActive ? 'هل تريد إيقاف الحساب وطرد المستخدم؟' : 'تفعيل الحساب؟';
     if(confirm(msg)) {
-        await window.sb.from('profiles').update({ is_active: newStatus }).eq('id', userId);
-        fetchUsersList(); // تحديث الجدول فوراً
+        try {
+            await window.sb.from('profiles').update({ is_active: !isCurrentlyActive }).eq('id', userId);
+            if (isCurrentlyActive) {
+                await window.sb.from('user_sessions').delete().eq('user_id', userId);
+            }
+            alert("تم تنفيذ العملية بنجاح ✅");
+            fetchUsersList();
+        } catch (err) { alert("فشل تغيير الحالة"); }
     }
 }
 
-// تشغيل النظام للقسم عند التحميل
+/**
+ * 5. إدارة الجلسات النشطة (Active Sessions)
+ */
+async function fetchAllSessions() {
+    const tbody = document.getElementById('activeSessionsTable');
+    if (!tbody) return;
+
+    try {
+        const { data: sessions, error } = await window.sb.from('user_sessions').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+
+        tbody.innerHTML = '';
+        if (!sessions || sessions.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center p-3 text-muted">لا توجد جلسات نشطة حالياً.</td></tr>';
+            return;
+        }
+
+        sessions.forEach(s => {
+            const isOnline = (Date.now() - new Date(s.created_at)) < 300000;
+            tbody.innerHTML += `
+                <tr>
+                    <td><div class="fw-bold" style="font-size:13px;">${s.user_email}</div></td>
+                    <td><span class="badge bg-light text-dark border" style="font-size:11px;">${s.browser} / ${s.os}</span></td>
+                    <td><code>${s.ip_address}</code></td>
+                    <td class="small"><span class="status-dot ${isOnline ? 'bg-success' : 'bg-secondary'}"></span> ${new Date(s.created_at).toLocaleTimeString('ar-YE')}</td>
+                    <td class="text-center"><button class="btn btn-sm btn-link text-danger" onclick="terminateUserSession('${s.id}')"><i class="fa-solid fa-user-slash"></i></button></td>
+                </tr>`;
+        });
+    } catch (err) { console.error(err); }
+}
+
+async function terminateUserSession(id) {
+    if(confirm("هل أنت متأكد من طرد هذا المستخدم فوراً؟")) {
+        await window.sb.from('user_sessions').delete().eq('id', id);
+        fetchAllSessions();
+    }
+}
+
+/**
+ * 6. إدارة شريط الأخبار والوسائط
+ */
+async function saveAdvancedTicker() {
+    const text = document.getElementById('settingsNewsInput')?.value || '';
+    const bgColor = document.getElementById('settingsTickerBgColor')?.value || '#000000';
+    const txtColor = document.getElementById('settingsTickerTextColor')?.value || '#ffffff';
+    const speed = document.getElementById('settingsTickerSpeed')?.value || '50';
+    
+    try {
+        await window.sb.from('settings').upsert([
+            { key: 'news_ticker', value: text },
+            { key: 'ticker_bg', value: bgColor },
+            { key: 'ticker_color', value: txtColor },
+            { key: 'ticker_speed', value: speed }
+        ]);
+        alert('تم تحديث شريط الأخبار بنجاح 📡');
+    } catch (err) { alert('خطأ في البث'); }
+}
+
+async function uploadFallbackImage() {
+    const fileInput = document.getElementById('fallbackInput');
+    const file = fileInput.files[0];
+    if (!file) return alert('اختر صورة أولاً');
+    
+    try {
+        const fileName = `fallback_${Date.now()}.${file.name.split('.').pop()}`;
+        const { data, error } = await window.sb.storage.from('media').upload(fileName, file);
+        if (error) throw error;
+        
+        const { data: { publicUrl } } = window.sb.storage.from('media').getPublicUrl(fileName);
+        await window.sb.from('settings').upsert({ key: 'fallback_image', value: publicUrl });
+        alert("تم رفع الشعار بنجاح ✅");
+        fetchSettings();
+    } catch (err) { alert("فشل الرفع"); }
+}
+
+// 🔄 مراقبة تغيير الألوان لحظياً في المتصفح
+function attachColorListeners() {
+    const colorIds = ['primaryColor', 'sidebarColor', 'bgColor', 'cardBgColor', 'textColor'];
+    colorIds.forEach(id => {
+        const picker = document.getElementById(id);
+        if (picker) {
+            picker.addEventListener('input', (e) => {
+                const textInput = document.getElementById(id + 'Text');
+                if (textInput) textInput.value = e.target.value;
+                // تطبيق حي ومؤقت للعين
+                let cssVar = id === 'primaryColor' ? '--primary' : (id === 'sidebarColor' ? '--sidebar-bg' : (id === 'bgColor' ? '--bg-color' : (id === 'cardBgColor' ? '--card-bg' : '--text-color')));
+                document.documentElement.style.setProperty(cssVar, e.target.value);
+            });
+        }
+    });
+}
+
+// تشغيل النظام
 initSettings();

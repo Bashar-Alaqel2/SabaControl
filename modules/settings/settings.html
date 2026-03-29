@@ -116,35 +116,12 @@
                 </table>
             </div>
         </div>
+<!-- -->
+        
+<!-- -->
+    </div>
 
-
-        <div class="card shadow-sm mt-4" id="adminSessionsSection" style="display: none;">
-    <div class="card-header flex-between bg-white py-3">
-        <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
-            <i class="fa-solid fa-user-shield text-danger me-2"></i> الجلسات النشطة (المتصلون الآن)
-        </h3>
-        <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="fetchAllSessions()">
-            <i class="fa-solid fa-sync me-1"></i> تحديث القائمة
-        </button>
-    </div>
-    <div class="table-responsive">
-        <table class="clean-table mb-0 w-100">
-            <thead class="bg-light">
-                <tr>
-                    <th class="ps-3">المستخدم</th>
-                    <th>الجهاز / المتصفح</th>
-                    <th>عنوان IP</th>
-                    <th>آخر ظهور</th>
-                    <th class="text-center">إجراء</th>
-                </tr>
-            </thead>
-            <tbody id="activeSessionsTable">
-                <tr><td colspan="5" class="text-center p-4 text-muted">جاري فحص الجلسات النشطة...</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-    </div>
+    
 
     <div class="side-panel">
         
@@ -189,11 +166,48 @@
         </div>
 
             <!---->
+
+
+
+
+            
         </div>
 
-        
+        <div class="card shadow-sm mt-4" id="adminSessionsSection" style="display: none;">
+    <div class="card-header flex-between bg-white py-3">
+        <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
+            <i class="fa-solid fa-user-shield text-danger me-2"></i> الجلسات النشطة (المتصلون الآن)
+        </h3>
+        <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="fetchAllSessions()">
+            <i class="fa-solid fa-sync me-1"></i> تحديث القائمة
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="clean-table mb-0 w-100">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-3">المستخدم</th>
+                    <th>الجهاز / المتصفح</th>
+                    <th>عنوان IP</th>
+                    <th>آخر ظهور</th>
+                    <th class="text-center">إجراء</th>
+                </tr>
+            </thead>
+            <tbody id="activeSessionsTable">
+                <tr><td colspan="5" class="text-center p-4 text-muted">جاري فحص الجلسات النشطة...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!---->
 
     </div>
+
+
+<!---->
+    
+    <!---->
+    
 </div>
 
 <style>

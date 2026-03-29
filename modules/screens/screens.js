@@ -1,6 +1,6 @@
-// ==========================================
-// 🖥️ modules/screens/screens.js - إدارة الشاشات (النسخة الآمنة المدمجة)
-// ==========================================
+
+//  modules/screens/screens.js - إدارة الشاشات (النسخة الآمنة المدمجة)
+
 
 function initScreens() {
     loadComponents(); // نحمل الإحصائيات هنا أيضاً
@@ -84,9 +84,9 @@ function renderScreens(screens, myUserId, myRole) {
             ? `<span style="color: #2e7d32; font-weight:bold; font-size: 0.85em;"><i class="fa-solid fa-wifi"></i> متصل </span>` 
             : `<span style="color: #c62828; font-weight:bold; font-size: 0.85em;"><i class="fa-solid fa-plug-circle-xmark"></i> مفصول</span>`;
 
-        // ==========================================
-        // 🛡️ منطق الحماية (إخفاء/إظهار الأزرار)
-        // ==========================================
+       
+        //  منطق الحماية (إخفاء/إظهار الأزرار)
+       
         const ownerName = s.profiles?.full_name || 'غير معروف';
         const isOwner = (s.created_by === myUserId) || (myRole === 'admin');
 
@@ -148,7 +148,7 @@ function renderScreens(screens, myUserId, myRole) {
     document.querySelectorAll('.offlineScreensVal').forEach(el => el.innerText = offlineCount);
 }
 
-// 🟢 تعديل دوال الحذف والتحديث لالتقاط أخطاء الصلاحيات (RLS)
+//  تعديل دوال الحذف والتحديث لالتقاط أخطاء الصلاحيات (RLS)
 async function updateScreenStatus(id, status) {
     try {
         const { error } = await window.sb.from('screens').update({ status: status }).eq('device_id', id);
@@ -177,7 +177,7 @@ async function renameScreen(deviceId, currentName) {
     } catch (err) { alert('عذراً، لا تملك صلاحية تغيير اسم هذه الشاشة.'); }
 }
 
-// 🟢 إدارة إضافة شاشة جديدة (Modal)
+//  إدارة إضافة شاشة جديدة (Modal)
 function openAddScreenModal() {
     const modal = document.getElementById('addScreenModal');
     if (modal) modal.style.display = 'flex';
@@ -206,10 +206,10 @@ async function submitNewScreen() {
     } catch (err) { alert('حدث خطأ أثناء إضافة الشاشة: ' + err.message); }
 }
 
-// ==========================================
-// 🔄 مراقب التحديثات اللحظية (Realtime Watcher)
+
+//  مراقب التحديثات اللحظية (Realtime Watcher)
 // يوضع في أسفل ملف screens.js
-// ==========================================
+
 
 // 1. الاستماع لتغييرات قاعدة البيانات (تفعيل التحديث التلقائي)
 window.sb.channel('db-screens-changes')

@@ -541,3 +541,19 @@ using (true);
 create policy "Allow authenticated users to insert tickers" 
 on tickers for insert 
 with check (auth.role() = 'authenticated');
+
+
+
+-- 1. التأكد من تفعيل الحماية
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- 2. حذف أي سياسات تحديث قديمة لتجنب التعارض
+DROP POLICY IF EXISTS "Admins can update all profiles" ON public.profiles;
+
+-- 3. إنشاء سياسة تسمح للمدير فقط بتحديث أي سجل في جدول profiles
+CREATE POLICY "Admins can update all profiles" 
+ON public.profiles 
+FOR UPDATE 
+TO authenticated 
+USING ( (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin' )
+WITH CHECK ( (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin' );

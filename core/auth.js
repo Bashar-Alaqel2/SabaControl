@@ -1,6 +1,6 @@
-// ==========================================
-// 🔐 core/auth.js - نظام تسجيل الدخول والحماية المطور
-// ==========================================
+
+//  core/auth.js - نظام تسجيل الدخول والحماية المطور
+
 
 let isLoginMode = true;
 
@@ -81,37 +81,37 @@ async function handleAuth(e) {
 
     try {
         if (isLoginMode) {
-    // 1. تنظيف شامل قبل البدء
-    await window.sb.auth.signOut(); 
-    localStorage.clear();
-    sessionStorage.clear();
+            // 1. تنظيف عنيف للذاكرة قبل الدخول
+            localStorage.clear();
+            sessionStorage.clear();
+            await window.sb.auth.signOut(); 
 
-    // 2. تسجيل الدخول
-    const { data, error } = await window.sb.auth.signInWithPassword({ email, password });
-    if (error) throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
-    
-    // 3. جمع البيانات
-    const info = getBrowserInfo();
-    const ip = await getUserIP();
-    
-    // 4. ✨ الانتظار (await) لضمان كتابة الجلسة في القاعدة قبل الانتقال
-    const { error: sessionError } = await window.sb.from('user_sessions').insert([{
-        user_id: data.user.id,
-        user_email: email,
-        browser: info.browser,
-        os: info.os,
-        ip_address: ip,
-        session_id: data.session.access_token.slice(-20)
-    }]);
+            // 2. تسجيل الدخول
+            const { data, error } = await window.sb.auth.signInWithPassword({ email, password });
+            if (error) throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+            
+            // 3. ✨ تحديث بيانات الجلسة فوراً (Fresh Session)
+            await window.sb.auth.refreshSession(); 
 
-    if (sessionError) throw new Error("فشل في تهيئة الجلسة الأمنية، حاول مجدداً.");
+            // 4. جمع البيانات الأمنية
+            const info = getBrowserInfo();
+            const ip = await getUserIP();
+            
+            // 5. تسجيل الجلسة في القاعدة
+            const { error: sessionError } = await window.sb.from('user_sessions').insert([{
+                user_id: data.user.id,
+                user_email: email,
+                browser: info.browser,
+                os: info.os,
+                ip_address: ip,
+                session_id: data.session.access_token.slice(-20)
+            }]);
 
-    // 5. ⏳ تأخير بسيط جداً (500ms) لضمان مزامنة السيرفر
-    setTimeout(() => {
-        window.location.replace('index.html');
-    }, 500);
+            if (sessionError) throw new Error("فشل في تهيئة الجلسة الأمنية.");
 
-} else {
+            // 6. التوجيه
+            window.location.replace('index.html');
+        } else {
             // 🟢 عملية تسجيل حساب جديد
             const { data, error } = await window.sb.auth.signUp({
                 email: email,

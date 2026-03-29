@@ -1,0 +1,9 @@
+.status-dot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 5px;
+}
+.bg-success { background-color: #28a745; } /* متصل */
+.bg-secondary { background-color: #6c757d; } /* غير نشط *
