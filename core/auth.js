@@ -80,34 +80,38 @@ async function handleAuth(e) {
     errorMsg.style.display = 'none';
 
     try {
-        // داخل core/auth.js في عملية تسجيل الدخول
-if (isLoginMode) {
-    const { data, error } = await window.sb.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+        if (isLoginMode) {
+    // 1. تنظيف شامل قبل البدء
+    await window.sb.auth.signOut(); 
+    localStorage.clear();
+    sessionStorage.clear();
 
-    // ✨ تأكد من مسح أي جلسات قديمة لهذا المتصفح قبل التسجيل الجديد (إختياري)
+    // 2. تسجيل الدخول
+    const { data, error } = await window.sb.auth.signInWithPassword({ email, password });
+    if (error) throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+    
+    // 3. جمع البيانات
     const info = getBrowserInfo();
     const ip = await getUserIP();
-    const shortToken = data.session.access_token.slice(-20);
-
-    // 🟢 الانتظار حتى يتم التأكد من إدخال الجلسة في قاعدة البيانات
+    
+    // 4. ✨ الانتظار (await) لضمان كتابة الجلسة في القاعدة قبل الانتقال
     const { error: sessionError } = await window.sb.from('user_sessions').insert([{
         user_id: data.user.id,
         user_email: email,
         browser: info.browser,
         os: info.os,
         ip_address: ip,
-        session_id: shortToken
+        session_id: data.session.access_token.slice(-20)
     }]);
 
-    if (sessionError) {
-        console.error("فشل تسجيل الجلسة:", sessionError);
-        // حتى لو فشل تسجيل الجلسة الإضافي، لا نريد طرد المستخدم فوراً
-    }
+    if (sessionError) throw new Error("فشل في تهيئة الجلسة الأمنية، حاول مجدداً.");
 
-    // التوجيه بعد التأكد من انتهاء العمليات
-    window.location.replace('index.html');
-} else{
+    // 5. ⏳ تأخير بسيط جداً (500ms) لضمان مزامنة السيرفر
+    setTimeout(() => {
+        window.location.replace('index.html');
+    }, 500);
+
+} else {
             // 🟢 عملية تسجيل حساب جديد
             const { data, error } = await window.sb.auth.signUp({
                 email: email,
@@ -188,20 +192,31 @@ async function terminateSession(sessionId) {
 
 // 7. تسجيل الخروج
 window.logout = async function() {
-    // 1. مسح الكاش البرمجي
-    if (typeof appCache !== 'undefined') {
-        appCache.profile = null;
-        appCache.settings = null;
-        appCache.lastFetch = { profile: 0, settings: 0 };
-    }
-    
-    // 2. تسجيل الخروج من Supabase
-    await window.sb.auth.signOut();
-    
-    // 3. التوجيه لصفحة الدخول
-    window.location.replace('login.html');
-}
+    console.log("🔄 جاري تسجيل الخروج وتنظيف الجلسة...");
 
+    try {
+        // 1. مسح الكاش البرمجي (Global Cache)
+        if (typeof appCache !== 'undefined') {
+            appCache.profile = null;
+            appCache.settings = null;
+            appCache.lastFetch = { profile: 0, settings: 0 };
+        }
+
+        // الخطوة الأهم: مسح ذاكرة المتصفح تماماً 
+        // هذا يضمن عدم بقاء أي توكن (Token) قديم يسبب تداخل
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // 3. تسجيل الخروج من Supabase (تعطيل الجلسة في السيرفر)
+        await window.sb.auth.signOut();
+
+    } catch (err) {
+        console.error("خطأ أثناء تسجيل الخروج:", err);
+    } finally {
+        // 4. التوجيه لصفحة الدخول باستخدام replace لضمان عدم العودة للخلف
+        window.location.replace('login.html');
+    }
+}
 // تشغيل الأحداث والحماية
 const authForm = document.getElementById('authForm');
 if (authForm) authForm.addEventListener('submit', handleAuth);

@@ -26,22 +26,34 @@ async function getSmartData(key, fetchFn, expiry = 300000) { // كاش لمدة 
 // 3. حارس الجلسة النشطة (Active Session Guard)
 // هذه الدالة تتأكد أن المدير لم يطرد المستخدم حالياً
 async function validateSessionIntegrity() {
-    const { data: { session } } = await window.sb.auth.getSession();
+    try {
+        const { data: { session } } = await window.sb.auth.getSession();
     if (!session) return false;
 
-    // التحقق هل الجلسة موجودة في جدولنا المخصص (للسماح بالطرد الفوري)
+    // 🟢 إضافة "وقت سماح" للدخول الجديد
+    const loginTime = new Date(session.user.last_sign_in_at).getTime();
+    const now = new Date().getTime();
+    if (now - loginTime < 5000) return true; // تخطي الفحص في أول 5 ثوانٍ من الدخول
+
+    // الفحص العادي...
     const { data: activeSession } = await window.sb
         .from('user_sessions')
         .select('id')
         .eq('session_id', session.access_token.slice(-20))
-        .single();
+        .maybeSingle();
 
-    if (!activeSession) {
-        alert("تم إنهاء جلستك من قبل الإدارة.");
-        window.logout();
-        return false;
+            if (!retrySession) {
+                alert("تم إنهاء جلستك من قبل الإدارة.");
+                if (typeof window.logout === 'function') window.logout();
+                return false;
+            }
+        
+        
+        return true;
+    } catch (err) {
+        console.error("Session integrity check failed:", err);
+        return true; // في حال حدوث خطأ تقني في الشبكة، لا تطرد المستخدم
     }
-    return true;
 }
 
 //يعمل زر المنيو عند الضغط عليه

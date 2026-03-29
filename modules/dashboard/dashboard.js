@@ -245,18 +245,31 @@ async function deleteTickerRecord(id) {
     if (!confirm("هل أنت متأكد من حذف هذا الخبر نهائياً؟")) return;
 
     try {
+        // 1. محاولة الحذف من قاعدة البيانات أولاً
         const { error } = await window.sb.from('tickers').delete().eq('id', id);
-        if (error) throw error;
         
-        // تأثير بصري للحذف
+        // 2. إذا حدث خطأ (مثلاً نقص صلاحيات)، توقف هنا ولا تحذف من الواجهة
+        if (error) {
+            console.error("Supabase Delete Error:", error);
+            throw new Error("لا تملك صلاحية الحذف أو حدث خطأ في السيرفر");
+        }
+
+        // 3. فقط إذا نجح الحذف في القاعدة، نقوم بإزالته من الواجهة
         const row = document.getElementById(`row-${id}`);
         if (row) {
             row.style.transition = '0.5s';
-            row.style.backgroundColor = '#ffebee';
-            setTimeout(() => row.remove(), 500);
+            row.style.opacity = '0'; // تأثير شفافية
+            row.style.transform = 'translateX(20px)'; // إزاحة بسيطة
+            
+            setTimeout(() => {
+                row.remove();
+                //alert("تم الحذف نهائياً من النظام ✅");
+            }, 500);
         }
-        alert("تم الحذف بنجاح!");
-    } catch (err) { alert("خطأ في الحذف: " + err.message); }
+
+    } catch (err) { 
+        alert("⚠️ فشل الحذف: " + err.message); 
+    }
 }
 
 /**
@@ -467,8 +480,11 @@ window.sb.channel('dashboard-screens-sync')
 if (window.currentUserRole === 'admin') {
     window.sb.channel('dashboard-tickers-sync')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tickers' }, () => {
-            console.log('📢 تم رصد خبر جديد، تحديث سجل الأخبار...');
             fetchTickerHistory();
+        })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'tickers' }, () => {
+            console.log('🗑️ تم حذف خبر، تحديث السجل...');
+            fetchTickerHistory(); // تحديث القائمة لضمان اختفاء العنصر المحذوف
         })
         .subscribe();
 }
