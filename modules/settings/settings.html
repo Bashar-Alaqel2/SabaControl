@@ -66,7 +66,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-save mt-4" onclick="saveThemeSettings()">
+            <button class="btn btn-save mt-4" onclick="SettingsModule.saveTheme()">
                 <i class="fa-solid fa-wand-magic-sparkles me-2"></i> حفظ وتطبيق التصميم الجديد
             </button>
         </div>
@@ -78,7 +78,7 @@
                     <i class="fa-solid fa-satellite-dish text-warning"></i> شريط الأخبار العاجلة
                 </h3>
                 <label class="toggle-switch">
-                    <input type="checkbox" id="settingsTickerToggle" onchange="toggleTickerVisibility('settings')">
+                    <input type="checkbox" id="settingsTickerToggle">
                     <span class="premium-switch"></span>
                 </label>
             </div>
@@ -103,7 +103,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-warning w-100 mt-3 fw-bold py-3 rounded-4 shadow-sm" onclick="saveAdvancedTicker()">
+            <button class="btn btn-warning w-100 mt-3 fw-bold py-3 rounded-4 shadow-sm" onclick="SettingsModule.saveAdvancedTicker()">
                 <i class="fa-solid fa-paper-plane me-2"></i> بث التحديثات للشاشات فوراً
             </button>
         </div>
@@ -114,7 +114,7 @@
                 <h3 class="section-title mb-0">
                     <i class="fa-solid fa-user-shield text-success"></i> إدارة طاقم العمل
                 </h3>
-                <button class="btn btn-light btn-sm rounded-pill px-3 fw-bold" onclick="fetchUsersList()">
+                <button class="btn btn-light btn-sm rounded-pill px-3 fw-bold" onclick="SettingsModule.fetchUsersList()">
                     <i class="fa-solid fa-rotate-right me-1"></i> تحديث القائمة
                 </button>
             </div>
@@ -158,7 +158,7 @@
             <input type="file" id="fallbackInput" accept="image/*" class="form-control premium-input mb-3" style="font-size: 12px;">
             
             <div class="d-flex gap-2">
-                <button class="btn btn-primary flex-fill py-3 rounded-4" onclick="uploadFallbackImage()">
+                <button class="btn btn-primary flex-fill py-3 rounded-4" onclick="SettingsModule.uploadFallbackImage()">
                     <i class="fa-solid fa-upload"></i>
                 </button>
                 <button class="btn btn-danger px-4 py-3 rounded-4" onclick="deleteFallbackImage()">
@@ -198,7 +198,7 @@
                 </table>
             </div>
 
-            <button class="btn btn-outline-danger btn-sm w-100 mt-3 rounded-pill border-0" onclick="fetchAllSessions()">
+            <button class="btn btn-outline-danger btn-sm w-100 mt-3 rounded-pill border-0" onclick="SettingsModule.fetchSessions()">
                 <i class="fa-solid fa-sync me-1"></i> تحديث الجلسات
             </button>
         </div>

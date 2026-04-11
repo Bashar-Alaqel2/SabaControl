@@ -32,10 +32,7 @@
                 <li id="tab-settings"><a href="#" onclick="loadModule('settings')"><img src="images/settings.png"
                             alt="SabaPost Logo"> الإعدادات</a></li>
             </ul>
-            <div class="sidebar-footer">
-                <div style="margin-bottom: 12px; font-weight: bold; color: var(--primary);">
-                    <i class="fa-solid fa-user-shield"></i> لوحة المشرف
-                </div>
+            <div class="sidebar-footer" id="sidebarFooterContainer">
                 <div id="userInfoContent"></div>
             </div>
 
@@ -49,7 +46,12 @@
                     </button>
                     <h2 id="pageTitle">لوحة القيادة الرئيسية</h2>
                 </div>
-                <div class="user-info"><span id="clock" style="font-weight: bold; color: var(--primary);"></span></div>
+                <div class="user-info">
+                    <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()" title="تبديل المظهر">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <span id="clock" style="font-weight: bold; color: var(--primary);"></span>
+                </div>
             </header>
 
             <div id="app-content" class="view-section">
@@ -89,6 +91,7 @@
     </div>
 
     <script src="core/db.js"></script>
+    <script src="core/api.js"></script>
     <script src="core/app.js"></script>
     <script src="core/auth.js"></script>
 

@@ -32,7 +32,7 @@ async function validateSessionIntegrity() {
         //   وقت سماح للدخول الجديد (5 ثوانٍ) لضمان مزامنة القاعدة
         const loginTime = new Date(session.user.last_sign_in_at).getTime();
         const now = new Date().getTime();
-        if (now - loginTime < 5000) return true; 
+        if (now - loginTime < 5000) return true;
 
         //  جلب بيانات الجلسة والبروفايل في طلب واحد لضمان الدقة
         const [sessionRes, profileRes] = await Promise.all([
@@ -83,7 +83,7 @@ async function validateSessionIntegrity() {
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
-    
+
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
 }
@@ -164,7 +164,7 @@ async function loadUserProfile() {
             // تنفيذ الإخفاء والإظهار بناءً على القيمة الطازجة
             const settingsTab = document.getElementById('tab-settings');
             const adminUsers = document.getElementById('adminUsersSection');
-            
+
             if (profile.role === 'admin') {
                 if (settingsTab) settingsTab.style.setProperty('display', 'block', 'important');
                 if (adminUsers) adminUsers.style.setProperty('display', 'block', 'important');
@@ -187,19 +187,54 @@ async function applyInitialTheme() {
     if (settings) {
         const themeMap = {};
         settings.forEach(s => themeMap[s.key] = s.value);
-        
+
         const root = document.documentElement.style;
-        root.setProperty('--primary', themeMap['theme_primary'] || '#5c6bc0');
-        root.setProperty('--sidebar-bg', themeMap['theme_sidebar'] || '#2b2b44');
-        root.setProperty('--bg-color', themeMap['theme_bg'] || '#f4f7fa');
-        root.setProperty('--card-bg', themeMap['theme_card_bg'] || '#ffffff');
-        root.setProperty('--text-color', themeMap['theme_text'] || '#333333');
+
+        // التحقق من وجود "وضع ليلي مفروض" يدوياً من المستخدم
+        const isDarkMode = localStorage.getItem('theme') === 'dark';
+
+        if (!isDarkMode) {
+            root.setProperty('--primary', themeMap['theme_primary'] || '#940f31');
+            root.setProperty('--sidebar-bg-color', themeMap['theme_sidebar'] || '#2b2b44');
+            root.setProperty('--bg-color', themeMap['theme_bg'] || '#f4f7fa');
+            root.setProperty('--card-bg', themeMap['theme_card_bg'] || '#ffffff');
+            root.setProperty('--text-color', themeMap['theme_text'] || '#333333');
+        } else {
+            // في الوضع الليلي، نستخدم تدرجات داكنة ولكن نحافظ على الهوية (Primary)
+            root.setProperty('--primary', themeMap['theme_primary'] || '#940f31');
+        }
 
         document.querySelectorAll('.brand span').forEach(el => el.innerText = themeMap['system_name'] || 'SabaPost');
     }
 }
 
+// ✨ نظام تبديل المظهر (Light/Dark Mode) ✨
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-theme');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateThemeIcon(isDark);
+
+    // إعادة جلب الإعدادات الأصلية لتعديل المتغيرات إذا لزم الأمر
+    applyInitialTheme();
+}
+
+function updateThemeIcon(isDark) {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+}
+
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const isDark = savedTheme === 'dark';
+    if (isDark) {
+        document.body.classList.add('dark-theme');
+    }
+    updateThemeIcon(isDark);
+}
+
 // 7. دوال مساعدة للواجهة (UI Helpers)
+// ... (بقية الملف لم تتغير)
 function showLoader(container) {
     container.innerHTML = `<div class="loader-container"><i class="fa-solid fa-spinner fa-spin"></i><p>جاري التحميل...</p></div>`;
 }
@@ -212,16 +247,22 @@ function renderSidebarFooter(profile) {
     const userInfoContent = document.getElementById('userInfoContent');
     if (!userInfoContent) return;
 
-    const roleLabel = profile.role === 'admin' ? 'مدير النظام 👑' : 'محرر محتوى ✍️';
-    
+    // تحديد المسمى الوظيفي بناءً على الرتبة
+    const roleDashboardLabel = profile.role === 'admin' ? 'لوحة مدير النظام' : 'لوحة محرر البث';
+    const roleIcon = profile.role === 'admin' ? 'fa-user-shield' : 'fa-user-pen';
+
     userInfoContent.innerHTML = `
-        <div class="user-info-box" style="margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-            <div style="font-size: 14px; font-weight: bold; color: #fff;">${profile.full_name}</div>
-            <div style="font-size: 11px; color: #bbb; margin-top: 2px;">${roleLabel}</div>
+        <div class="user-profile-card">
+            <span class="user-role-label">
+                <i class="fa-solid ${roleIcon}"></i> ${roleDashboardLabel}
+            </span>
+            <span class="user-name">${profile.full_name}</span>
+            <span class="user-status">نشط الآن</span>
         </div>
-        <button class="logout-btn" onclick="logout()" 
-                style="font-size: 12px; padding: 8px 12px; background-color: #d32f2f; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
-            <i class="fa-solid fa-power-off"></i> تسجيل الخروج
+        
+        <button class="premium-logout-btn" onclick="Auth.logout()">
+            <i class="fa-solid fa-power-off"></i> 
+            <span>تسجيل الخروج</span>
         </button>
     `;
 }
@@ -235,8 +276,8 @@ function injectAssets(moduleName) {
     }
     // إعادة تشغيل الـ Script إذا كان موجوداً لضمان عمل initFunction
     const oldScript = document.getElementById(`script-${moduleName}`);
-    if (oldScript) oldScript.remove(); 
-    
+    if (oldScript) oldScript.remove();
+
     const script = document.createElement('script');
     script.id = `script-${moduleName}`;
     script.src = `modules/${moduleName}/${moduleName}.js`;
@@ -246,8 +287,9 @@ function injectAssets(moduleName) {
 
 // 8. تشغيل النظام
 document.addEventListener('DOMContentLoaded', async () => {
+    initTheme(); // تشغيل الثيم المحفوظ أولاً لمنع وميض الشاشة البيضاء
     await applyInitialTheme();
-    
+
     // مراقبة تحديثات الإعدادات (الألوان والاسم)
     window.sb.channel('public:settings').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'settings' }, () => {
         appCache.settings = null;
@@ -258,15 +300,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { data: { user } } = await window.sb.auth.getUser();
     if (user) {
         window.sb.channel('user-security')
-            .on('postgres_changes', { 
-                event: 'UPDATE', 
-                schema: 'public', 
-                table: 'profiles', 
-                filter: `id=eq.${user.id}` 
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'profiles',
+                filter: `id=eq.${user.id}`
             }, (payload) => {
                 console.log("🛡️ تغيير أمني رُصد:", payload.new);
                 // إذا تم إيقاف الحساب أو تغيير الرتبة، نحدث البيانات فوراً
-                loadUserProfile(); 
+                loadUserProfile();
             }).subscribe();
     }
 

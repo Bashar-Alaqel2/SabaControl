@@ -6,12 +6,18 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 // إنشاء العميل وجعله متاحاً للجميع (Global)
 window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// تشغيل النظام اللحظي (Real-time) الأساسي
-window.sb.channel('admin-dashboard')
+// تشغيل النظام اللحظي (Real-time) الموحد
+window.sb.channel('global-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'screens' }, () => {
-        if(typeof fetchScreens === 'function') fetchScreens();
+        // تحديث كل من يهتم بالشاشات
+        if (window.ScreensModule) window.ScreensModule.fetchAndRender();
+        if (window.DashboardModule) window.DashboardModule.fetchAndRenderAll();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'tickers' }, () => {
+        // تحديث كل من يهتم بـ Tickers
+        if (window.DashboardModule) window.DashboardModule.fetchTickerHistory();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'playlist' }, () => {
-        if(typeof fetchPlaylist === 'function') fetchPlaylist();
+        if (typeof fetchPlaylist === 'function') fetchPlaylist();
     })
     .subscribe();
