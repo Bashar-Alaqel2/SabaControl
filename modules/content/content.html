@@ -1,48 +1,107 @@
-<div class="dashboard-grid">
+<div class="dashboard-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    <!-- الجانب الرئيسي: الرفع والمكتبة -->
     <div class="center-panel">
-        <div class="card">
-            <div class="card-header"><h3><i class="fa-solid fa-cloud-arrow-up"></i> رفع محتوى جديد للمكتبة</h3></div>
-            <div class="drag-drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                <p id="fileNameDisplay">اسحب الملف هنا أو <span>اضغط للاستعراض</span></p>
+        <div class="premium-glass-card">
+            <div class="flex-between mb-4">
+                <div>
+                    <h3 class="mb-1" style="font-size: 1.5rem; font-weight: 800; color: #fff;">
+                        <i class="fa-solid fa-cloud-arrow-up text-primary me-2"></i> نشر محتوى فائق السرعة
+                    </h3>
+                    <p class="text-muted small">ارفع الوسائط الخاصة بك وانشرها فوراً على الشاشات المستهدفة</p>
+                </div>
+            </div>
+
+            <div class="drag-drop-zone glass-neon-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" style="border: 2px dashed rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); border-radius: 24px; padding: 50px; text-align: center; cursor: pointer; transition: all 0.3s ease;">
+                <i class="fa-solid fa-cloud-arrow-up fa-3x mb-3" style="color: var(--primary); filter: drop-shadow(0 0 15px var(--primary-glow));"></i>
+                <h4 style="font-weight: 800; color: #fff;">اسحب الملف هنا أو <span style="color: var(--primary);">اضغط للاستعراض</span></h4>
+                <p class="text-muted small" id="fileNameDisplay">يدعم الصور (JPG, PNG) والفيديوهات (MP4)</p>
                 <input type="file" id="fileInput" accept="image/*,video/*" hidden>
             </div>
-            <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
-                <div class="form-group"><label>نوع المحتوى</label><select id="fileType"><option value="image">صورة</option><option value="video">فيديو</option></select></div>
-                <div class="form-group"><label>مدة العرض</label><input type="number" id="duration" value="10000"></div>
+
+            <div class="settings-grid mt-4" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="form-group">
-                    <label style="color: #2e7d32; font-weight: bold;"><i class="fa-solid fa-calendar-check"></i> يبدأ العرض في:</label>
-                    <input type="datetime-local" id="startsAt" required>
+                    <label class="small fw-bold text-muted mb-2">نوع المحتوى</label>
+                    <select id="fileType" class="premium-input w-100"><option value="image">🎞️ صورة رقمية</option><option value="video">📽️ فيديو سينمائي</option></select>
                 </div>
                 <div class="form-group">
-                    <label style="color: #e53935; font-weight: bold;"><i class="fa-regular fa-clock"></i> ينتهي العرض في:</label>
-                    <input type="datetime-local" id="expiresAt" required>
+                    <label class="small fw-bold text-muted mb-2">مدة العرض (ميلي ثانية)</label>
+                    <input type="number" id="duration" value="10000" class="premium-input w-100">
                 </div>
-                <div class="form-group"><label>تخصيص الشاشة</label><select id="targetScreen"><option value="all">كل الشاشات</option></select></div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="small fw-bold text-muted mb-2">🎯 تخصيص الشاشة المستهدفة</label>
+                    <select id="targetScreen" class="premium-input w-100"><option value="all">كل الشاشات (بث موحد)</option></select>
+                </div>
+                <div class="form-group">
+                    <label style="color: #10b981; font-weight: 800; font-size: 13px;" class="mb-2"><i class="fa-solid fa-calendar-check"></i> يبدأ الجدولة في:</label>
+                    <input type="datetime-local" id="startsAt" required class="premium-input w-100">
+                </div>
+                <div class="form-group">
+                    <label style="color: #ef4444; font-weight: 800; font-size: 13px;" class="mb-2"><i class="fa-regular fa-clock"></i> ينتهي البث في:</label>
+                    <input type="datetime-local" id="expiresAt" required class="premium-input w-100">
+                </div>
             </div>
-            <button class="btn btn-primary btn-block mt-10" onclick="uploadContent()"><i class="fa-solid fa-rocket"></i> رفع ونشر</button>
+
+            <button class="neon-btn w-100 py-3 mt-4" style="background: var(--primary); font-size: 18px; font-weight: 900;" onclick="uploadContent()">
+                <i class="fa-solid fa-rocket me-2"></i> ارفع وانشر الآن
+            </button>
             
-            <div class="progress-container" id="progressContainer" style="display: none; width: 100%; background-color: #e0e0e0; border-radius: 5px; margin-top: 15px; overflow: hidden;">
-                <div id="progressBar" style="width: 0%; height: 10px; background-color: #2e7d32; transition: width 0.3s;"></div>
+            <div id="progressContainer" style="display: none; margin-top: 25px;">
+                <div style="background: rgba(255,255,255,0.05); height: 10px; border-radius: 10px; overflow: hidden;">
+                    <div id="progressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), #8a0c2a); transition: width 0.3s;"></div>
+                </div>
+                <div class="flex-between mt-2">
+                    <span id="progressText" style="font-size: 12px; font-weight: 900; color: #fff;">0%</span>
+                    <span style="font-size: 12px; color: rgba(255,255,255,0.4);">جاري معالجة البيانات...</span>
+                </div>
             </div>
-            <div id="progressText" style="text-align: center; font-size: 12px; margin-top: 5px; font-weight: bold; color: var(--text-color); display: none;">0%</div>
-            <div id="uploadStatus" class="status-msg mt-10"></div>
+            <div id="uploadStatus" class="status-msg mt-3"></div>
         </div>
         
-        <div class="card mt-20">
-            <div class="card-header"><h3><i class="fa-solid fa-photo-film"></i> مكتبة الوسائط</h3></div>
-            <div class="media-grid" id="mediaGallery"></div>
+        <div class="premium-glass-card mt-4">
+            <div class="flex-between mb-4">
+                <h3 class="mb-0" style="font-size: 1.4rem; font-weight: 800; color: #fff;">
+                    <i class="fa-solid fa-photo-film text-primary me-2"></i> مكتبة الوسائط الراقية
+                </h3>
+            </div>
+            <div class="media-grid" id="mediaGallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;"></div>
         </div>
     </div>
 
+    <!-- الجانب الفرعي: المعاينة -->
     <div class="side-panel">
-        <div class="card sticky-card">
-            <div class="card-header"><h3><i class="fa-solid fa-display"></i> المعاينة المباشرة</h3></div>
-            <div class="preview-container" id="previewContainer">
-                <div class="preview-placeholder" id="previewPlaceholder"><i class="fa-solid fa-clapperboard"></i><p>اختر ملفاً للعرض</p></div>
-                <img id="imagePreview" src="" style="display: none;">
-                <video id="videoPreview" src="" controls style="display: none;" muted></video>
+        <div class="premium-glass-card sticky-card" style="position: sticky; top: 30px;">
+            <h3 class="mb-4" style="font-size: 1.3rem; font-weight: 800; color: #fff;">
+                <i class="fa-solid fa-eye text-primary me-2"></i> المعاينة اللحظية
+            </h3>
+            <div class="preview-container glass-neon-zone" id="previewContainer" style="aspect-ratio: 16/9; border-radius: 18px; overflow: hidden; background: #000; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; position: relative;">
+                <div class="preview-placeholder" id="previewPlaceholder" style="text-align: center; color: rgba(255,255,255,0.2);">
+                    <i class="fa-solid fa-clapperboard fa-3x mb-3"></i>
+                    <p>اختر ملفاً لعرضه هنا</p>
+                </div>
+                <img id="imagePreview" src="" style="display: none; width: 100%; height: 100%; object-fit: contain;">
+                <video id="videoPreview" src="" controls style="display: none; width: 100%; height: 100%;" muted></video>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .glass-neon-zone:hover {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 30px var(--primary-glow);
+        background: rgba(255, 71, 87, 0.05) !important;
+    }
+    .premium-input {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
+        padding: 12px 15px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    .premium-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 15px var(--primary-glow);
+        outline: none;
+    }
+</style>

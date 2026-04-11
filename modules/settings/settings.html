@@ -14,42 +14,41 @@
             </div>
             
             <div class="form-group mb-4">
-                <label class="small fw-bold mb-2">اسم النظام (Branding)</label>
-                <input type="text" id="systemName" value="SabaPost" class="form-control premium-input shadow-none" 
-                       style="font-size: 1.1rem; padding: 15px; border-radius: 18px;">
+                <label class="small fw-bold text-muted mb-2">اسم النظام (Branding)</label>
+                <input type="text" id="systemName" value="SabaPost" class="premium-input w-100" style="font-size: 1.1rem;">
             </div>
 
             <div class="settings-control-grid">
                 <!-- اللون الرئيسي -->
                 <div class="premium-color-control">
-                    <div class="color-preview-circle" id="primaryColorCircle">
-                        <input type="color" id="primaryColor" value="#940f31">
+                    <div class="color-preview-circle" id="primaryColorCircle" style="border: 2px solid var(--primary); box-shadow: 0 0 15px var(--primary-glow);">
+                        <input type="color" id="primaryColor" value="#ff4757" style="position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; cursor: pointer; border: none; background: none;">
                     </div>
                     <div class="color-info">
                         <label>اللون الأساسي</label>
-                        <span class="color-hex-text" id="primaryColorHex">#940f31</span>
+                        <span class="color-hex-text" id="primaryColorHex">#ff4757</span>
                     </div>
                 </div>
 
                 <!-- اللون الجانبي -->
                 <div class="premium-color-control">
                     <div class="color-preview-circle" id="sidebarColorCircle">
-                        <input type="color" id="sidebarColor" value="#5c041c">
+                        <input type="color" id="sidebarColor" value="#0f172a" style="position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; cursor: pointer; border: none; background: none;">
                     </div>
                     <div class="color-info">
                         <label>القائمة الجانبية</label>
-                        <span class="color-hex-text" id="sidebarColorHex">#5c041c</span>
+                        <span class="color-hex-text" id="sidebarColorHex">#0f172a</span>
                     </div>
                 </div>
 
                 <!-- لون النصوص -->
                 <div class="premium-color-control">
                     <div class="color-preview-circle" id="textColorCircle">
-                        <input type="color" id="textColor" value="#4a5568">
+                        <input type="color" id="textColor" value="#ffffff" style="position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; cursor: pointer; border: none; background: none;">
                     </div>
                     <div class="color-info">
                         <label>لون النصوص</label>
-                        <span class="color-hex-text" id="textColorHex">#4a5568</span>
+                        <span class="color-hex-text" id="textColorHex">#ffffff</span>
                     </div>
                 </div>
             </div>
@@ -61,27 +60,27 @@
         </div>
 
         <!-- كرت: بث الأخبار العاجلة -->
-        <div class="premium-glass-card">
+        <div class="premium-glass-card" style="border-top: 4px solid #f59e0b;">
             <div class="settings-header">
-                <i class="fa-solid fa-satellite-dish" style="background: #ffa000;"></i>
+                <i class="fa-solid fa-satellite-dish" style="color: #ffa000; box-shadow: 0 0 15px rgba(255, 160, 0, 0.3);"></i>
                 <div>
                     <h3>إدارة شريط البث المباشر</h3>
                     <p class="text-muted small mb-0">بث نصوص متحركة لكل شاشات العرض المربوطة</p>
                 </div>
             </div>
 
-            <div class="flex-between mb-3">
-                <span class="fw-bold small"><i class="fa-solid fa-toggle-on text-success me-1"></i> تفعيل الشريط على الشاشات</span>
+            <div class="flex-between mb-4">
+                <span class="fw-bold small text-muted"><i class="fa-solid fa-toggle-on text-success me-1"></i> تفعيل الشريط على الشاشات</span>
                 <label class="toggle-switch">
                     <input type="checkbox" id="settingsTickerToggle">
                     <span class="slider"></span>
                 </label>
             </div>
 
-            <div class="flex-between mb-3 pt-2 border-top">
+            <div class="flex-between mb-4 pt-3 border-top" style="border-color: rgba(255,255,255,0.05) !important;">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="fw-bold small">إظهار كود التعريف على الشاشات</span>
-                    <i class="fa-solid fa-circle-info text-muted small" title="يساعدك في معرفة رقم كل شاشة عن بعد"></i>
+                    <span class="fw-bold small text-muted">إظهار كود التعريف على الشاشات</span>
+                    <i class="fa-solid fa-circle-info text-primary small" title="يساعدك في معرفة رقم كل شاشة عن بعد"></i>
                 </div>
                 <label class="toggle-switch">
                     <input type="checkbox" id="showDeviceIdToggle">
@@ -89,27 +88,27 @@
                 </label>
             </div>
 
-            <div class="form-group">
-                <textarea id="settingsNewsInput" rows="2" class="form-control premium-input" 
-                          placeholder="اكتب الخبر العاجل هنا ليظهر على الشاشات..." style="border-radius: 18px;"></textarea>
+            <div class="form-group mb-4">
+                <textarea id="settingsNewsInput" rows="2" class="premium-input w-100" 
+                          placeholder="اكتب الخبر العاجل هنا ليظهر على الشاشات..." style="resize: none;"></textarea>
             </div>
 
             <div class="settings-control-grid mt-3">
                 <div class="form-group text-center">
-                    <label class="small fw-bold">لون الخلفية</label>
-                    <input type="color" id="settingsTickerBgColor" value="#000000" class="form-control premium-input p-1" style="height: 48px; border-radius: 14px;">
+                    <label class="small fw-bold text-muted mb-2">الخلفية</label>
+                    <input type="color" id="settingsTickerBgColor" value="#000000" class="premium-input w-100" style="height: 50px; padding: 5px;">
                 </div>
                 <div class="form-group text-center">
-                    <label class="small fw-bold">لون الخط</label>
-                    <input type="color" id="settingsTickerTextColor" value="#ffffff" class="form-control premium-input p-1" style="height: 48px; border-radius: 14px;">
+                    <label class="small fw-bold text-muted mb-2">لون الخط</label>
+                    <input type="color" id="settingsTickerTextColor" value="#ffffff" class="premium-input w-100" style="height: 50px; padding: 5px;">
                 </div>
                 <div class="form-group">
-                    <label class="small fw-bold">السرعة</label>
-                    <input type="number" id="settingsTickerSpeed" value="50" class="form-control premium-input">
+                    <label class="small fw-bold text-muted mb-2">سرعة الحركة</label>
+                    <input type="number" id="settingsTickerSpeed" value="50" class="premium-input w-100">
                 </div>
             </div>
 
-            <button class="btn btn-warning w-100 py-3 mt-3 fw-bold rounded-4" onclick="SettingsModule.saveAdvancedTicker()">
+            <button class="neon-btn w-100 py-3 mt-4" style="background: #f59e0b; font-weight: 900; font-size: 16px; width: 100%; border: none;" onclick="SettingsModule.saveAdvancedTicker()">
                 <i class="fa-solid fa-paper-plane me-2"></i>
                 تحديث وبث شريط الأخبار الآن
             </button>
@@ -123,73 +122,70 @@
         <!-- كرت: الشعار -->
         <div class="premium-glass-card">
             <div class="settings-header">
-                <i class="fa-solid fa-image" style="background: #2196f3;"></i>
+                <i class="fa-solid fa-image" style="color: #2196f3; box-shadow: 0 0 15px rgba(33, 150, 243, 0.3);"></i>
                 <h3>شعار المؤسسة</h3>
             </div>
 
             <div class="branding-preview-area">
                 <img id="currentFallbackPreview" src="" style="display: none;">
                 <div id="fallbackPlaceholder" class="text-center text-muted">
-                    <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2"></i>
-                    <p class="small">لم يتم رفع شعار</p>
+                    <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2" style="color: var(--primary);"></i>
+                    <p class="small">لم يتم رفع شعار رسمي</p>
                 </div>
             </div>
 
-            <div class="form-group">
-                <input type="file" id="fallbackInput" accept="image/*" class="form-control premium-input border-dashed">
+            <div class="form-group mb-4">
+                <input type="file" id="fallbackInput" accept="image/*" class="premium-input w-100" style="font-size: 12px; border-style: dashed;">
             </div>
 
             <div class="d-flex gap-2">
-                <button class="btn btn-primary flex-fill" onclick="SettingsModule.uploadFallbackImage()">
-                    <i class="fa-solid fa-upload"></i> رفع
+                <button class="neon-btn flex-fill" style="background: var(--primary); font-weight: 800;" onclick="SettingsModule.uploadFallbackImage()">
+                    <i class="fa-solid fa-upload"></i> رفع الشعار
                 </button>
-                <button class="btn btn-light px-3" onclick="deleteFallbackImage()">
+                <button class="neon-btn" style="width: 50px;" onclick="deleteFallbackImage()">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
             </div>
         </div>
 
         <!-- كرت: الأمان والجلسات -->
-        <div class="premium-glass-card" id="adminSessionsSection" style="display: none;">
+        <div class="premium-glass-card" id="adminSessionsSection" style="display: none; border-top: 4px solid #f44336;">
             <div class="settings-header">
-                <i class="fa-solid fa-shield-halved" style="background: #f44336;"></i>
+                <i class="fa-solid fa-shield-halved" style="color: #f44336; box-shadow: 0 0 15px rgba(244, 67, 54, 0.3);"></i>
                 <h3>الحماية والجلسات</h3>
             </div>
 
-            <div class="table-responsive staff-table-wrapper">
-                <table class="table table-hover table-sm mb-0" style="font-size: 12px;">
+            <div class="table-responsive">
+                <table class="table mb-0" style="font-size: 13px; color: #fff;">
                     <tbody id="activeSessionsTable">
-                        <tr><td class="text-center p-3">جاري مراقبة الاتصال...</td></tr>
+                        <tr><td class="text-center p-3 text-muted">جاري مراقبة الاتصال...</td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <button class="btn btn-outline-danger btn-sm w-100 mt-3 border-0" onclick="SettingsModule.fetchSessions()">
-                <i class="fa-solid fa-sync me-1"></i> تحديث قائمة الأمان
+            <button class="neon-btn w-100 mt-4" style="background: rgba(255,255,255,0.05);" onclick="SettingsModule.fetchSessions()">
+                <i class="fa-solid fa-sync me-2"></i> تحديث قائمة الأمان
             </button>
         </div>
 
     </div>
 
     <!-- كرت: إدارة طاقم العمل (عرض كامل) -->
-    <div class="premium-glass-card mt-2" id="adminUsersSection" style="display: none; grid-column: 1 / -1;">
-        <div class="settings-header flex-between">
-            <div class="d-flex align-items-center gap-3">
-                <i class="fa-solid fa-users-gear" style="background: #4caf50;"></i>
+    <div class="premium-glass-card mt-2" id="adminUsersSection" style="display: none; grid-column: 1 / -1; border-top: 4px solid #10b981;">
+        <div class="flex-between mb-5">
+            <div class="d-flex align-items-center gap-4">
+                <i class="fa-solid fa-users-gear fa-2x text-success" style="filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3));"></i>
                 <div>
-                    <h3>إدارة طاقم العمل والصلاحيات</h3>
-                    <p class="text-muted small mb-0">التحكم في وصول الموظفين وترقية الرتب</p>
+                    <h3 class="mb-1" style="font-size: 1.6rem; font-weight: 900; color: #fff;">إدارة طاقم العمل والصلاحيات</h3>
+                    <p class="text-muted small mb-0">التحكم في وصول الموظفين وترقية الرتب عبر النظام</p>
                 </div>
             </div>
-            <button class="btn btn-light btn-sm rounded-pill px-4 fw-bold" onclick="SettingsModule.fetchUsersList()">
-                <i class="fa-solid fa-rotate-right me-1"></i> تحديث البيانات
+            <button class="neon-btn" style="width: auto; padding: 0 25px;" onclick="SettingsModule.fetchUsersList()">
+                <i class="fa-solid fa-rotate-right me-2"></i> تحديث البيانات
             </button>
         </div>
 
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 text-center">
-                <thead class="table-light">
-                    <tr>
                         <th>الموظف</th>
                         <th>البريد الإلكتروني</th>
                         <th>الرتبة</th>

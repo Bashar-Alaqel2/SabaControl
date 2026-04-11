@@ -1,40 +1,32 @@
 <!-- قسم الإحصائيات (يتم تحميله ديناميكياً) -->
 <div class="load-stats-here"></div>
 
-<!-- التحكم المركزي بالشاشات -->
-<div class="glass-card mt-4">
-    <div class="flex-between mb-4 flex-wrap gap-3">
-        <h3 class="section-title mb-0" style="font-size: 1.15rem;">
-            <i class="fa-solid fa-server"></i> التحكم المركزي بالأسطول
-        </h3>
-        <div class="d-flex gap-2">
-            <button class="btn btn-light rounded-pill px-3 shadow-none border" onclick="ScreensModule.fetchAndRender()">
-                <i class="fa-solid fa-rotate-right me-1"></i> تحديث
+<!-- التحكم المركزي بالشاشات (Grand Layout) -->
+<div class="mt-4">
+    <div class="flex-between mb-5 flex-wrap gap-4">
+        <div>
+            <h2 class="section-title mb-2" style="font-size: 2rem; font-weight: 900; letter-spacing: -1px;">
+                <i class="fa-solid fa-server text-primary"></i> التحكم بالأسطول
+            </h2>
+            <p class="text-muted" style="font-size: 14px;">إدارة الشاشات والارتباطات اللحظية عبر البروتوكول السحابي</p>
+        </div>
+        <div class="d-flex gap-3">
+            <button class="neon-btn" style="width: auto; padding: 0 25px; gap: 10px;" onclick="ScreensModule.fetchAndRender()">
+                <i class="fa-solid fa-rotate-right"></i> تحديث الحالة
             </button>
-            <button class="btn btn-primary rounded-pill px-4" onclick="ScreensModule.openModal()">
-                <i class="fa-solid fa-plus me-1"></i> إضافة شاشة جديدة
+            <button class="neon-btn" style="width: auto; padding: 0 25px; gap: 10px; background: var(--primary); box-shadow: 0 0 20px var(--primary-glow);" onclick="ScreensModule.openModal()">
+                <i class="fa-solid fa-plus"></i> إضافة شاشة ذكية
             </button>
         </div>
     </div>
 
-    <!-- الجدول الزجاجي للشاشات -->
-    <div class="table-responsive">
-        <table class="premium-table w-100">
-            <thead>
-                <tr>
-                    <th class="ps-3">اسم الشاشة ومعرفها</th>
-                    <th>عنوان الشبكة والحالة</th>
-                    <th>التصريح (Status)</th>
-                    <th>آخر ظهور (Ping)</th>
-                    <th class="text-center">إجراءات التحكم</th>
-                </tr>
-            </thead>
-            <tbody id="detailedScreensList">
-                <tr>
-                    <td colspan="5" class="text-center p-5 text-muted">جاري سحب بيانات الشاشات...</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- حاوية صفوف البطاقات المتطورة -->
+    <div id="detailedScreensList" class="screens-card-container">
+        <!-- جاري تحميل البيانات... -->
+        <div class="text-center p-5">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary"></i>
+            <p class="mt-3 text-muted">جاري سحب بيانات الشاشات...</p>
+        </div>
     </div>
 </div>
 

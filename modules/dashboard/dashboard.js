@@ -170,18 +170,18 @@ window.DashboardModule = {
                 const screenDisplayName = log.target_screen_id === 'all' ? 'الكل' : (log.screens?.screen_name || log.target_screen_id);
 
                 tbody.innerHTML += `
-                    <tr id="row-${log.id}">
-                        <td><span id="text-${log.id}" style="font-size: 13px;">${log.message}</span></td>
-                        <td class="small text-muted">${sender}</td>
-                        <td class="small">${time}</td>
-                        <td><span class="badge bg-light text-dark border">${screenDisplayName}</span></td>
+                    <tr id="row-${log.id}" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td class="py-3"><span id="text-${log.id}" style="font-size: 14px; color: #fff; font-weight: 600;">${log.message}</span></td>
+                        <td style="color: rgba(255,255,255,0.6); font-weight: 600;">${sender}</td>
+                        <td style="color: rgba(255,255,255,0.4); font-size: 13px;">${time}</td>
+                        <td><span class="badge-neon" style="background:rgba(255,255,255,0.05); color: #fff;">${screenDisplayName}</span></td>
                         <td>
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-outline-primary" onclick="DashboardModule.editTickerInline('${log.id}')">
-                                    <img src="images/edit_square.png" alt="Edit">
+                            <div class="d-flex gap-2">
+                                <button class="neon-btn edit" style="width: 32px; height: 32px;" onclick="DashboardModule.editTickerInline('${log.id}')">
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="DashboardModule.deleteTickerRecord('${log.id}')">
-                                    <img src="images/delete_2.png" alt="Delete">
+                                <button class="neon-btn delete" style="width: 32px; height: 32px;" onclick="DashboardModule.deleteTickerRecord('${log.id}')">
+                                    <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
                         </td>
@@ -237,16 +237,16 @@ window.DashboardModule = {
         const statsHTML = `
             <div class="stats-grid">
                 <div class="stat-card-glass">
-                    <div class="stat-icon-wrapper" style="background: #f1f5f9; color: #64748b;"><i class="fa-solid fa-tv"></i></div>
+                    <div class="stat-icon-wrapper"><i class="fa-solid fa-tv"></i></div>
                     <div class="stat-content"><h4 class="totalScreensVal">0</h4><span>إجمالي الشاشات</span></div>
                 </div>
-                <div class="stat-card-glass">
-                    <div class="stat-icon-wrapper" style="background: #e8fdf5; color: #10b981;"><i class="fa-solid fa-wifi"></i></div>
-                    <div class="stat-content"><h4 class="onlineScreensVal">0</h4><span>نشطة (Online)</span></div>
+                <div class="stat-card-glass" style="--primary: #10b981; --primary-glow: rgba(16, 185, 129, 0.4);">
+                    <div class="stat-icon-wrapper"><i class="fa-solid fa-wifi"></i></div>
+                    <div class="stat-content"><h4 class="onlineScreensVal">0</h4><span>نشطة الآن</span></div>
                 </div>
-                <div class="stat-card-glass">
-                    <div class="stat-icon-wrapper" style="background: #fef2f2; color: #ef4444;"><i class="fa-solid fa-plug-circle-xmark"></i></div>
-                    <div class="stat-content"><h4 class="offlineScreensVal">0</h4><span>غير متصلة (Offline)</span></div>
+                <div class="stat-card-glass" style="--primary: #ef4444; --primary-glow: rgba(239, 68, 68, 0.4);">
+                    <div class="stat-icon-wrapper"><i class="fa-solid fa-plug-circle-xmark"></i></div>
+                    <div class="stat-content"><h4 class="offlineScreensVal">0</h4><span>غير متصلة</span></div>
                 </div>
             </div>
         `;
@@ -269,8 +269,8 @@ window.DashboardModule = {
             if (isOnline) onlineCount++; else offlineCount++;
 
             const statusBadge = isOnline
-                ? `<span class="badge-glass" style="background:#e8fdf5; color:#10b981; border:1px solid #d1fae5;"><span class="status-glow online"></span> متصلة</span>`
-                : `<span class="badge-glass" style="background:#fef2f2; color:#ef4444; border:1px solid #fee2e2;"><span class="status-glow offline"></span> منقطعة</span>`;
+                ? `<span class="badge-neon online" style="font-size: 10px; padding: 4px 8px;">متصلة</span>`
+                : `<span class="badge-neon offline" style="font-size: 10px; padding: 4px 8px;">منقطعة</span>`;
 
             if (tbodyDashboard) {
                 tbodyDashboard.innerHTML += `

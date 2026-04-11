@@ -29,14 +29,14 @@ window.ScreensModule = {
     },
 
     renderDetailedTable(screens, myUserId, myRole) {
-        const tbodyDetailed = document.getElementById('detailedScreensList');
-        if (!tbodyDetailed) return;
+        const container = document.getElementById('detailedScreensList');
+        if (!container) return;
 
-        tbodyDetailed.innerHTML = '';
+        container.innerHTML = '';
         const now = new Date();
         let onlineCount = 0, offlineCount = 0;
 
-        screens.forEach(s => {
+        screens.forEach((s, index) => {
             const displayName = s.screen_name || `شاشة (${s.device_id})`;
             const isLinked = s.status === 'linked';
             const lastPing = new Date(s.last_ping);
@@ -45,13 +45,13 @@ window.ScreensModule = {
             if (isOnline) onlineCount++; else offlineCount++;
 
             const statusBadge = isOnline
-                ? `<span class="badge-glass" style="background:#e8fdf5; color:#10b981; border:1px solid #d1fae5;"><span class="status-glow online"></span> متصلة</span>`
-                : `<span class="badge-glass" style="background:#fef2f2; color:#ef4444; border:1px solid #fee2e2;"><span class="status-glow offline"></span> منقطعة</span>`;
+                ? `<span class="badge-neon online"><span class="status-glow online"></span> متصلة الآن</span>`
+                : `<span class="badge-neon offline"><span class="status-glow offline"></span> منقطعة</span>`;
 
             const isPlaying = s.play_status && s.play_status.includes('playing');
             const playBadge = isPlaying
-                ? `<span class="badge-glass" style="background:#eff6ff; color:#3b82f6; border:1px solid #dbeafe;"><i class="fa-solid fa-play me-1"></i> يبث الآن</span>`
-                : `<span class="badge-glass" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0;"><i class="fa-solid fa-stop me-1"></i> متوقف</span>`;
+                ? `<span class="badge-neon" style="color: #60a5fa; background: rgba(96, 165, 250, 0.1);"><i class="fa-solid fa-play"></i> يبث الآن</span>`
+                : `<span class="badge-neon" style="color: #94a3b8; background: rgba(148, 163, 184, 0.1);"><i class="fa-solid fa-stop"></i> متوقف</span>`;
 
             const ownerName = s.profiles?.full_name || 'غير معروف';
             const isOwner = (s.created_by === myUserId) || (myRole === 'admin');
@@ -59,46 +59,57 @@ window.ScreensModule = {
             let actions = '';
             if (isOwner) {
                 actions = `
-                    <button class="action-circle-btn text-info shadow-sm" onclick="ScreensModule.identify('${s.device_id}')" title="تعريف الشاشة">
-                        <i class="fa-solid fa-id-badge"></i>
-                    </button>
-                    <button class="action-circle-btn text-danger shadow-sm" onclick="ScreensModule.updateStatus('${s.device_id}', '${isLinked ? 'pending' : 'linked'}')" title="تبديل الحالة">
-                        <i class="fa-solid fa-power-off"></i>
-                    </button>
-                    <button class="action-circle-btn text-warning shadow-sm" onclick="ScreensModule.rename('${s.device_id}', '${s.screen_name || ''}')" title="تعديل الاسم">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button class="action-circle-btn text-danger shadow-sm" onclick="ScreensModule.delete('${s.device_id}')" title="حذف">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                    <div class="action-hub">
+                        <button class="neon-btn identify" onclick="ScreensModule.identify('${s.device_id}')" title="تعريف الشاشة">
+                            <i class="fa-solid fa-id-badge"></i>
+                        </button>
+                        <button class="neon-btn" style="color: ${isLinked ? '#818cf8' : '#fbbf24'}" onclick="ScreensModule.updateStatus('${s.device_id}', '${isLinked ? 'pending' : 'linked'}')" title="تبديل الحالة">
+                            <i class="fa-solid fa-power-off"></i>
+                        </button>
+                        <button class="neon-btn edit" onclick="ScreensModule.rename('${s.device_id}', '${s.screen_name || ''}')" title="تعديل الاسم">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="neon-btn delete" onclick="ScreensModule.delete('${s.device_id}')" title="حذف">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
                 `;
             } else {
-                actions = `<span class="badge-glass bg-light"><i class="fa-solid fa-lock me-1"></i> محمية</span>`;
+                actions = `<span class="badge-neon" style="background: rgba(255,255,255,0.05); color: #fff;"><i class="fa-solid fa-lock me-2"></i> شاشة محمية</span>`;
             }
 
-            tbodyDetailed.innerHTML += `
-                <tr class="detailed-table-row">
-                    <td class="ps-3">
-                        <div class="fw-bold text-dark" style="font-size: 15px;">${displayName}</div>
-                        <span class="screen-id-badge">${s.device_id}</span>
-                        <div class="owner-pill mt-2"><i class="fa-solid fa-user-tie"></i> المالك: ${ownerName}</div>
-                    </td>
-                    <td>
-                        <code class="small text-muted">${s.ip_address || '---.---.---.---'}</code><br>
-                        ${statusBadge}
-                    </td>
-                    <td>
-                        <div class="d-flex flex-column gap-1">
-                            ${isLinked ? `<span class="badge-glass bg-light text-success fw-bold" style="font-size:10px;">مصرحة بالبث ✓</span>` : `<span class="badge-glass bg-light text-warning fw-bold" style="font-size:10px;">بانتظار الموافقة ⏳</span>`}
-                            ${isLinked ? playBadge : ''}
+            container.innerHTML += `
+                <div class="screen-card-row" style="animation-delay: ${index * 0.1}s">
+                    <div class="screen-main-info">
+                        <div class="screen-avatar">${displayName.charAt(0).toUpperCase()}</div>
+                        <div class="screen-text-meta">
+                            <h5>${displayName}</h5>
+                            <span class="screen-id-badge">${s.device_id}</span>
+                            <div class="owner-pill"><i class="fa-solid fa-shield-user"></i> المالك: ${ownerName}</div>
                         </div>
-                    </td>
-                    <td dir="ltr" class="text-end pe-4">
-                        <div class="small fw-bold">${lastPing.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit' })}</div>
-                        <div class="small text-muted" style="font-size: 10px;">${lastPing.toLocaleDateString('ar-YE')}</div>
-                    </td>
-                    <td><div class="d-flex gap-2 justify-content-center">${actions}</div></td>
-                </tr>
+                    </div>
+                    
+                    <div class="screen-network-info">
+                        <div style="font-family: monospace; color: #fff; margin-bottom: 8px;">${s.ip_address || '---.---.---.---'}</div>
+                        ${statusBadge}
+                    </div>
+
+                    <div class="screen-status-info">
+                        <div class="d-flex flex-column gap-2">
+                             ${isLinked ? `<span class="badge-neon" style="color: #10b981;"><i class="fa-solid fa-check-double"></i> مصرحة بالبث</span>` : `<span class="badge-neon" style="color: #f59e0b;"><i class="fa-solid fa-hourglass-half"></i> بانتظار الموافقة</span>`}
+                             ${isLinked ? playBadge : ''}
+                        </div>
+                    </div>
+
+                    <div class="screen-time-info" dir="ltr">
+                        <div style="font-weight: 900; color: #fff; font-size: 16px;">${lastPing.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit' })}</div>
+                        <div style="color: rgba(255,255,255,0.4); font-size: 12px;">${lastPing.toLocaleDateString('ar-YE')}</div>
+                    </div>
+
+                    <div class="screen-actions">
+                        ${actions}
+                    </div>
+                </div>
             `;
         });
 

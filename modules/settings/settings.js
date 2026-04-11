@@ -107,20 +107,26 @@ window.SettingsModule = {
             users.forEach(u => {
                 const isMe = u.id === currentUser?.id;
                 const statusBadge = u.is_active !== false 
-                    ? '<span class="text-success">نشط</span>' 
-                    : '<span class="text-danger">موقوف</span>';
+                    ? '<span class="badge-neon online" style="font-size: 10px; padding: 4px 10px;">نشط</span>' 
+                    : '<span class="badge-neon offline" style="font-size: 10px; padding: 4px 10px;">موقوف</span>';
+                
+                const roleBadge = u.role === 'admin' 
+                    ? '<span class="badge-role badge-admin">مدير النظام</span>' 
+                    : '<span class="badge-role badge-editor">محرر محتوى</span>';
 
                 tbody.innerHTML += `
-                    <tr>
-                        <td>${u.full_name || 'موظف'}</td>
-                        <td>${u.email}</td>
-                        <td>${u.role === 'admin' ? 'مدير' : 'محرر'}</td>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td class="py-4" style="font-weight: 800; color: #fff;">${u.full_name || 'موظف غير مسمى'}</td>
+                        <td style="color: rgba(255,255,255,0.6); font-family: monospace;">${u.email}</td>
+                        <td>${roleBadge}</td>
                         <td>${statusBadge}</td>
                         <td>
-                            ${isMe ? '-' : `
-                                <button onclick="SettingsModule.toggleRole('${u.id}', '${u.role}')" class="btn btn-sm btn-light">ترقية/تزيل</button>
-                                <button onclick="SettingsModule.toggleStatus('${u.id}', ${u.is_active !== false})" class="btn btn-sm btn-light">تفعيل/تعطيل</button>
-                            `}
+                            <div class="d-flex gap-2 justify-content-center">
+                                ${isMe ? '<span class="text-muted small">أنت حالياً</span>' : `
+                                    <button onclick="SettingsModule.toggleRole('${u.id}', '${u.role}')" class="neon-btn" style="width: auto; padding: 0 15px; font-size: 11px;">رتبة</button>
+                                    <button onclick="SettingsModule.toggleStatus('${u.id}', ${u.is_active !== false})" class="neon-btn" style="width: auto; padding: 0 15px; font-size: 11px;">حالة</button>
+                                `}
+                            </div>
                         </td>
                     </tr>`;
             });
@@ -152,11 +158,15 @@ window.SettingsModule = {
 
         data.forEach(s => {
             tbody.innerHTML += `
-                <tr>
-                    <td>${s.user_email}</td>
-                    <td>${s.browser} / ${s.os}</td>
-                    <td>${new Date(s.created_at).toLocaleTimeString('ar-YE')}</td>
-                    <td><button onclick="SettingsModule.terminateSession('${s.id}')" class="btn btn-sm btn-link text-danger">طرد</button></td>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td class="py-3" style="font-weight: 600;">${s.user_email}</td>
+                    <td class="text-muted" style="font-size: 11px;">${s.browser} / ${s.os}</td>
+                    <td style="color: var(--primary); font-family: monospace;">${new Date(s.created_at).toLocaleTimeString('ar-YE')}</td>
+                    <td>
+                         <button onclick="SettingsModule.terminateSession('${s.id}')" class="neon-btn delete" style="width: 32px; height: 32px; font-size: 11px;">
+                            <i class="fa-solid fa-user-slash"></i>
+                         </button>
+                    </td>
                 </tr>`;
         });
     },

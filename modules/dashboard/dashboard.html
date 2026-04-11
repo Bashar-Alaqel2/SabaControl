@@ -1,106 +1,118 @@
 <div class="load-stats-here"></div>
 
-<div class="dashboard-wrapper" style="display: flex; flex-direction: column; gap: 20px;">
+<div class="dashboard-wrapper" style="display: flex; flex-direction: column; gap: 30px;">
     
-    <div class="dashboard-top-row" style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 20px; align-items: start;">
+    <div class="dashboard-top-row" style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 30px; align-items: start;">
         
+        <!-- مركز المراقبة الزجاجي -->
         <div class="center-panel">
-            <div class="card shadow-sm h-100">
-                <div class="card-header flex-between bg-white py-3">
-                    <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
-                        <i class="fa-solid fa-network-wired text-primary me-2"></i> نظرة عامة على الشاشات
-                    </h3>
-                    <button class="btn btn-primary btn-sm" onclick="loadModule('screens')">إدارة الكل</button>
+            <div class="premium-glass-card h-100">
+                <div class="flex-between mb-4">
+                    <div>
+                        <h3 class="mb-1" style="font-size: 1.4rem; font-weight: 800; color: #fff;">
+                            <i class="fa-solid fa-desktop text-primary me-2"></i> مركز مراقبة الأسطول
+                        </h3>
+                        <p class="text-muted small">نظرة عامة سريعة على حالة الشاشات المتصلة حالياً</p>
+                    </div>
+                    <button class="neon-btn" style="width: auto; padding: 0 20px;" onclick="loadModule('screens')">إدارة شاملة</button>
                 </div>
+                
                 <div class="table-responsive">
-                    <table class="clean-table mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th>ID الجهاز</th>
-                                <th>حالة الاتصال</th>
-                                <th>التصريح</th>
-                                <th>حالة العرض</th>
+                    <table class="premium-table w-100">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.02);">
+                                <th class="ps-3">الشاشة</th>
+                                <th class="text-center">حالة الاتصال</th>
+                                <th class="text-center">الترخيص</th>
                             </tr>
                         </thead>
                         <tbody id="screensList">
-                            </tbody>
+                            <!-- جاري التحميل... -->
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
+        <!-- مركز تحكم بث الأخبار -->
         <div class="side-panel">
-            <div class="card shadow-sm h-100" id="adminDashboardTicker" style="display: none; border-top: 3px solid var(--warning);">
-                <div class="card-header flex-between bg-white py-3">
-                    <h3 class="mb-0" style="font-size: 1.1rem; font-weight: 600;">
-                        <i class="fa-solid fa-bullhorn text-warning me-2"></i> التحكم بالشريط
+            <div class="premium-glass-card h-100" id="adminDashboardTicker" style="display: none; border-top: 4px solid #f59e0b;">
+                <div class="flex-between mb-4">
+                    <h3 class="mb-0" style="font-size: 1.3rem; font-weight: 800; color: #fff;">
+                        <i class="fa-solid fa-bolt-lightning text-warning me-2"></i> بث الأخبار العاجلة
                     </h3>
-                    <label class="toggle-switch" title="إظهار/إخفاء الشريط">
+                    <label class="toggle-switch">
                         <input type="checkbox" id="tickerToggle">
                         <span class="slider"></span>
                     </label>
                 </div>
                 
-                <div class="card-body">
-                    <div class="form-group mb-3">
-                        <label class="small fw-bold text-muted mb-1">🎯 استهداف الشاشة:</label>
-                        <select id="tickerTargetScreen" onchange="DashboardModule.loadSpecificScreenTicker()" class="form-select form-select-sm shadow-none">
-                            <option value="all">بث لجميع الشاشات (موحد)</option>
+                <div class="card-body p-0">
+                    <div class="form-group mb-4">
+                        <label class="small fw-bold text-muted mb-2">🎯 استهداف البث:</label>
+                        <select id="tickerTargetScreen" onchange="DashboardModule.loadSpecificScreenTicker()" class="premium-input w-100" style="background: rgba(0,0,0,0.3);">
+                            <option value="all">البث للجميع (Global Sync)</option>
                         </select>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <textarea id="newsInput" rows="3" class="form-control shadow-none" placeholder="اكتب الخبر العاجل هنا..." style="font-size: 14px; resize: none;"></textarea>
+                    <div class="form-group mb-4">
+                        <textarea id="newsInput" rows="3" class="premium-input w-100" placeholder="اكتب رسالة البث هنا..." style="font-size: 15px; resize: none; background: rgba(0,0,0,0.3);"></textarea>
                     </div>
 
-                    <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
                         <div class="form-group text-center">
-                            <label class="small d-block mb-1 fw-bold">الخلفية</label>
-                            <input type="color" id="tickerBgColor" value="#000000" class="w-100 border-0 p-0" style="height: 35px; cursor: pointer;">
+                            <label class="small d-block mb-2 fw-bold text-muted">الخلفية</label>
+                            <input type="color" id="tickerBgColor" value="#000000" class="w-100 border-0" style="height: 40px; cursor: pointer; border-radius: 10px; background: transparent;">
                         </div>
                         <div class="form-group text-center">
-                            <label class="small d-block mb-1 fw-bold">الخط</label>
-                            <input type="color" id="tickerTextColor" value="#ffffff" class="w-100 border-0 p-0" style="height: 35px; cursor: pointer;">
+                            <label class="small d-block mb-2 fw-bold text-muted">لون الخط</label>
+                            <input type="color" id="tickerTextColor" value="#ffffff" class="w-100 border-0" style="height: 40px; cursor: pointer; border-radius: 10px; background: transparent;">
                         </div>
                         <div class="form-group" style="grid-column: span 2;">
-                            <label class="small fw-bold">سرعة الحركة (بيكسل/ثانية)</label>
-                            <input type="number" id="tickerSpeed" value="50" min="10" max="200" class="form-control form-control-sm">
+                            <label class="small fw-bold text-muted mb-2">سرعة الحركة</label>
+                            <input type="range" id="tickerSpeed" value="50" min="10" max="200" class="form-range" style="accent-color: var(--primary);">
                         </div>
                     </div>
 
-                    <button class="btn btn-warning w-100 fw-bold" onclick="DashboardModule.updateAdvancedTickerDashboard()">
-                        <i class="fa-solid fa-satellite-dish me-2"></i> تحديث وبث الأخبار
+                    <button class="neon-btn w-100 py-3" style="background: var(--primary); font-weight: 800; font-size: 16px;" onclick="DashboardModule.updateAdvancedTickerDashboard()">
+                        <i class="fa-solid fa-satellite-dish me-2"></i> إرسال البث الفوري
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- سجل الأمان والمساءلة -->
     <div class="dashboard-bottom-row">
-        <div class="card shadow-sm border-0" id="tickerHistoryCard" style="display:none; border-radius: 12px; overflow: hidden;">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #7cabdb;">
-                <h5 class="mb-0" style="font-weight: 700; color: #2c3e50;">
-                    <i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> سجل عمليات البث الأخيرة (نظام المساءلة)
+        <div class="premium-glass-card" id="tickerHistoryCard" style="display:none;">
+            <div class="flex-between mb-4">
+                <h5 class="mb-0" style="font-weight: 800; font-size: 1.4rem; color: #fff;">
+                    <i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> سجل عمليات البث (نظام المساءلة)
                 </h5>
-                <button class="btn btn-sm btn-light border shadow-sm" onclick="DashboardModule.fetchTickerHistory()">
-                    <i class="fa-solid fa-rotate me-1"></i> تحديث البيانات
+                <button class="neon-btn" style="width: auto; padding: 0 20px;" onclick="DashboardModule.fetchTickerHistory()">
+                    <i class="fa-solid fa-rotate"></i> تحديث السجلات
                 </button>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th style="width: 45%; padding: 15px;">نص الخبر المرسل</th>
-                                <th>بواسطة</th>
-                                <th>التوقيت</th>
-                                <th>الشاشة المستهدفة</th>
-                                <th class="text-center">إدارة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tickerHistoryBody">
-                            <tr><td colspan="5" class="text-center p-4">جاري مزامنة السجل من قاعدة البيانات...</td></tr>
-                        </tbody>
+            <div class="table-responsive">
+                <table class="premium-table w-100">
+                    <thead>
+                        <tr>
+                            <th style="padding: 15px 25px;">الرسالة</th>
+                            <th>بواسطة</th>
+                            <th>التوقيت</th>
+                            <th>الشاشة</th>
+                            <th class="text-center">إدارة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tickerHistoryBody">
+                        <!-- جاري التحميل... -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>ody>
                     </table>
                 </div>
             </div>
