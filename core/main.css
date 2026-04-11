@@ -1,29 +1,26 @@
-/* 
-   إعدادات عامة ومتغيرات الألوان (تم تنظيف التكرار)
-   */
 :root {
-    /* الألوان الأساسية والهوية */
+    /* الألوان الأساسية والهوية (Corporate Professional) */
     --primary: #940f31;
     --primary-hover: #b81b40;
-    --bg-color: #f4f7fb;
+    --bg-color: #f8fafc; /* خلفية ناعمة مريحة للعين */
     --card-bg: #ffffff;
-    --text-color: #4a5568;
-    --text-dark: #2d3748;
+    --text-color: #64748b;
+    --text-dark: #1e293b;
     
-    /* ألوان القائمة الجانبية */
-    --sidebar-bg-color: #5c041c;
-    --sidebar-bg: linear-gradient(180deg, var(--sidebar-bg-color) 0%, #8a0c2a 100%);
-    --sidebar-hover: rgba(255, 255, 255, 0.1);
-    --sidebar-text: #e2e8f0;
+    /* ألوان القائمة الجانبية (Navy Professional) */
+    --sidebar-bg-color: #0f172a; /* كحلي داكن رسمي */
+    --sidebar-bg: var(--sidebar-bg-color);
+    --sidebar-hover: rgba(255, 255, 255, 0.05);
+    --sidebar-text: #94a3b8;
     
     /* ألوان الحالات */
-    --danger: #e53e3e;
-    --success: #38a169;
-    --warning: #d69e2e;
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
     --border: #e2e8f0;
     
     /* مقاسات افتراضية */
-    --sidebar-width: 250px;
+    --sidebar-width: 260px;
 }
 
 body {

@@ -62,6 +62,9 @@ window.DashboardModule = {
 
             if (error) throw error;
             console.log("✅ تم تحديث حالة الشريط");
+            
+            // 🚀 إرسال أمر بث فوري للشاشات
+            window.broadcastCommand('SYNC_TICKER', targetId);
         } catch (err) {
             console.error("خطأ في التحديث:", err.message);
             e.target.checked = !isVisible;
@@ -137,6 +140,10 @@ window.DashboardModule = {
 
             if (error) throw error;
             alert(`تم بث الخبر بنجاح! 📡`);
+
+            // 🚀 إرسال أمر بث فوري للشاشات
+            window.broadcastCommand('SYNC_TICKER', targetId);
+
             newsInput.value = '';
         } catch (err) {
             alert('حدث خطأ: ' + err.message);
@@ -189,8 +196,16 @@ window.DashboardModule = {
     async deleteTickerRecord(id) {
         if (!confirm("هل أنت متأكد من حذف هذا الخبر؟")) return;
         try {
+            // جلب المعرف قبل الحذف
+            const { data: log } = await window.sb.from('tickers').select('target_screen_id').eq('id', id).single();
+            
             const { error } = await window.sb.from('tickers').delete().eq('id', id);
             if (error) throw error;
+            
+            if (log) {
+                window.broadcastCommand('SYNC_TICKER', log.target_screen_id);
+            }
+            
             document.getElementById(`row-${id}`)?.remove();
         } catch (err) { alert("فشل الحذف: " + err.message); }
     },
@@ -206,9 +221,13 @@ window.DashboardModule = {
             const { error } = await window.sb.from('tickers').update({
                 message: newMessage,
                 created_at: new Date().toISOString()
-            }).eq('id', id);
+            }).eq('id', id).select('target_screen_id').single();
 
             if (error) throw error;
+
+            // 🚀 إرسال أمر بث فوري للشاشات
+            window.broadcastCommand('SYNC_TICKER', 'all'); // التعديل في السجل نعتبره تحديث عام أو نحدد المعرف
+
             if (textElement) textElement.innerText = newMessage;
             alert("تم التعديل بنجاح! ✅");
         } catch (err) { alert("خطأ في التعديل: " + err.message); }
@@ -218,15 +237,15 @@ window.DashboardModule = {
         const statsHTML = `
             <div class="stats-grid">
                 <div class="stat-card-glass">
-                    <div class="stat-icon-wrapper" style="background: rgba(25, 118, 210, 0.1); color: #1976d2;"><i class="fa-solid fa-tv"></i></div>
+                    <div class="stat-icon-wrapper" style="background: #f1f5f9; color: #64748b;"><i class="fa-solid fa-tv"></i></div>
                     <div class="stat-content"><h4 class="totalScreensVal">0</h4><span>إجمالي الشاشات</span></div>
                 </div>
                 <div class="stat-card-glass">
-                    <div class="stat-icon-wrapper" style="background: rgba(46, 204, 113, 0.1); color: #2ecc71;"><i class="fa-solid fa-wifi"></i></div>
+                    <div class="stat-icon-wrapper" style="background: #e8fdf5; color: #10b981;"><i class="fa-solid fa-wifi"></i></div>
                     <div class="stat-content"><h4 class="onlineScreensVal">0</h4><span>نشطة (Online)</span></div>
                 </div>
                 <div class="stat-card-glass">
-                    <div class="stat-icon-wrapper" style="background: rgba(231, 76, 60, 0.1); color: #e74c3c;"><i class="fa-solid fa-plug-circle-xmark"></i></div>
+                    <div class="stat-icon-wrapper" style="background: #fef2f2; color: #ef4444;"><i class="fa-solid fa-plug-circle-xmark"></i></div>
                     <div class="stat-content"><h4 class="offlineScreensVal">0</h4><span>غير متصلة (Offline)</span></div>
                 </div>
             </div>
@@ -250,8 +269,8 @@ window.DashboardModule = {
             if (isOnline) onlineCount++; else offlineCount++;
 
             const statusBadge = isOnline
-                ? `<span class="badge-glass" style="background:rgba(46,204,113,0.1); color:#2ecc71;"><span class="status-glow online"></span> متصلة</span>`
-                : `<span class="badge-glass" style="background:rgba(231,76,60,0.1); color:#e74c3c;"><span class="status-glow offline"></span> منقطعة</span>`;
+                ? `<span class="badge-glass" style="background:#e8fdf5; color:#10b981; border:1px solid #d1fae5;"><span class="status-glow online"></span> متصلة</span>`
+                : `<span class="badge-glass" style="background:#fef2f2; color:#ef4444; border:1px solid #fee2e2;"><span class="status-glow offline"></span> منقطعة</span>`;
 
             if (tbodyDashboard) {
                 tbodyDashboard.innerHTML += `

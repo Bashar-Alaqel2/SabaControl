@@ -6,18 +6,29 @@ window.SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 // إنشاء العميل وجعله متاحاً للجميع (Global)
 window.sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
 
-// تشغيل النظام اللحظي (Real-time) الموحد
-window.sb.channel('global-sync')
+// 9. تشغيل النظام اللحظي (Real-time) الموحد
+const globalSyncChannel = window.sb.channel('global-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'screens' }, () => {
-        // تحديث كل من يهتم بالشاشات
         if (window.ScreensModule) window.ScreensModule.fetchAndRender();
         if (window.DashboardModule) window.DashboardModule.fetchAndRenderAll();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'tickers' }, () => {
-        // تحديث كل من يهتم بـ Tickers
         if (window.DashboardModule) window.DashboardModule.fetchTickerHistory();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'playlist' }, () => {
         if (window.ContentModule) window.ContentModule.fetchPlaylist();
     })
     .subscribe();
+
+// ✨ نظام البث الفائق (Supreme Broadcast System) ✨
+// هذا النظام يرسل الأوامر للشاشات في أقل من 100 ملي ثانية
+window.commandChannel = window.sb.channel('signage-commands').subscribe();
+
+window.broadcastCommand = (command, target = 'all', metadata = {}) => {
+    console.log(`🚀 Sending Command: ${command} to ${target}`);
+    window.commandChannel.send({
+        type: 'broadcast',
+        event: 'cmd',
+        payload: { command, target, metadata, timestamp: Date.now() }
+    });
+};

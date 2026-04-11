@@ -6,24 +6,24 @@ window.ScreensModule = {
     init() {
         // إذا كان هناك حاجة لشحن الإحصائيات، نتأكد أنها متاحة
         if (window.DashboardModule && typeof window.DashboardModule.loadStatsLayout === 'function') {
-             window.DashboardModule.loadStatsLayout();
+            window.DashboardModule.loadStatsLayout();
         }
-        
+
         this.fetchAndRender();
         this.initRealtime();
-        
+
         // تحديث دوري كل دقيقة
         setInterval(() => this.fetchAndRender(), 60000);
     },
 
     async fetchAndRender() {
         const screens = await window.api.fetchScreens();
-        
+
         const myUserId = (await window.sb.auth.getUser()).data?.user?.id;
         const myRole = window.currentUserRole || 'editor';
 
         this.renderDetailedTable(screens, myUserId, myRole);
-        
+
         // تحديث الاختيارات في إدارة المحتوى إذا كان المديول محّملاً
         if (typeof updateTargetSelect === 'function') updateTargetSelect(screens);
     },
@@ -44,14 +44,14 @@ window.ScreensModule = {
 
             if (isOnline) onlineCount++; else offlineCount++;
 
-            const statusBadge = isOnline 
-                ? `<span class="badge-glass" style="background:rgba(46,204,113,0.1); color:#2ecc71;"><span class="status-glow online"></span> متصلة</span>` 
-                : `<span class="badge-glass" style="background:rgba(231,76,60,0.1); color:#e74c3c;"><span class="status-glow offline"></span> منقطعة</span>`;
+            const statusBadge = isOnline
+                ? `<span class="badge-glass" style="background:#e8fdf5; color:#10b981; border:1px solid #d1fae5;"><span class="status-glow online"></span> متصلة</span>`
+                : `<span class="badge-glass" style="background:#fef2f2; color:#ef4444; border:1px solid #fee2e2;"><span class="status-glow offline"></span> منقطعة</span>`;
 
             const isPlaying = s.play_status && s.play_status.includes('playing');
             const playBadge = isPlaying
-                ? `<span class="badge-glass" style="background:rgba(33,150,243,0.1); color:#2196F3;"><i class="fa-solid fa-play me-1"></i> يبث الآن</span>`
-                : `<span class="badge-glass" style="background:rgba(244,67,54,0.1); color:#f44336;"><i class="fa-solid fa-stop me-1"></i> متوقف</span>`;
+                ? `<span class="badge-glass" style="background:#eff6ff; color:#3b82f6; border:1px solid #dbeafe;"><i class="fa-solid fa-play me-1"></i> يبث الآن</span>`
+                : `<span class="badge-glass" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0;"><i class="fa-solid fa-stop me-1"></i> متوقف</span>`;
 
             const ownerName = s.profiles?.full_name || 'غير معروف';
             const isOwner = (s.created_by === myUserId) || (myRole === 'admin');
@@ -59,6 +59,9 @@ window.ScreensModule = {
             let actions = '';
             if (isOwner) {
                 actions = `
+                    <button class="action-circle-btn text-info shadow-sm" onclick="ScreensModule.identify('${s.device_id}')" title="تعريف الشاشة">
+                        <i class="fa-solid fa-id-badge"></i>
+                    </button>
                     <button class="action-circle-btn text-danger shadow-sm" onclick="ScreensModule.updateStatus('${s.device_id}', '${isLinked ? 'pending' : 'linked'}')" title="تبديل الحالة">
                         <i class="fa-solid fa-power-off"></i>
                     </button>
@@ -91,7 +94,7 @@ window.ScreensModule = {
                         </div>
                     </td>
                     <td dir="ltr" class="text-end pe-4">
-                        <div class="small fw-bold">${lastPing.toLocaleTimeString('ar-YE', {hour:'2-digit', minute:'2-digit'})}</div>
+                        <div class="small fw-bold">${lastPing.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit' })}</div>
                         <div class="small text-muted" style="font-size: 10px;">${lastPing.toLocaleDateString('ar-YE')}</div>
                     </td>
                     <td><div class="d-flex gap-2 justify-content-center">${actions}</div></td>
@@ -110,7 +113,7 @@ window.ScreensModule = {
             const { error } = await window.sb.from('screens').update({ status }).eq('device_id', id);
             if (error) throw error;
             this.fetchAndRender();
-        } catch(err) { alert("فشل في تحديث الحالة."); }
+        } catch (err) { alert("فشل في تحديث الحالة."); }
     },
 
     async delete(id) {
@@ -119,7 +122,7 @@ window.ScreensModule = {
             const { error } = await window.sb.from('screens').delete().eq('device_id', id);
             if (error) throw error;
             this.fetchAndRender();
-        } catch(err) { alert("فشل في حذف الشاشة."); }
+        } catch (err) { alert("فشل في حذف الشاشة."); }
     },
 
     async rename(deviceId, currentName) {
@@ -130,6 +133,13 @@ window.ScreensModule = {
             if (error) throw error;
             this.fetchAndRender();
         } catch (err) { alert('فشل تغيير الاسم.'); }
+    },
+
+    async identify(deviceId) {
+        try {
+            window.broadcastCommand('SHOW_ID', deviceId);
+            console.log(`📡 Identify command sent to: ${deviceId}`);
+        } catch (err) { console.error(err); }
     },
 
     openModal() {

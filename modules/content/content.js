@@ -48,22 +48,22 @@ window.ContentModule = {
         if (statusLabel) statusLabel.innerText = 'جاري فحص توفر الشاشات... 🔍';
 
         try {
-            // 🛑 1. فحص التعارض قبل الرفع
+            // 🛑 1. فحص التعارض قبل الرفع (Smart Conflict Check)
             const { data: conflicts } = await window.sb
                 .from('playlist')
                 .select('target_screen_id')
                 .lt('starts_at', new Date(expiresInput).toISOString())
                 .gt('expires_at', new Date(startsInput).toISOString());
 
-            const busyIds = conflicts?.map(c => c.target_screen_id) || [];
+            const busyIds = new Set(conflicts?.map(c => c.target_screen_id) || []);
 
-            if (target !== 'all' && busyIds.includes(target)) {
+            if (target !== 'all' && busyIds.has(target)) {
                 return alert('عذراً، هذه الشاشة محجوزة بالفعل في هذا التوقيت!');
             }
 
             if (target === 'all') {
                 const allScreens = await window.api.fetchScreens();
-                const freeScreens = allScreens.filter(s => !busyIds.includes(s.device_id));
+                const freeScreens = allScreens.filter(s => !busyIds.has(s.device_id));
                 if (freeScreens.length === 0) {
                     return alert('جميع الشاشات محجوزة في هذا التوقيت، لا يمكن النشر!');
                 }
@@ -150,6 +150,9 @@ window.ContentModule = {
             const { error } = await window.sb.from('playlist').insert(rowsToInsert);
             if (error) throw error;
 
+            // 🚀 إرسال أمر بث فوري للشاشات
+            window.broadcastCommand('SYNC_PLAYLIST', target);
+
             if (statusLabel) statusLabel.innerText = `تم النشر بنجاح على ${rowsToInsert.length} شاشة! ✅`;
             this.fetchPlaylist();
         } catch (err) {
@@ -197,7 +200,16 @@ window.ContentModule = {
 
     async delete(id) {
         if (!confirm('هل أنت متأكد من الحذف؟')) return;
+        
+        // جلب المعرف قبل الحذف لإبلاغ الشاشة
+        const { data: item } = await window.sb.from('playlist').select('target_screen_id').eq('id', id).single();
+        
         await window.sb.from('playlist').delete().eq('id', id);
+        
+        if (item) {
+            window.broadcastCommand('SYNC_PLAYLIST', item.target_screen_id);
+        }
+        
         this.fetchPlaylist();
     },
 

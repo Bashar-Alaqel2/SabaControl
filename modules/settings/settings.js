@@ -38,6 +38,9 @@ window.SettingsModule = {
         if (document.getElementById('settingsTickerToggle')) document.getElementById('settingsTickerToggle').checked = isShowing;
         if (document.getElementById('settingsNewsInput')) document.getElementById('settingsNewsInput').value = themeMap['news_ticker'] || '';
 
+        const showId = themeMap['show_device_id'] === 'true';
+        if (document.getElementById('showDeviceIdToggle')) document.getElementById('showDeviceIdToggle').checked = showId;
+
         // الشعار (Fallback)
         if (themeMap['fallback_image']) {
             const preview = document.getElementById('currentFallbackPreview');
@@ -81,6 +84,10 @@ window.SettingsModule = {
         try {
             const { error } = await window.sb.from('settings').upsert(settings);
             if (error) throw error;
+            
+            // 🚀 إرسال أمر بث فوري لتحديث الهوية البصرية
+            window.broadcastCommand('SYNC_SETTINGS', 'all');
+
             alert('تم الحفظ بنجاح! 🎨');
             this.fetchSettings();
         } catch (err) { alert('خطأ في الحفظ'); }
@@ -167,12 +174,22 @@ window.SettingsModule = {
         const speed = document.getElementById('settingsTickerSpeed')?.value || '50';
 
         try {
+            const isTickerOn = document.getElementById('settingsTickerToggle')?.checked ? 'true' : 'false';
+            const isIdOn = document.getElementById('showDeviceIdToggle')?.checked ? 'true' : 'false';
+
             await window.sb.from('settings').upsert([
                 { key: 'news_ticker', value: text },
                 { key: 'ticker_bg', value: bgColor },
                 { key: 'ticker_color', value: txtColor },
-                { key: 'ticker_speed', value: speed }
+                { key: 'ticker_speed', value: speed },
+                { key: 'show_ticker', value: isTickerOn },
+                { key: 'show_device_id', value: isIdOn }
             ]);
+
+            // 🚀 إرسال أمر بث فوري لتحديث شريط الأخبار والإعدادات
+            window.broadcastCommand('SYNC_TICKER', 'all');
+            window.broadcastCommand('SYNC_SETTINGS', 'all');
+
             alert('تم البث بنجاح 📡');
         } catch (err) { alert('خطأ في البث'); }
     },
@@ -189,6 +206,10 @@ window.SettingsModule = {
 
             const { data: { publicUrl } } = window.sb.storage.from('media').getPublicUrl(fileName);
             await window.sb.from('settings').upsert({ key: 'fallback_image', value: publicUrl });
+            
+            // 🚀 إرسال أمر بث فوري لتحديث الشعار المرجعي
+            window.broadcastCommand('SYNC_SETTINGS', 'all');
+
             alert("تم رفع الشعار بنجاح ✅");
             this.fetchSettings();
         } catch (err) { alert("فشل الرفع"); }
