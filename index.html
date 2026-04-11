@@ -1,89 +1,102 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة تحكم شاشات سبأ | SabaPost</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.1.1/dist/tus.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.1.1/dist/tus.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <link rel="stylesheet" href="core/main.css">
     <link rel="stylesheet" href="/modules/settings/settings.css">
 </head>
+
 <body>
 
-<div class="app-container">
-    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
-    
-    <aside class="sidebar">
-        <div class="brand">
-             <img src="images/sabalog.png" alt="SabaPost Logo"><span>SabaPost</span>
-        </div>
-        <ul class="nav-links">
-            <li class="active" id="tab-dashboard"><a href="#" onclick="loadModule('dashboard')"><img src="images/home.png" alt="SabaPost Logo"> الرئيسية</a></li>
-            <li id="tab-screens"><a href="#" onclick="loadModule('screens')"><img src="images/screen_con.png" alt="SabaPost Logo"> إدارة الشاشات</a></li>
-            <li id="tab-content"><a href="#" onclick="loadModule('content')"><img src="images/movie_info.png" alt="SabaPost Logo"> إدارة المحتوى</a></li>
-            <li id="tab-settings"><a href="#" onclick="loadModule('settings')"><img src="images/settings.png" alt="SabaPost Logo"> الإعدادات</a></li>
-        </ul>
-       <div class="sidebar-footer">
-    <div style="margin-bottom: 12px; font-weight: bold; color: var(--primary);">
-        <i class="fa-solid fa-user-shield"></i> لوحة المشرف
-    </div>
-    <div id="userInfoContent"></div>
-</div>
-        
-    </aside>
+    <div class="app-container">
+        <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <main class="main-content">
-        <header class="top-bar">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <button id="menu-toggle" class="mobile-menu-btn" onclick="toggleSidebar()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <h2 id="pageTitle">لوحة القيادة الرئيسية</h2>
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="images/sabalog.png" alt="SabaPost Logo"><span>SabaPost</span>
             </div>
-            <div class="user-info"><span id="clock" style="font-weight: bold; color: var(--primary);"></span></div>
-        </header>
-
-        <div id="app-content" class="view-section">
-            <div style="text-align:center; margin-top:50px;">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; color: var(--primary);"></i>
-                <p>جاري تحميل النظام...</p>
+            <ul class="nav-links">
+                <li class="active" id="tab-dashboard"><a href="#" onclick="loadModule('dashboard')"><img
+                            src="images/home.png" alt="SabaPost Logo"> الرئيسية</a></li>
+                <li id="tab-screens"><a href="#" onclick="loadModule('screens')"><img src="images/screen_con.png"
+                            alt="SabaPost Logo"> إدارة الشاشات</a></li>
+                <li id="tab-content"><a href="#" onclick="loadModule('content')"><img src="images/movie_info.png"
+                            alt="SabaPost Logo"> إدارة المحتوى</a></li>
+                <li id="tab-settings"><a href="#" onclick="loadModule('settings')"><img src="images/settings.png"
+                            alt="SabaPost Logo"> الإعدادات</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div style="margin-bottom: 12px; font-weight: bold; color: var(--primary);">
+                    <i class="fa-solid fa-user-shield"></i> لوحة المشرف
+                </div>
+                <div id="userInfoContent"></div>
             </div>
-        </div>
-    </main>
-</div>
 
-<div id="addScreenModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
-    <div style="background: var(--card-bg); padding: 30px; border-radius: 15px; width: 400px; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;">
-        <span onclick="closeAddScreenModal()" style="position: absolute; top: 15px; left: 20px; font-size: 24px; cursor: pointer; color: #888;">&times;</span>
-        <h3 style="margin-top: 0; color: var(--primary);"><i class="fa-solid fa-display"></i> تسجيل شاشة جديدة</h3>
-        <p style="font-size: 12px; color: #666; margin-bottom: 20px;">أدخل المعرف (ID) الظاهر على الشاشة لربطها بالنظام.</p>
-        
-        <div class="form-group">
-            <label>معرف الشاشة (Device ID) *</label>
-            <input type="text" id="newScreenId" placeholder="مثال: 1a2b3c4d5e" style="font-family: monospace; font-size: 16px; letter-spacing: 1px;">
-        </div>
-        <div class="form-group mt-10">
-            <label>اسم الشاشة (للتنظيم) *</label>
-            <input type="text" id="newScreenName" placeholder="مثال: شاشة الاستقبال الرئيسية">
-        </div>
-        
-        <button class="btn btn-primary btn-block mt-20" onclick="submitNewScreen()" style="padding: 12px; font-size: 16px;">
-            <i class="fa-solid fa-link"></i> ربط وتفعيل الشاشة
-        </button>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button id="menu-toggle" class="mobile-menu-btn" onclick="toggleSidebar()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 id="pageTitle">لوحة القيادة الرئيسية</h2>
+                </div>
+                <div class="user-info"><span id="clock" style="font-weight: bold; color: var(--primary);"></span></div>
+            </header>
+
+            <div id="app-content" class="view-section">
+                <div style="text-align:center; margin-top:50px;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; color: var(--primary);"></i>
+                    <p>جاري تحميل النظام...</p>
+                </div>
+            </div>
+        </main>
     </div>
-</div>
 
-<script src="core/db.js"></script>
-<script src="core/app.js"></script>
-<script src="core/auth.js"></script>
+    <div id="addScreenModal" class="modal-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 15px; width: 400px; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;">
+            <span onclick="closeAddScreenModal()"
+                style="position: absolute; top: 15px; left: 20px; font-size: 24px; cursor: pointer; color: #888;">&times;</span>
+            <h3 style="margin-top: 0; color: var(--primary);"><i class="fa-solid fa-display"></i> تسجيل شاشة جديدة</h3>
+            <p style="font-size: 12px; color: #666; margin-bottom: 20px;">أدخل المعرف (ID) الظاهر على الشاشة لربطها
+                بالنظام.</p>
 
-<script>
-    // تشغيل الساعة
-    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('ar-EG'); }, 1000);
-</script>
+            <div class="form-group">
+                <label>معرف الشاشة (Device ID) *</label>
+                <input type="text" id="newScreenId" placeholder="مثال: 1a2b3c4d5e"
+                    style="font-family: monospace; font-size: 16px; letter-spacing: 1px;">
+            </div>
+            <div class="form-group mt-10">
+                <label>اسم الشاشة (للتنظيم) *</label>
+                <input type="text" id="newScreenName" placeholder="مثال: شاشة الاستقبال الرئيسية">
+            </div>
+
+            <button class="btn btn-primary btn-block mt-20" onclick="submitNewScreen()"
+                style="padding: 12px; font-size: 16px;">
+                <i class="fa-solid fa-link"></i> ربط وتفعيل الشاشة
+            </button>
+        </div>
+    </div>
+
+    <script src="core/db.js"></script>
+    <script src="core/app.js"></script>
+    <script src="core/auth.js"></script>
+
+    <script>
+        // تشغيل الساعة
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('ar-EG'); }, 1000);
+    </script>
 
 </body>
+
 </html>

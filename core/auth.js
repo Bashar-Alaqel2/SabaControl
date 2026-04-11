@@ -14,14 +14,14 @@ async function checkAuth() {
 }
 
 // 2. دالة التبديل بين واجهة الدخول والتسجيل
-window.toggleAuthMode = function() {
+window.toggleAuthMode = function () {
     isLoginMode = !isLoginMode;
     const nameGroup = document.getElementById('nameGroup');
     const title = document.getElementById('formTitle');
     const submitBtn = document.getElementById('submitBtn');
     const toggleBtn = document.getElementById('toggleModeBtn');
     const fullNameInput = document.getElementById('fullName');
-    
+
     document.getElementById('errorMsg').style.display = 'none';
     document.getElementById('successMsg').style.display = 'none';
 
@@ -56,7 +56,7 @@ function getBrowserInfo() {
     else if (ua.includes("Firefox")) browser = "Firefox";
     else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
     else if (ua.includes("Edge")) browser = "Edge";
-    
+
     return {
         browser: browser,
         os: navigator.platform,
@@ -67,7 +67,7 @@ function getBrowserInfo() {
 // 4. معالجة إرسال النموذج (تسجيل دخول أو حساب جديد)
 async function handleAuth(e) {
     e.preventDefault();
-    
+
     const fullName = document.getElementById('fullName').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -84,19 +84,18 @@ async function handleAuth(e) {
             // 1. تنظيف عنيف للذاكرة قبل الدخول
             localStorage.clear();
             sessionStorage.clear();
-            await window.sb.auth.signOut(); 
+            await window.sb.auth.signOut();
 
             // 2. تسجيل الدخول
             const { data, error } = await window.sb.auth.signInWithPassword({ email, password });
             if (error) throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
-            
-            // 3. ✨ تحديث بيانات الجلسة فوراً (Fresh Session)
-            await window.sb.auth.refreshSession(); 
+
+            // تم إزالة تحديث الجلسة لأنه يغير التوكن قبل تسجيله، مما يسبب طرد المستخدم فوراً
 
             // 4. جمع البيانات الأمنية
             const info = getBrowserInfo();
             const ip = await getUserIP();
-            
+
             // 5. تسجيل الجلسة في القاعدة
             const { error: sessionError } = await window.sb.from('user_sessions').insert([{
                 user_id: data.user.id,
@@ -118,8 +117,22 @@ async function handleAuth(e) {
                 password: password,
                 options: { data: { full_name: fullName } }
             });
-            
+
             if (error) throw new Error(error.message);
+
+            // تسجيل جلسة الحساب الجديد لتجنب طرده أيضاً
+            if (data.session) {
+                const info = getBrowserInfo();
+                const ip = await getUserIP();
+                await window.sb.from('user_sessions').insert([{
+                    user_id: data.user.id,
+                    user_email: email,
+                    browser: info.browser,
+                    os: info.os,
+                    ip_address: ip,
+                    session_id: data.session.access_token.slice(-20)
+                }]);
+            }
 
             successMsg.style.display = 'block';
             setTimeout(() => { window.location.replace('index.html'); }, 1500);
@@ -144,10 +157,10 @@ async function fetchAllSessions() {
 
         const tableBody = document.getElementById('activeSessionsTable');
         if (!tableBody) return;
-        
+
         tableBody.innerHTML = '';
         sessions.forEach(session => {
-            const isOnline = new Date() - new Date(session.created_at) < 300000; 
+            const isOnline = new Date() - new Date(session.created_at) < 300000;
 
             tableBody.innerHTML += `
                 <tr>
@@ -191,7 +204,7 @@ async function terminateSession(sessionId) {
 }
 
 // 7. تسجيل الخروج
-window.logout = async function() {
+window.logout = async function () {
     console.log("🔄 جاري تسجيل الخروج وتنظيف الجلسة...");
 
     try {

@@ -1,9 +1,222 @@
+/* ==========================================
+   ✨ settings.css - واجهة الإعدادات المتطورة (Glassmorphism)
+   ========================================== */
+
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+/* الكروت الزجاجية */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    padding: 25px;
+    margin-bottom: 25px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0.6;
+}
+
+/* العناوين */
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-dark);
+}
+
+.section-title i {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    color: var(--primary);
+}
+
+/* تحسين الحقول */
+.premium-input {
+    background: rgba(255, 255, 255, 0.5) !important;
+    border: 2px solid transparent !important;
+    border-radius: 14px !important;
+    padding: 12px 18px !important;
+    transition: all 0.3s ease !important;
+    font-weight: 600 !important;
+}
+
+.premium-input:focus {
+    background: white !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(148, 15, 49, 0.1) !important;
+    transform: scale(1.01);
+}
+
+/* التحكم بالألوان */
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+}
+
+.color-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    border: 3px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.color-circle input[type="color"] {
+    width: 150%;
+    height: 150%;
+    margin: -25%;
+    padding: 0;
+    cursor: pointer;
+}
+
+/* أزرار الحفظ */
+.btn-save {
+    background: linear-gradient(135deg, var(--primary) 0%, #c5294a 100%);
+    border: none;
+    border-radius: 16px;
+    padding: 15px 30px;
+    color: white;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-shadow: 0 10px 20px rgba(148, 15, 49, 0.2);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-save:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(148, 15, 49, 0.3);
+}
+
+/* الجداول المتطورة */
+.premium-table {
+    border-radius: 20px;
+    overflow: hidden;
+    border: none !important;
+}
+
+.premium-table thead th {
+    background: rgba(0,0,0,0.03) !important;
+    border: none !important;
+    padding: 20px !important;
+    font-size: 0.85rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888;
+}
+
+.premium-table tbody td {
+    padding: 20px !important;
+    border-bottom: 1px solid rgba(0,0,0,0.02) !important;
+    vertical-align: middle;
+}
+
+.premium-table tbody tr:last-child td {
+    border: none !important;
+}
+
+.premium-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* البادجات */
+.badge-glass {
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 11px;
+    backdrop-filter: blur(4px);
+}
+
 .status-dot {
     height: 10px;
     width: 10px;
     border-radius: 50%;
     display: inline-block;
-    margin-left: 5px;
+    margin-left: 8px;
+    box-shadow: 0 0 10px currentColor;
 }
-.bg-success { background-color: #28a745; } /* متصل */
-.bg-secondary { background-color: #6c757d; } /* غير نشط *
+
+.bg-success { background-color: #2ecc71 !important; color: #2ecc71; }
+.bg-secondary { background-color: #bdc3c7 !important; color: #bdc3c7; }
+
+/* تبديل الحالة */
+.premium-switch {
+    width: 46px;
+    height: 24px;
+    background: #e0e0e0;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.premium-switch::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    right: 3px;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+input:checked + .premium-switch {
+    background: var(--primary);
+}
+
+input:checked + .premium-switch::after {
+    transform: translateX(-22px);
+}
+
+/* الأنيميشن */
+@keyframes fadeInSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.view-section > div {
+    animation: fadeInSlideUp 0.6s ease-out forwards;
+}

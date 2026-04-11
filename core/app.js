@@ -134,7 +134,10 @@ async function loadModule(moduleName) {
     }
 
     if (window.innerWidth <= 768) {
-        toggleSidebar(); // إغلاق القائمة بعد الاختيار
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar && sidebar.classList.contains('active')) {
+            toggleSidebar(); // إغلاق القائمة بعد الاختيار
+        }
     }
 }
 

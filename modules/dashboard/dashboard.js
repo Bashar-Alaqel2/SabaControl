@@ -9,12 +9,12 @@
 function initDashboard() {
     loadComponents();
     if (typeof fetchScreens === 'function') fetchScreens();
-    
+
     // 🟢 الحماية البرمجية: إظهار وجلب بيانات شريط الأخبار للمدير فقط
     if (window.currentUserRole === 'admin') {
         const dashboardTicker = document.getElementById('adminDashboardTicker');
         if (dashboardTicker) dashboardTicker.style.display = 'block';
-        
+
         // جلب البيانات الأساسية
         populateTickerTargetSelect();
         fetchLastActiveTicker();
@@ -22,40 +22,40 @@ function initDashboard() {
     }
 
     // استهداف زر التبديل (Toggle)
-const tickerToggle = document.getElementById('tickerToggle');
+    const tickerToggle = document.getElementById('tickerToggle');
 
-if (tickerToggle) {
-    tickerToggle.addEventListener('change', async (e) => {
-        const isVisible = e.target.checked;
-        const targetId = document.getElementById('tickerTargetScreen')?.value || 'all';
-        const message = document.getElementById('newsInput')?.value || "تحديث حالة الشريط";
+    if (tickerToggle) {
+        tickerToggle.addEventListener('change', async (e) => {
+            const isVisible = e.target.checked;
+            const targetId = document.getElementById('tickerTargetScreen')?.value || 'all';
+            const message = document.getElementById('newsInput')?.value || "تحديث حالة الشريط";
 
-        // إشعار المستخدم بالتحميل البسيط
-        console.log("🔄 جاري تغيير حالة ظهور الشريط إلى:", isVisible);
+            // إشعار المستخدم بالتحميل البسيط
+            console.log("🔄 جاري تغيير حالة ظهور الشريط إلى:", isVisible);
 
-        try {
-            // نقوم بإضافة سجل جديد (Insert) لتوثيق أن المدير غير الحالة الآن
-            const { error } = await window.sb.from('tickers').insert([{
-                message: message,
-                show_ticker: isVisible,
-                target_screen_id: targetId,
-                // نأخذ بقية التنسيقات من الحقول الحالية
-                bg_color: document.getElementById('tickerBgColor')?.value || '#000000',
-                text_color: document.getElementById('tickerTextColor')?.value || '#ffffff',
-                speed: parseInt(document.getElementById('tickerSpeed')?.value || '50')
-            }]);
+            try {
+                // نقوم بإضافة سجل جديد (Insert) لتوثيق أن المدير غير الحالة الآن
+                const { error } = await window.sb.from('tickers').insert([{
+                    message: message,
+                    show_ticker: isVisible,
+                    target_screen_id: targetId,
+                    // نأخذ بقية التنسيقات من الحقول الحالية
+                    bg_color: document.getElementById('tickerBgColor')?.value || '#000000',
+                    text_color: document.getElementById('tickerTextColor')?.value || '#ffffff',
+                    speed: parseInt(document.getElementById('tickerSpeed')?.value || '50')
+                }]);
 
-            if (error) throw error;
-            
-            // ملاحظة: الـ Realtime سيتكفل بتحديث الشاشات فوراً
-            console.log("✅ تم تحديث الحالة بنجاح");
-        } catch (err) {
-            console.error("خطأ في تحديث الحالة:", err.message);
-            // إعادة الزر لوضعه السابق في حال الفشل
-            e.target.checked = !isVisible; 
-        }
-    });
-}
+                if (error) throw error;
+
+                // ملاحظة: الـ Realtime سيتكفل بتحديث الشاشات فوراً
+                console.log("✅ تم تحديث الحالة بنجاح");
+            } catch (err) {
+                console.error("خطأ في تحديث الحالة:", err.message);
+                // إعادة الزر لوضعه السابق في حال الفشل
+                e.target.checked = !isVisible;
+            }
+        });
+    }
 }
 
 /**
@@ -88,7 +88,7 @@ async function populateTickerTargetSelect() {
         const { data: screens } = await window.sb.from('screens').select('device_id, screen_name');
         const select = document.getElementById('tickerTargetScreen');
         if (!select || !screens) return;
-        
+
         select.innerHTML = '<option value="all">بث لجميع الشاشات (موحد)</option>';
         screens.forEach(s => {
             const name = s.screen_name || `شاشة (${s.device_id})`;
@@ -102,7 +102,7 @@ async function populateTickerTargetSelect() {
  */
 async function loadSpecificScreenTicker() {
     const targetId = document.getElementById('tickerTargetScreen')?.value || 'all';
-    
+
     try {
         const { data } = await window.sb
             .from('tickers')
@@ -170,13 +170,13 @@ async function updateAdvancedTickerDashboard() {
 
         // ✅ نجاح العملية
         alert(`تم بث الخبر بنجاح وتوثيقه في السجل! 📡`);
-        
+
         // تفريغ الحقل بعد النجاح (اختياري)
         newsInput.value = '';
 
-    } catch (err) { 
+    } catch (err) {
         console.error("بث الأخبار فشل:", err);
-        alert('حدث خطأ تقني: ' + err.message); 
+        alert('حدث خطأ تقني: ' + err.message);
     } finally {
         // 🔓 إعادة الزر للعمل دائماً (حتى لو فشل الإنترنت) لإنهاء الدوران
         if (btn) {
@@ -207,10 +207,10 @@ async function fetchTickerHistory() {
         if (data && data.length > 0) {
             tbody.innerHTML = '';
             data.forEach(log => {
-                const time = new Date(log.created_at).toLocaleTimeString('ar-YE', {hour: '2-digit', minute:'2-digit'});
+                const time = new Date(log.created_at).toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit' });
                 const sender = log.profiles?.full_name || 'مدير النظام';
                 const screenDisplayName = log.target_screen_id === 'all' ? 'الكل' : (log.screens?.screen_name || log.target_screen_id);
-                
+
                 tbody.innerHTML += `
                     <tr id="row-${log.id}">
                         <td><span id="text-${log.id}" style="font-size: 13px;">${log.message}</span></td>
@@ -233,8 +233,8 @@ async function fetchTickerHistory() {
         } else {
             tbody.innerHTML = '<tr><td colspan="5" class="text-center p-3 text-muted">لا توجد سجلات حالياً</td></tr>';
         }
-    } catch (err) { 
-        console.error("History Error:", err); 
+    } catch (err) {
+        console.error("History Error:", err);
     }
 }
 
@@ -247,7 +247,7 @@ async function deleteTickerRecord(id) {
     try {
         // 1. محاولة الحذف من قاعدة البيانات أولاً
         const { error } = await window.sb.from('tickers').delete().eq('id', id);
-        
+
         // 2. إذا حدث خطأ (مثلاً نقص صلاحيات)، توقف هنا ولا تحذف من الواجهة
         if (error) {
             console.error("Supabase Delete Error:", error);
@@ -260,15 +260,15 @@ async function deleteTickerRecord(id) {
             row.style.transition = '0.5s';
             row.style.opacity = '0'; // تأثير شفافية
             row.style.transform = 'translateX(20px)'; // إزاحة بسيطة
-            
+
             setTimeout(() => {
                 row.remove();
                 //alert("تم الحذف نهائياً من النظام ✅");
             }, 500);
         }
 
-    } catch (err) { 
-        alert("⚠️ فشل الحذف: " + err.message); 
+    } catch (err) {
+        alert("⚠️ فشل الحذف: " + err.message);
     }
 }
 
@@ -278,14 +278,14 @@ async function deleteTickerRecord(id) {
 async function editTickerInline(id) {
     const textElement = document.getElementById(`text-${id}`);
     const oldMessage = textElement ? textElement.innerText : "";
-    
+
     const newMessage = prompt("تعديل نص الخبر وبثه مجدداً:", oldMessage);
     if (!newMessage || newMessage === oldMessage) return;
 
     try {
         const { error } = await window.sb
             .from('tickers')
-            .update({ 
+            .update({
                 message: newMessage,
                 created_at: new Date().toISOString() // تحديث الوقت ليظهر كأحدث خبر في الشاشات
             })
@@ -296,10 +296,10 @@ async function editTickerInline(id) {
         // تحديث الواجهة
         if (textElement) {
             textElement.innerText = newMessage;
-            textElement.style.color = '#2e7d32'; 
+            textElement.style.color = '#2e7d32';
             textElement.style.fontWeight = 'bold';
         }
-        
+
         alert("تم تحديث الخبر وبثه للشاشات! ✅");
     } catch (err) { alert("خطأ في التعديل: " + err.message); }
 }
@@ -310,17 +310,32 @@ async function editTickerInline(id) {
 function loadComponents() {
     const statsHTML = `
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #e3f2fd; color: #1976d2;"><img src="images/Total_screens.png" alt="SabaPost Logo"></div>
-                <div class="stat-info"><h4 class="totalScreensVal">0</h4><span>إجمالي الشاشات</span></div>
+            <div class="stat-card-glass">
+                <div class="stat-icon-wrapper" style="background: rgba(25, 118, 210, 0.1); color: #1976d2;">
+                    <i class="fa-solid fa-tv"></i>
+                </div>
+                <div class="stat-content">
+                    <h4 class="totalScreensVal">0</h4>
+                    <span>إجمالي الشاشات</span>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32;"><img src="images/cat_connect.png" alt="SabaPost Logo"></div>
-                <div class="stat-info"><h4 class="onlineScreensVal">0</h4><span>متصلة الآن (Online)</span></div>
+            <div class="stat-card-glass">
+                <div class="stat-icon-wrapper" style="background: rgba(46, 204, 113, 0.1); color: #2ecc71;">
+                    <i class="fa-solid fa-wifi"></i>
+                </div>
+                <div class="stat-content">
+                    <h4 class="onlineScreensVal">0</h4>
+                    <span>نشطة (Online)</span>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #ffebee; color: #c62828;"><img src="images/Separated_screens.png" alt="SabaPost Logo"></div>
-                <div class="stat-info"><h4 class="offlineScreensVal">0</h4><span>مفصولة (Offline)</span></div>
+            <div class="stat-card-glass">
+                <div class="stat-icon-wrapper" style="background: rgba(231, 76, 60, 0.1); color: #e74c3c;">
+                    <i class="fa-solid fa-plug-circle-xmark"></i>
+                </div>
+                <div class="stat-content">
+                    <h4 class="offlineScreensVal">0</h4>
+                    <span>غير متصلة (Offline)</span>
+                </div>
             </div>
         </div>
     `;
@@ -336,7 +351,7 @@ async function fetchScreens() {
         // 1. إظهار مؤشر تحميل في الجدول الصغير
         const tbodyDashboard = document.getElementById('screensList');
         if (tbodyDashboard && tbodyDashboard.innerHTML === '') {
-            tbodyDashboard.innerHTML = '<tr><td colspan="4" class="text-center p-3">جاري المزامنة...</td></tr>';
+            tbodyDashboard.innerHTML = '<tr><td colspan="4" class="text-center p-3 small text-muted">جاري سحب البيانات...</td></tr>';
         }
 
         // 2. جلب البيانات بالتوازي لسرعة فائقة
@@ -347,16 +362,16 @@ async function fetchScreens() {
 
         const user = userRes.data?.user;
         const screens = screensRes.data || [];
-        
+
         if (screensRes.error) throw screensRes.error;
 
         // 3. تحديد الهوية والصلاحية (تستخدم للتحكم في العرض)
         let myUserId = user?.id;
-        let myRole = window.currentUserRole || 'editor'; 
+        let myRole = window.currentUserRole || 'editor';
 
         // 4. إرسال البيانات لدالة الرسم
         renderDashboardScreensTable(screens, myUserId, myRole);
-        
+
     } catch (err) {
         console.error('Error fetching dashboard screens:', err);
     }
@@ -366,11 +381,11 @@ async function fetchScreens() {
  * دالة مساعدة لرسم جدول الشاشات في لوحة القيادة
  */
 function renderDashboardScreensTable(screens, myUserId, myRole) {
-        const tbodyDashboard = document.getElementById('screensList');
+    const tbodyDashboard = document.getElementById('screensList');
     const tbodyDetailed = document.getElementById('detailedScreensList');
-    
-    if(tbodyDashboard) tbodyDashboard.innerHTML = '';
-    if(tbodyDetailed) tbodyDetailed.innerHTML = '';
+
+    if (tbodyDashboard) tbodyDashboard.innerHTML = '';
+    if (tbodyDetailed) tbodyDetailed.innerHTML = '';
 
     let onlineCount = 0;
     let offlineCount = 0;
@@ -379,27 +394,23 @@ function renderDashboardScreensTable(screens, myUserId, myRole) {
     screens.forEach(s => {
         const displayName = s.screen_name ? s.screen_name : `شاشة (${s.device_id})`;
         const isLinked = s.status === 'linked';
-        const statusClass = isLinked ? 'status-linked' : 'status-pending';
-        const statusText = isLinked ? 'متصل ومفعل ✅' : 'بانتظار الموافقة ⏳';
-
-        const isPlaying = s.play_status && s.play_status.includes('playing');
-        const playBadge = isPlaying
-            ? `<span style="background: #2196F3; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-top: 5px; display: inline-block;">📺 يعرض الآن</span>`
-            : `<span style="background: #f44336; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-top: 5px; display: inline-block;">⚠️ شاشة فارغة</span>`;
 
         const lastPing = new Date(s.last_ping);
         const diffMinutes = Math.abs(now - lastPing) / (1000 * 60);
-        const isOnline = diffMinutes <= 1; 
+        const isOnline = diffMinutes <= 2; // توسيع وقت السماح لـ دقيقتين
 
         if (isOnline) onlineCount++; else offlineCount++;
 
-        const connectionBadge = isOnline 
-            ? `<span style="color: #2e7d32; font-weight:bold; font-size: 0.85em;"><i class="fa-solid fa-wifi"></i> متصل </span>` 
-            : `<span style="color: #c62828; font-weight:bold; font-size: 0.85em;"><i class="fa-solid fa-plug-circle-xmark"></i> مفصول</span>`;
+        const statusBadge = isOnline
+            ? `<span class="badge-glass" style="background:rgba(46,204,113,0.1); color:#2ecc71;"><span class="status-glow online" style="margin-left:5px;"></span> متصلة</span>`
+            : `<span class="badge-glass" style="background:rgba(231,76,60,0.1); color:#e74c3c;"><span class="status-glow offline" style="margin-left:5px;"></span> منقطعة</span>`;
 
-        // ==========================================
-        // 🛡️ منطق الحماية (إخفاء/إظهار الأزرار)
-        // ==========================================
+        const isPlaying = s.play_status && s.play_status.includes('playing');
+        const playBadge = isPlaying
+            ? `<span class="badge-glass" style="background:rgba(33,150,243,0.1); color:#2196F3;"><i class="fa-solid fa-play me-1"></i> يبث الآن</span>`
+            : `<span class="badge-glass" style="background:rgba(244,67,54,0.1); color:#f44336;"><i class="fa-solid fa-stop me-1"></i> متوقف</span>`;
+
+        // منطق الحماية والأزرار
         const ownerName = s.profiles?.full_name || 'غير معروف';
         const isOwner = (s.created_by === myUserId) || (myRole === 'admin');
 
@@ -408,50 +419,57 @@ function renderDashboardScreensTable(screens, myUserId, myRole) {
         let renameBtn = '';
         let protectedBadge = '';
 
-        // إذا كان المالك أو مدير، نجهز الأزرار كالمعتاد
-        // إذا كان المالك أو مدير، نجهز الأزرار كالمعتاد
         if (isOwner) {
             actionBtn = isLinked
-                ? `<button style="background: #f91616;" class="btn-delete" onclick="updateScreenStatus('${s.device_id}', 'pending')"><img src="images/mode_off_on_2b.png" alt="SabaPost Logo"></button>`
-                : `<button style="background: #54dc5b;" class="btn-approve" onclick="updateScreenStatus('${s.device_id}', 'linked')" ><img src="images/mode_off_on_2b.png" alt="SabaPost Logo"></button>`;
-            
-            deleteBtn = `<button class="btn-delete" style="background:#ed0707; margin-right:5px;" onclick="deleteScreen('${s.device_id}')"><img src="images/delete_22.png" alt="SabaPost Logo"></button>`;
-            renameBtn = `<button class="btn btn-warning" style="padding: 5px 10px; font-size:12px; margin-right:5px;" onclick="renameScreen('${s.device_id}', '${s.screen_name || ''}')"><img src="images/edit_22.png" alt="SabaPost Logo"></button>`;
-        } else {
-            // إذا لم يكن يملك الصلاحية، نجهز علامة القفل فقط
-            protectedBadge = `<span style="font-size: 11px; color: #888; background: #eee; padding: 6px 10px; border-radius: 4px;"><i class="fa-solid fa-lock"></i> محمية</span>`;
-        }
-        // ==========================================
+                ? `<button class="action-circle-btn text-danger" onclick="updateScreenStatus('${s.device_id}', 'pending')" title="تعطيل البث"><i class="fa-solid fa-power-off"></i></button>`
+                : `<button class="action-circle-btn text-success" onclick="updateScreenStatus('${s.device_id}', 'linked')" title="تفعيل البث"><i class="fa-solid fa-check"></i></button>`;
 
-        if(tbodyDashboard) {
+            renameBtn = `<button class="action-circle-btn text-warning" onclick="renameScreen('${s.device_id}', '${s.screen_name || ''}')" title="تعديل الاسم"><i class="fa-solid fa-pen"></i></button>`;
+            deleteBtn = `<button class="action-circle-btn text-danger" onclick="deleteScreen('${s.device_id}')" title="حذف الشاشة"><i class="fa-solid fa-trash"></i></button>`;
+        } else {
+            protectedBadge = `<span class="badge-glass bg-light"><i class="fa-solid fa-lock me-1"></i> محمية</span>`;
+        }
+
+        if (tbodyDashboard) {
             tbodyDashboard.innerHTML += `
-                <tr>
+                <tr style="transition:0.3s;">
                     <td>
-                        <div style="color: var(--primary); font-weight: bold; font-size: 14px;">${displayName}</div>
-                        <div style="font-size: 10px; color: gray; margin-top:2px;"><i class="fa-solid fa-user"></i> ${ownerName}</div>
+                        <div class="fw-bold text-dark" style="font-size:14px;">${displayName}</div>
+                        <div class="owner-pill mt-1" style="font-size: 9px;"><i class="fa-solid fa-user"></i> ${ownerName}</div>
                     </td>
-                    <td>${connectionBadge}</td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${statusBadge}</td>
                     <td>${isLinked ? playBadge : '-'}</td>
                 </tr>
             `;
         }
 
-        if(tbodyDetailed) {
+        if (tbodyDetailed) {
             tbodyDetailed.innerHTML += `
-                <tr>
-                    <td>
-                        <strong style="font-size: 15px;">${displayName}</strong><br>
-                        <small style="color: #888;">ID: ${s.device_id}</small>
-                        <div style="font-size: 11px; color: var(--primary); margin-top: 3px;"><i class="fa-solid fa-user-tie"></i> المالك: ${ownerName}</div>
+                <tr class="detailed-table-row">
+                    <td class="ps-3">
+                        <div class="fw-bold text-dark" style="font-size: 15px;">${displayName}</div>
+                        <span class="screen-id-badge">${s.device_id}</span>
+                        <div class="owner-pill mt-2"><i class="fa-solid fa-user-tie"></i> المالك: ${ownerName}</div>
                     </td>
-                    <td>${s.ip_address || '-'} <br> ${connectionBadge}</td>
                     <td>
-                        <span class="status-badge ${statusClass}">${statusText}</span><br>
-                        ${isLinked ? playBadge : ''}
+                        <code class="small text-muted">${s.ip_address || '---.---.---.---'}</code><br>
+                        ${statusBadge}
                     </td>
-                    <td dir="ltr" style="text-align: right;">${lastPing.toLocaleTimeString('ar-EG')}</td>
-                    <td>${isOwner ? (actionBtn + ' ' + renameBtn + ' ' + deleteBtn) : protectedBadge}</td>
+                    <td>
+                        <div class="d-flex flex-column gap-1">
+                            ${isLinked ? `<span class="badge-glass bg-light text-success fw-bold" style="font-size:10px;">مصرحة بالبث ✓</span>` : `<span class="badge-glass bg-light text-warning fw-bold" style="font-size:10px;">بانتظار الموافقة ⏳</span>`}
+                            ${isLinked ? playBadge : ''}
+                        </div>
+                    </td>
+                    <td dir="ltr" class="text-end pe-4">
+                        <div class="small fw-bold">${lastPing.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit' })}</div>
+                        <div class="small text-muted" style="font-size: 10px;">${lastPing.toLocaleDateString('ar-YE')}</div>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2 justify-content-center">
+                            ${isOwner ? (actionBtn + renameBtn + deleteBtn) : protectedBadge}
+                        </div>
+                    </td>
                 </tr>
             `;
         }
@@ -472,7 +490,7 @@ function renderDashboardScreensTable(screens, myUserId, myRole) {
 window.sb.channel('dashboard-screens-sync')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'screens' }, () => {
         console.log('🔄 تحديث تلقائي للبيانات والإحصائيات...');
-        fetchScreens(); 
+        fetchScreens();
     })
     .subscribe();
 

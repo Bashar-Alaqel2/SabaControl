@@ -58,7 +58,7 @@ function renderScreens(screens, myUserId, myRole) {
     
     if(tbodyDashboard) tbodyDashboard.innerHTML = '';
     if(tbodyDetailed) tbodyDetailed.innerHTML = '';
-//
+
     let onlineCount = 0;
     let offlineCount = 0;
     const now = new Date();
@@ -66,27 +66,23 @@ function renderScreens(screens, myUserId, myRole) {
     screens.forEach(s => {
         const displayName = s.screen_name ? s.screen_name : `شاشة (${s.device_id})`;
         const isLinked = s.status === 'linked';
-        const statusClass = isLinked ? 'status-linked' : 'status-pending';
-        const statusText = isLinked ? 'متصل ومفعل ✅' : 'بانتظار الموافقة ⏳';
-
-        const isPlaying = s.play_status && s.play_status.includes('playing');
-        const playBadge = isPlaying
-            ? `<span style="background: #2196F3; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-top: 5px; display: inline-block;">📺 يعرض الآن</span>`
-            : `<span style="background: #f44336; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-top: 5px; display: inline-block;">⚠️ شاشة فارغة</span>`;
-
+        
         const lastPing = new Date(s.last_ping);
         const diffMinutes = Math.abs(now - lastPing) / (1000 * 60);
-        const isOnline = diffMinutes <= 1; 
+        const isOnline = diffMinutes <= 2; 
 
         if (isOnline) onlineCount++; else offlineCount++;
 
-        const connectionBadge = isOnline 
-            ? `<span style="color: #2e7d32; font-weight:bold; font-size: 0.85em;"><i class="fa-solid fa-wifi"></i> متصل </span>` 
-            : `<span style="color: #c62828; font-weight:bold; font-size: 0.85em;"><i class="fa-solid fa-plug-circle-xmark"></i> مفصول</span>`;
+        const statusBadge = isOnline 
+            ? `<span class="badge-glass" style="background:rgba(46,204,113,0.1); color:#2ecc71;"><span class="status-glow online" style="margin-left:5px;"></span> متصلة</span>` 
+            : `<span class="badge-glass" style="background:rgba(231,76,60,0.1); color:#e74c3c;"><span class="status-glow offline" style="margin-left:5px;"></span> منقطعة</span>`;
 
-       
-        //  منطق الحماية (إخفاء/إظهار الأزرار)
-       
+        const isPlaying = s.play_status && s.play_status.includes('playing');
+        const playBadge = isPlaying
+            ? `<span class="badge-glass" style="background:rgba(33,150,243,0.1); color:#2196F3;"><i class="fa-solid fa-play me-1"></i> يبث الآن</span>`
+            : `<span class="badge-glass" style="background:rgba(244,67,54,0.1); color:#f44336;"><i class="fa-solid fa-stop me-1"></i> متوقف</span>`;
+
+        // منطق الحماية والأزرار
         const ownerName = s.profiles?.full_name || 'غير معروف';
         const isOwner = (s.created_by === myUserId) || (myRole === 'admin');
 
@@ -95,29 +91,25 @@ function renderScreens(screens, myUserId, myRole) {
         let renameBtn = '';
         let protectedBadge = '';
 
-        // إذا كان المالك أو مدير، نجهز الأزرار كالمعتاد
         if (isOwner) {
             actionBtn = isLinked
-                ? `<button style="background: #f91616;" class="btn-delete" onclick="updateScreenStatus('${s.device_id}', 'pending')"><img src="images/mode_off_on_2b.png" alt="SabaPost Logo"></button>`
-                : `<button style="background: #54dc5b;" class="btn-approve" onclick="updateScreenStatus('${s.device_id}', 'linked')" ><img src="images/mode_off_on_2b.png" alt="SabaPost Logo"></button>`;
+                ? `<button class="action-circle-btn text-danger shadow-sm" onclick="updateScreenStatus('${s.device_id}', 'pending')" title="تعطيل البث"><i class="fa-solid fa-power-off"></i></button>`
+                : `<button class="action-circle-btn text-success shadow-sm" onclick="updateScreenStatus('${s.device_id}', 'linked')" title="تفعيل البث"><i class="fa-solid fa-check"></i></button>`;
             
-            deleteBtn = `<button class="btn-delete" style="background:#ed0707; margin-right:5px;" onclick="deleteScreen('${s.device_id}')"><img src="images/delete_22.png" alt="SabaPost Logo"></button>`;
-            renameBtn = `<button class="btn btn-warning" style="padding: 5px 10px; font-size:12px; margin-right:5px;" onclick="renameScreen('${s.device_id}', '${s.screen_name || ''}')"><img src="images/edit_22.png" alt="SabaPost Logo"></button>`;
+            renameBtn = `<button class="action-circle-btn text-warning shadow-sm" onclick="renameScreen('${s.device_id}', '${s.screen_name || ''}')" title="تعديل الاسم"><i class="fa-solid fa-pen"></i></button>`;
+            deleteBtn = `<button class="action-circle-btn text-danger shadow-sm" onclick="deleteScreen('${s.device_id}')" title="حذف الشاشة"><i class="fa-solid fa-trash"></i></button>`;
         } else {
-            // إذا لم يكن يملك الصلاحية، نجهز علامة القفل فقط
-            protectedBadge = `<span style="font-size: 11px; color: #888; background: #eee; padding: 6px 10px; border-radius: 4px;"><i class="fa-solid fa-lock"></i> محمية</span>`;
+            protectedBadge = `<span class="badge-glass bg-light"><i class="fa-solid fa-lock me-1"></i> محمية</span>`;
         }
-        // ==========================================
 
         if(tbodyDashboard) {
             tbodyDashboard.innerHTML += `
-                <tr>
+                <tr style="transition:0.3s;">
                     <td>
-                        <div style="color: var(--primary); font-weight: bold; font-size: 14px;">${displayName}</div>
-                        <div style="font-size: 10px; color: gray; margin-top:2px;"><i class="fa-solid fa-user"></i> ${ownerName}</div>
+                        <div class="fw-bold text-dark" style="font-size:14px;">${displayName}</div>
+                        <div class="owner-pill mt-1" style="font-size: 9px;"><i class="fa-solid fa-user"></i> ${ownerName}</div>
                     </td>
-                    <td>${connectionBadge}</td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${statusBadge}</td>
                     <td>${isLinked ? playBadge : '-'}</td>
                 </tr>
             `;
@@ -125,19 +117,31 @@ function renderScreens(screens, myUserId, myRole) {
 
         if(tbodyDetailed) {
             tbodyDetailed.innerHTML += `
-                <tr>
-                    <td>
-                        <strong style="font-size: 15px;">${displayName}</strong><br>
-                        <small style="color: #888;">ID: ${s.device_id}</small>
-                        <div style="font-size: 11px; color: var(--primary); margin-top: 3px;"><i class="fa-solid fa-user-tie"></i> المدخل: ${ownerName}</div>
+                <tr class="detailed-table-row">
+                    <td class="ps-3">
+                        <div class="fw-bold text-dark" style="font-size: 15px;">${displayName}</div>
+                        <span class="screen-id-badge">${s.device_id}</span>
+                        <div class="owner-pill mt-2"><i class="fa-solid fa-user-tie"></i> المالك: ${ownerName}</div>
                     </td>
-                    <td>${s.ip_address || '-'} <br> ${connectionBadge}</td>
                     <td>
-                        <span class="status-badge ${statusClass}">${statusText}</span><br>
-                        ${isLinked ? playBadge : ''}
+                        <code class="small text-muted">${s.ip_address || '---.---.---.---'}</code><br>
+                        ${statusBadge}
                     </td>
-                    <td dir="ltr" style="text-align: right;">${lastPing.toLocaleTimeString('ar-EG')}</td>
-                    <td>${isOwner ? (actionBtn + ' ' + renameBtn + ' ' + deleteBtn) : protectedBadge}</td>
+                    <td>
+                        <div class="d-flex flex-column gap-1">
+                            ${isLinked ? `<span class="badge-glass bg-light text-success fw-bold" style="font-size:10px;">مصرحة بالبث ✓</span>` : `<span class="badge-glass bg-light text-warning fw-bold" style="font-size:10px;">بانتظار الموافقة ⏳</span>`}
+                            ${isLinked ? playBadge : ''}
+                        </div>
+                    </td>
+                    <td dir="ltr" class="text-end pe-4">
+                        <div class="small fw-bold">${lastPing.toLocaleTimeString('ar-YE', {hour:'2-digit', minute:'2-digit'})}</div>
+                        <div class="small text-muted" style="font-size: 10px;">${lastPing.toLocaleDateString('ar-YE')}</div>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2 justify-content-center">
+                            ${isOwner ? (actionBtn + renameBtn + deleteBtn) : protectedBadge}
+                        </div>
+                    </td>
                 </tr>
             `;
         }
