@@ -1,222 +1,280 @@
-/* ==========================================
-   ✨ settings.css - واجهة الإعدادات المتطورة (Glassmorphism)
-   ========================================== */
+/* 
+   modules/settings/settings.css - التصميم الاحترافي (The Doctor Ready Edition)
+*/
 
 :root {
     --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
 }
 
-/* الكروت الزجاجية */
-.glass-card {
+.dark-theme {
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* تخطيط الصفحة المطور */
+.settings-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    padding: 10px;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* كروت زجاجية فاخرة */
+.premium-glass-card {
     background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 24px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    padding: 30px;
+    margin-bottom: 30px;
     box-shadow: var(--glass-shadow);
-    padding: 25px;
-    margin-bottom: 25px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
 
-.glass-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
-    border-color: rgba(255, 255, 255, 0.5);
+.premium-glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
 }
 
-.glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, var(--primary), transparent);
-    opacity: 0.6;
-}
-
-/* العناوين */
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--text-dark);
-}
-
-.section-title i {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    color: var(--primary);
-}
-
-/* تحسين الحقول */
-.premium-input {
-    background: rgba(255, 255, 255, 0.5) !important;
-    border: 2px solid transparent !important;
-    border-radius: 14px !important;
-    padding: 12px 18px !important;
-    transition: all 0.3s ease !important;
-    font-weight: 600 !important;
-}
-
-.premium-input:focus {
-    background: white !important;
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 4px rgba(148, 15, 49, 0.1) !important;
-    transform: scale(1.01);
-}
-
-/* التحكم بالألوان */
-.color-picker-wrapper {
+/* عناوين الأقسام */
+.settings-header {
     display: flex;
     align-items: center;
     gap: 15px;
-    background: rgba(255, 255, 255, 0.4);
-    padding: 10px;
-    border-radius: 16px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.settings-header i {
+    width: 45px;
+    height: 45px;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 1.2rem;
+    box-shadow: 0 8px 20px rgba(148, 15, 49, 0.2);
+}
+
+.settings-header h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-dark);
+}
+
+/* شبكة الإعدادات */
+.settings-control-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* اختيار الألوان المطور */
+.premium-color-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.premium-color-control:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
+}
+
+.color-preview-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.color-preview-circle input[type="color"] {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+.color-info {
+    flex-grow: 1;
+}
+
+.color-info label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--text-color);
+    margin-bottom: 2px;
+}
+
+.color-hex-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* أزرار الحفظ الفاخرة */
+.premium-save-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, #d42d4d 100%);
+    color: white;
+    font-weight: 800;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 10px 25px rgba(148, 15, 49, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.premium-save-btn:hover {
+    transform: scale(1.02) translateY(-3px);
+    box-shadow: 0 15px 35px rgba(148, 15, 49, 0.3);
+}
+
+/* شعار النظام المعلق */
+.branding-preview-area {
+    width: 100%;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed var(--glass-border);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+#currentFallbackPreview {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+}
+
+/* جداول الموظفين */
+.staff-table-wrapper {
+    margin-top: 20px;
+    border-radius: 20px;
+    overflow: hidden;
     border: 1px solid var(--glass-border);
 }
 
-.color-circle {
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
-    border: 3px solid white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.color-circle input[type="color"] {
-    width: 150%;
-    height: 150%;
-    margin: -25%;
-    padding: 0;
-    cursor: pointer;
-}
-
-/* أزرار الحفظ */
-.btn-save {
-    background: linear-gradient(135deg, var(--primary) 0%, #c5294a 100%);
-    border: none;
-    border-radius: 16px;
-    padding: 15px 30px;
-    color: white;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    box-shadow: 0 10px 20px rgba(148, 15, 49, 0.2);
+.staff-row {
     transition: all 0.3s ease;
-    width: 100%;
 }
 
-.btn-save:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(148, 15, 49, 0.3);
+.staff-row:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* الجداول المتطورة */
-.premium-table {
-    border-radius: 20px;
-    overflow: hidden;
-    border: none !important;
+/* الموبايل */
+@media (max-width: 992px) {
+    .settings-container {
+        grid-template-columns: 1fr;
+    }
 }
 
-.premium-table thead th {
-    background: rgba(0,0,0,0.03) !important;
-    border: none !important;
-    padding: 20px !important;
-    font-size: 0.85rem !important;
+/* تحسين الجداول في صفحة الإعدادات */
+.premium-glass-card .table {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    margin-top: -10px;
+}
+
+.premium-glass-card .table thead th {
+    border: none;
+    font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #888;
+    color: var(--text-color);
+    opacity: 0.6;
+    padding: 20px;
 }
 
-.premium-table tbody td {
-    padding: 20px !important;
-    border-bottom: 1px solid rgba(0,0,0,0.02) !important;
-    vertical-align: middle;
-}
-
-.premium-table tbody tr:last-child td {
-    border: none !important;
-}
-
-.premium-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-/* البادجات */
-.badge-glass {
-    padding: 6px 14px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 11px;
-    backdrop-filter: blur(4px);
-}
-
-.status-dot {
-    height: 10px;
-    width: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 8px;
-    box-shadow: 0 0 10px currentColor;
-}
-
-.bg-success { background-color: #2ecc71 !important; color: #2ecc71; }
-.bg-secondary { background-color: #bdc3c7 !important; color: #bdc3c7; }
-
-/* تبديل الحالة */
-.premium-switch {
-    width: 46px;
-    height: 24px;
-    background: #e0e0e0;
-    border-radius: 20px;
-    position: relative;
-    cursor: pointer;
+.premium-glass-card .table tbody tr {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02);
     transition: all 0.3s ease;
 }
 
-.premium-switch::after {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: white;
-    border-radius: 50%;
-    top: 3px;
-    right: 3px;
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+.premium-glass-card .table tbody tr td {
+    border: none;
+    padding: 20px;
 }
 
-input:checked + .premium-switch {
-    background: var(--primary);
+.premium-glass-card .table tbody tr td:first-child {
+    border-radius: 15px 0 0 15px;
 }
 
-input:checked + .premium-switch::after {
-    transform: translateX(-22px);
+.premium-glass-card .table tbody tr td:last-child {
+    border-radius: 0 15px 15px 0;
 }
 
-/* الأنيميشن */
-@keyframes fadeInSlideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+.premium-glass-card .table tbody tr:hover {
+    transform: scale(1.01);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
 }
 
-.view-section > div {
-    animation: fadeInSlideUp 0.6s ease-out forwards;
-}
+/* المسميات الوظيفية بستايل Modern */
+.badge-role {
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.badge-admin {
+    background: rgba(148, 15, 49, 0.1);
+    color: var(--primary);
+}
+
+.badge-editor {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+}

@@ -1,10 +1,10 @@
 // core/db.js - إعدادات الربط مع Supabase
 
-const SUPABASE_URL = 'https://omjfsqwtaoyinfteqhqh.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tamZzcXd0YW95aW5mdGVxaHFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MDI2ODAsImV4cCI6MjA4NTM3ODY4MH0._2OGGOMW6YUctrCyk-neskR0F7fGadlW79BmPrkyJXM';
+window.SUPABASE_URL = 'https://omjfsqwtaoyinfteqhqh.supabase.co';
+window.SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tamZzcXd0YW95aW5mdGVxaHFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MDI2ODAsImV4cCI6MjA4NTM3ODY4MH0._2OGGOMW6YUctrCyk-neskR0F7fGadlW79BmPrkyJXM';
 
 // إنشاء العميل وجعله متاحاً للجميع (Global)
-window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+window.sb = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
 
 // تشغيل النظام اللحظي (Real-time) الموحد
 window.sb.channel('global-sync')
@@ -18,6 +18,6 @@ window.sb.channel('global-sync')
         if (window.DashboardModule) window.DashboardModule.fetchTickerHistory();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'playlist' }, () => {
-        if (typeof fetchPlaylist === 'function') fetchPlaylist();
+        if (window.ContentModule) window.ContentModule.fetchPlaylist();
     })
     .subscribe();

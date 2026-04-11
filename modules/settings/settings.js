@@ -60,8 +60,11 @@ window.SettingsModule = {
         Object.entries(colors).forEach(([id, val]) => {
             const picker = document.getElementById(id);
             const circle = document.getElementById(id + 'Circle');
+            const hexText = document.getElementById(id + 'Hex');
+            
             if (picker) picker.value = val;
-            if (circle) circle.style.borderColor = val;
+            if (circle) circle.style.backgroundColor = val; // تغيير من borderColor إلى backgroundColor للدوائر الجديدة
+            if (hexText) hexText.innerText = val.toUpperCase();
         });
     },
 
@@ -198,10 +201,14 @@ window.SettingsModule = {
             if (picker) {
                 picker.addEventListener('input', (e) => {
                     const circle = document.getElementById(id + 'Circle');
-                    if (circle) circle.style.borderColor = e.target.value;
+                    const hexText = document.getElementById(id + 'Hex');
+                    const val = e.target.value;
+
+                    if (circle) circle.style.backgroundColor = val;
+                    if (hexText) hexText.innerText = val.toUpperCase();
                     
-                    const cssVar = id === 'primaryColor' ? '--primary' : (id === 'sidebarColor' ? '--sidebar-bg' : (id === 'bgColor' ? '--bg-color' : (id === 'cardBgColor' ? '--card-bg' : '--text-color')));
-                    document.documentElement.style.setProperty(cssVar, e.target.value);
+                    const cssVar = id === 'primaryColor' ? '--primary' : (id === 'sidebarColor' ? '--sidebar-bg-color' : (id === 'bgColor' ? '--bg-color' : (id === 'cardBgColor' ? '--card-bg' : '--text-color')));
+                    document.documentElement.style.setProperty(cssVar, val);
                 });
             }
         });

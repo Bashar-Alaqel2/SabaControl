@@ -125,6 +125,11 @@ async function loadModule(moduleName) {
         const html = await response.text();
         contentDiv.innerHTML = html;
 
+        // 🟢 تحديث حالة الـ Sidebar النشطة
+        document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+        const activeTab = document.getElementById(`tab-${moduleName}`);
+        if (activeTab) activeTab.classList.add('active');
+
         injectAssets(moduleName);
         // ملاحظة: دالة updateUI(moduleName) قد تكون لديك لتنفيذ أكواد إضافية
         if (typeof updateUI === 'function') updateUI(moduleName);
