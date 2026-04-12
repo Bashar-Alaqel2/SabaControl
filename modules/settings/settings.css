@@ -11,36 +11,7 @@
     animation: fadeInSection 0.6s ease-out;
 }
 
-/* كروت الزجاج الفاخرة (Grand Glass) */
-.premium-glass-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 30px;
-    padding: 40px;
-    margin-bottom: 35px;
-    box-shadow: var(--glass-shadow);
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    position: relative;
-    overflow: hidden;
-}
 
-.premium-glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, var(--primary), transparent);
-    opacity: 0.5;
-}
-
-.premium-glass-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-5px);
-}
 
 /* عناوين الأقسام الضخمة */
 .settings-header {
@@ -173,48 +144,7 @@
     filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
 }
 
-/* جداول الزجاج (Grand Table) */
-.premium-glass-card .table {
-    border-collapse: separate;
-    border-spacing: 0 15px;
-    margin-top: -15px;
-    width: 100%;
-    color: #fff;
-}
 
-.premium-glass-card .table thead th {
-    border: none;
-    font-size: 13px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: rgba(255, 255, 255, 0.3);
-    padding: 15px 25px;
-}
-
-.premium-glass-card .table tbody tr {
-    background: rgba(255, 255, 255, 0.02);
-    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.premium-glass-card .table tbody tr td {
-    border: none;
-    padding: 25px;
-}
-
-.premium-glass-card .table tbody tr td:first-child {
-    border-radius: 20px 0 0 20px;
-}
-
-.premium-glass-card .table tbody tr td:last-child {
-    border-radius: 0 20px 20px 0;
-}
-
-.premium-glass-card .table tbody tr:hover {
-    transform: scale(1.02) translateX(-5px);
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
 
 /* شارات الرتب النيونية */
 .badge-role {
@@ -237,24 +167,4 @@
     background: rgba(59, 130, 246, 0.1);
     color: #3b82f6;
     border: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-/* تحسين المداخل (Inputs) */
-.premium-glass-card input[type="text"],
-.premium-glass-card input[type="password"],
-.premium-glass-card select {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--glass-border);
-    color: #fff;
-    padding: 15px 20px;
-    border-radius: 15px;
-    font-size: 15px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.premium-glass-card input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 15px var(--primary-glow);
-    outline: none;
 }

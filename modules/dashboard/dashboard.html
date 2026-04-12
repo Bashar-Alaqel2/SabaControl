@@ -9,7 +9,7 @@
             <div class="premium-glass-card h-100">
                 <div class="flex-between mb-4">
                     <div>
-                        <h3 class="mb-1" style="font-size: 1.4rem; font-weight: 800; color: #fff;">
+                        <h3 class="mb-1" style="font-size: 1.4rem; font-weight: 900; color: #fff;">
                             <i class="fa-solid fa-desktop text-primary me-2"></i> مركز مراقبة الأسطول
                         </h3>
                         <p class="text-muted small">نظرة عامة سريعة على حالة الشاشات المتصلة حالياً</p>
@@ -18,12 +18,12 @@
                 </div>
                 
                 <div class="table-responsive">
-                    <table class="premium-table w-100">
+                    <table class="table align-middle w-100 text-center">
                         <thead>
-                            <tr style="background: rgba(255,255,255,0.02);">
-                                <th class="ps-3">الشاشة</th>
-                                <th class="text-center">حالة الاتصال</th>
-                                <th class="text-center">الترخيص</th>
+                            <tr>
+                                <th class="text-start ps-4">الشاشة</th>
+                                <th>حالة الاتصال</th>
+                                <th>الترخيص</th>
                             </tr>
                         </thead>
                         <tbody id="screensList">
@@ -38,7 +38,7 @@
         <div class="side-panel">
             <div class="premium-glass-card h-100" id="adminDashboardTicker" style="display: none; border-top: 4px solid #f59e0b;">
                 <div class="flex-between mb-4">
-                    <h3 class="mb-0" style="font-size: 1.3rem; font-weight: 800; color: #fff;">
+                    <h3 class="mb-0" style="font-size: 1.3rem; font-weight: 900; color: #fff;">
                         <i class="fa-solid fa-bolt-lightning text-warning me-2"></i> بث الأخبار العاجلة
                     </h3>
                     <label class="toggle-switch">
@@ -62,11 +62,11 @@
                     <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
                         <div class="form-group text-center">
                             <label class="small d-block mb-2 fw-bold text-muted">الخلفية</label>
-                            <input type="color" id="tickerBgColor" value="#000000" class="w-100 border-0" style="height: 40px; cursor: pointer; border-radius: 10px; background: transparent;">
+                            <input type="color" id="tickerBgColor" value="#000000" class="premium-input w-100 p-1" style="height: 50px; cursor: pointer;">
                         </div>
                         <div class="form-group text-center">
                             <label class="small d-block mb-2 fw-bold text-muted">لون الخط</label>
-                            <input type="color" id="tickerTextColor" value="#ffffff" class="w-100 border-0" style="height: 40px; cursor: pointer; border-radius: 10px; background: transparent;">
+                            <input type="color" id="tickerTextColor" value="#ffffff" class="premium-input w-100 p-1" style="height: 50px; cursor: pointer;">
                         </div>
                         <div class="form-group" style="grid-column: span 2;">
                             <label class="small fw-bold text-muted mb-2">سرعة الحركة</label>
@@ -74,7 +74,7 @@
                         </div>
                     </div>
 
-                    <button class="neon-btn w-100 py-3" style="background: var(--primary); font-weight: 800; font-size: 16px;" onclick="DashboardModule.updateAdvancedTickerDashboard()">
+                    <button class="neon-btn w-100 py-3" style="background: #f59e0b; font-weight: 900; font-size: 16px; border: none;" onclick="DashboardModule.updateAdvancedTickerDashboard()">
                         <i class="fa-solid fa-satellite-dish me-2"></i> إرسال البث الفوري
                     </button>
                 </div>
@@ -86,7 +86,7 @@
     <div class="dashboard-bottom-row">
         <div class="premium-glass-card" id="tickerHistoryCard" style="display:none;">
             <div class="flex-between mb-4">
-                <h5 class="mb-0" style="font-weight: 800; font-size: 1.4rem; color: #fff;">
+                <h5 class="mb-0" style="font-weight: 900; font-size: 1.4rem; color: #fff;">
                     <i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> سجل عمليات البث (نظام المساءلة)
                 </h5>
                 <button class="neon-btn" style="width: auto; padding: 0 20px;" onclick="DashboardModule.fetchTickerHistory()">
@@ -94,14 +94,14 @@
                 </button>
             </div>
             <div class="table-responsive">
-                <table class="premium-table w-100">
+                <table class="table align-middle text-center w-100">
                     <thead>
                         <tr>
-                            <th style="padding: 15px 25px;">الرسالة</th>
+                            <th class="text-start ps-4">الرسالة</th>
                             <th>بواسطة</th>
                             <th>التوقيت</th>
                             <th>الشاشة</th>
-                            <th class="text-center">إدارة</th>
+                            <th>إدارة</th>
                         </tr>
                     </thead>
                     <tbody id="tickerHistoryBody">
@@ -112,17 +112,4 @@
         </div>
     </div>
 
-</div>ody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
-
-<style>
-    /* تم نقل التنسيقات وجعلها مركزية في main.css */
-    .badge { padding: 6px 10px; font-weight: 600; border-radius: 8px; }
-    .btn-group .btn { padding: 6px 10px; }
-</style>

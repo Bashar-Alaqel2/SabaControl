@@ -21,7 +21,8 @@ body {
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(-45deg, #09121a, #1a0b16, #420b1f, #0f172a);
+    background-color: var(--bg-color);
+    background-image: linear-gradient(-45deg, rgba(0,0,0,0.6), rgba(0,0,0,0.1), rgba(0,0,0,0.5), rgba(0,0,0,0.8));
     background-size: 400% 400%;
     animation: dashboardGradient 20s ease infinite;
     color: var(--text-dark);
@@ -48,8 +49,8 @@ body::before, body::after {
     animation: floatOrbs 15s ease-in-out infinite alternate;
 }
 
-body::before { background: rgba(255, 71, 87, 0.15); top: -200px; right: -100px; }
-body::after { background: rgba(59, 130, 246, 0.1); bottom: -200px; left: -100px; animation-delay: -7s; }
+body::before { background: var(--primary-glow); top: -200px; right: -100px; }
+body::after { background: var(--primary-glow); bottom: -200px; left: -100px; animation-delay: -7s; opacity: 0.6; }
 
 @keyframes floatOrbs {
     0% { transform: translate(0, 0) scale(1); }
@@ -158,4 +159,150 @@ body::after { background: rgba(59, 130, 246, 0.1); bottom: -200px; left: -100px;
     --text-dark: #f8fafc;
     --border: rgba(255, 255, 255, 0.1);
 }
-/* ... سيتم استكمال بقية الأنماط في حال الحاجة ولكن الأساس تم استعادته */
+
+/* الأزرار النيونية الفخمة المطابقة لشاشة الدخول */
+.neon-btn {
+    background-color: var(--primary);
+    color: white;
+    padding: 15px 25px;
+    font-size: 16px;
+    font-family: inherit;
+    font-weight: 800;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 20px var(--primary-glow);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.neon-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 30px var(--primary-glow);
+    filter: brightness(1.2);
+}
+
+.neon-btn:active {
+    transform: translateY(1px);
+}
+
+/* أزرار الإجراءات الصغيرة (Table Icons) */
+.action-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px var(--primary-glow);
+    transform: translateY(-3px) scale(1.1);
+}
+
+.action-btn.edit:hover, .action-btn.view:hover { background: #f59e0b; border-color: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+.action-btn.delete:hover { background: #ef4444; border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+
+/* المدخلات الفخمة (Premium Inputs) المطابقة لشاشة الدخول */
+.premium-input {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    padding: 15px 20px;
+    font-size: 15px;
+    font-family: inherit;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.premium-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.premium-input:focus {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-glow);
+    outline: none;
+    transform: translateY(-2px);
+}
+
+/* كروت الزجاج الفاخرة (Grand Glass - Global) المطابقة لشاشة الدخول */
+.premium-glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 40px;
+    margin-bottom: 35px;
+    box-shadow: var(--glass-shadow);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 100%; height: 4px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0.5;
+}
+
+.premium-glass-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-5px);
+}
+
+/* جداول الزجاج المطابقة للإعدادات */
+.premium-glass-card .table {
+    border-collapse: separate;
+    border-spacing: 0 15px;
+    margin-top: -15px;
+    width: 100%;
+    color: #fff;
+}
+
+.premium-glass-card .table thead th {
+    border: none;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.3);
+    padding: 15px 25px;
+}
+
+.premium-glass-card .table tbody tr {
+    background: rgba(255, 255, 255, 0.02);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.premium-glass-card .table tbody tr td {
+    border: none;
+    padding: 25px;
+}
+
+.premium-glass-card .table tbody tr td:first-child { border-radius: 20px 0 0 20px; }
+.premium-glass-card .table tbody tr td:last-child { border-radius: 0 20px 20px 0; }
+
+.premium-glass-card .table tbody tr:hover {
+    transform: scale(1.02) translateX(-5px);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}

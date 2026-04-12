@@ -185,9 +185,13 @@ window.ContentModule = {
                                 <strong><i class="fa-solid fa-display"></i> ${screenName}</strong>
                                 <div class="small text-muted">${new Date(item.starts_at).toLocaleString('ar-YE')}</div>
                             </div>
-                            <div class="media-actions">
-                                <button class="btn btn-warning btn-sm" onclick="ContentModule.preview('${item.url}', '${item.type}')">عرض</button>
-                                <button class="btn btn-danger btn-sm" onclick="ContentModule.delete('${item.id}')">حذف</button>
+                            <div class="media-actions d-flex gap-2 mt-2">
+                                <button class="action-btn view" onclick="ContentModule.preview('${item.url}', '${item.type}')" title="عرض المعاينة">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button class="action-btn delete" onclick="ContentModule.delete('${item.id}')" title="حذف المحتوى">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     `;

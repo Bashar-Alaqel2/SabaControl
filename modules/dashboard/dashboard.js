@@ -176,12 +176,12 @@ window.DashboardModule = {
                         <td style="color: rgba(255,255,255,0.4); font-size: 13px;">${time}</td>
                         <td><span class="badge-neon" style="background:rgba(255,255,255,0.05); color: #fff;">${screenDisplayName}</span></td>
                         <td>
-                            <div class="d-flex gap-2">
-                                <button class="neon-btn edit" style="width: 32px; height: 32px;" onclick="DashboardModule.editTickerInline('${log.id}')">
-                                    <i class="fa-solid fa-pen-to-square"></i>
+                            <div class="d-flex gap-2 justify-content-center">
+                                <button class="action-btn edit" style="width: 32px; height: 32px;" onclick="DashboardModule.editTickerInline('${log.id}')" title="تعديل الرسالة">
+                                    <i class="fa-solid fa-pen-to-square" style="font-size: 14px;"></i>
                                 </button>
-                                <button class="neon-btn delete" style="width: 32px; height: 32px;" onclick="DashboardModule.deleteTickerRecord('${log.id}')">
-                                    <i class="fa-solid fa-trash-can"></i>
+                                <button class="action-btn delete" style="width: 32px; height: 32px;" onclick="DashboardModule.deleteTickerRecord('${log.id}')" title="حذف الرسالة">
+                                    <i class="fa-solid fa-trash-can" style="font-size: 14px;"></i>
                                 </button>
                             </div>
                         </td>

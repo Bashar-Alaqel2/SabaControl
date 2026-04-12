@@ -142,7 +142,7 @@
                 <button class="neon-btn flex-fill" style="background: var(--primary); font-weight: 800;" onclick="SettingsModule.uploadFallbackImage()">
                     <i class="fa-solid fa-upload"></i> رفع الشعار
                 </button>
-                <button class="neon-btn" style="width: 50px;" onclick="deleteFallbackImage()">
+                <button class="action-btn delete" onclick="SettingsModule.deleteFallbackImage()" title="حذف الشعار الحالي">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
             </div>
@@ -186,7 +186,10 @@
         </div>
 
         <div class="table-responsive">
-                        <th>الموظف</th>
+            <table class="table align-middle text-center w-100">
+                <thead>
+                    <tr>
+                        <th class="text-start ps-4">الموظف</th>
                         <th>البريد الإلكتروني</th>
                         <th>الرتبة</th>
                         <th>الحالة الأمنية</th>

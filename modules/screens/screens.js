@@ -60,16 +60,16 @@ window.ScreensModule = {
             if (isOwner) {
                 actions = `
                     <div class="action-hub">
-                        <button class="neon-btn identify" onclick="ScreensModule.identify('${s.device_id}')" title="تعريف الشاشة">
+                        <button class="action-btn identify" onclick="ScreensModule.identify('${s.device_id}')" title="تعريف الشاشة">
                             <i class="fa-solid fa-id-badge"></i>
                         </button>
-                        <button class="neon-btn" style="color: ${isLinked ? '#818cf8' : '#fbbf24'}" onclick="ScreensModule.updateStatus('${s.device_id}', '${isLinked ? 'pending' : 'linked'}')" title="تبديل الحالة">
+                        <button class="action-btn" style="color: ${isLinked ? '#818cf8' : '#fbbf24'}" onclick="ScreensModule.updateStatus('${s.device_id}', '${isLinked ? 'pending' : 'linked'}')" title="تبديل الحالة">
                             <i class="fa-solid fa-power-off"></i>
                         </button>
-                        <button class="neon-btn edit" onclick="ScreensModule.rename('${s.device_id}', '${s.screen_name || ''}')" title="تعديل الاسم">
+                        <button class="action-btn edit" onclick="ScreensModule.rename('${s.device_id}', '${s.screen_name || ''}')" title="تعديل الاسم">
                             <i class="fa-solid fa-pen"></i>
                         </button>
-                        <button class="neon-btn delete" onclick="ScreensModule.delete('${s.device_id}')" title="حذف">
+                        <button class="action-btn delete" onclick="ScreensModule.delete('${s.device_id}')" title="حذف">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>

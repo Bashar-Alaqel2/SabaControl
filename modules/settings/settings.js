@@ -64,7 +64,7 @@ window.SettingsModule = {
             const picker = document.getElementById(id);
             const circle = document.getElementById(id + 'Circle');
             const hexText = document.getElementById(id + 'Hex');
-            
+
             if (picker) picker.value = val;
             if (circle) circle.style.backgroundColor = val; // تغيير من borderColor إلى backgroundColor للدوائر الجديدة
             if (hexText) hexText.innerText = val.toUpperCase();
@@ -84,7 +84,7 @@ window.SettingsModule = {
         try {
             const { error } = await window.sb.from('settings').upsert(settings);
             if (error) throw error;
-            
+
             // 🚀 إرسال أمر بث فوري لتحديث الهوية البصرية
             window.broadcastCommand('SYNC_SETTINGS', 'all');
 
@@ -106,12 +106,12 @@ window.SettingsModule = {
 
             users.forEach(u => {
                 const isMe = u.id === currentUser?.id;
-                const statusBadge = u.is_active !== false 
-                    ? '<span class="badge-neon online" style="font-size: 10px; padding: 4px 10px;">نشط</span>' 
+                const statusBadge = u.is_active !== false
+                    ? '<span class="badge-neon online" style="font-size: 10px; padding: 4px 10px;">نشط</span>'
                     : '<span class="badge-neon offline" style="font-size: 10px; padding: 4px 10px;">موقوف</span>';
-                
-                const roleBadge = u.role === 'admin' 
-                    ? '<span class="badge-role badge-admin">مدير النظام</span>' 
+
+                const roleBadge = u.role === 'admin'
+                    ? '<span class="badge-role badge-admin">مدير النظام</span>'
                     : '<span class="badge-role badge-editor">محرر محتوى</span>';
 
                 tbody.innerHTML += `
@@ -123,8 +123,12 @@ window.SettingsModule = {
                         <td>
                             <div class="d-flex gap-2 justify-content-center">
                                 ${isMe ? '<span class="text-muted small">أنت حالياً</span>' : `
-                                    <button onclick="SettingsModule.toggleRole('${u.id}', '${u.role}')" class="neon-btn" style="width: auto; padding: 0 15px; font-size: 11px;">رتبة</button>
-                                    <button onclick="SettingsModule.toggleStatus('${u.id}', ${u.is_active !== false})" class="neon-btn" style="width: auto; padding: 0 15px; font-size: 11px;">حالة</button>
+                                    <button onclick="SettingsModule.toggleRole('${u.id}', '${u.role}')" class="action-btn edit" title="تغيير الرتبة">
+                                        <i class="fa-solid fa-user-shield"></i>
+                                    </button>
+                                    <button onclick="SettingsModule.toggleStatus('${u.id}', ${u.is_active !== false})" class="action-btn delete" title="إيقاف/تفعيل الحساب">
+                                        <i class="fa-solid fa-power-off"></i>
+                                    </button>
                                 `}
                             </div>
                         </td>
@@ -163,7 +167,7 @@ window.SettingsModule = {
                     <td class="text-muted" style="font-size: 11px;">${s.browser} / ${s.os}</td>
                     <td style="color: var(--primary); font-family: monospace;">${new Date(s.created_at).toLocaleTimeString('ar-YE')}</td>
                     <td>
-                         <button onclick="SettingsModule.terminateSession('${s.id}')" class="neon-btn delete" style="width: 32px; height: 32px; font-size: 11px;">
+                         <button onclick="SettingsModule.terminateSession('${s.id}')" class="action-btn delete" title="إنهاء الجلسة">
                             <i class="fa-solid fa-user-slash"></i>
                          </button>
                     </td>
@@ -216,13 +220,28 @@ window.SettingsModule = {
 
             const { data: { publicUrl } } = window.sb.storage.from('media').getPublicUrl(fileName);
             await window.sb.from('settings').upsert({ key: 'fallback_image', value: publicUrl });
-            
+
             // 🚀 إرسال أمر بث فوري لتحديث الشعار المرجعي
             window.broadcastCommand('SYNC_SETTINGS', 'all');
 
             alert("تم رفع الشعار بنجاح ✅");
             this.fetchSettings();
         } catch (err) { alert("فشل الرفع"); }
+    },
+
+    async deleteFallbackImage() {
+        if (!confirm('هل تريد حذف الشعار الحالي؟')) return;
+        try {
+            await window.sb.from('settings').delete().eq('key', 'fallback_image');
+
+            // 🚀 إرسال أمر تعميم التحديث
+            window.broadcastCommand('SYNC_SETTINGS', 'all');
+
+            const preview = document.getElementById('currentFallbackPreview');
+            if (preview) { preview.src = ''; preview.style.display = 'none'; }
+
+            alert('تم حذف الشعار بنجاح!');
+        } catch (err) { alert("خطأ في الحذف"); }
     },
 
     attachColorListeners() {
@@ -237,7 +256,7 @@ window.SettingsModule = {
 
                     if (circle) circle.style.backgroundColor = val;
                     if (hexText) hexText.innerText = val.toUpperCase();
-                    
+
                     const cssVar = id === 'primaryColor' ? '--primary' : (id === 'sidebarColor' ? '--sidebar-bg-color' : (id === 'bgColor' ? '--bg-color' : (id === 'cardBgColor' ? '--card-bg' : '--text-color')));
                     document.documentElement.style.setProperty(cssVar, val);
                 });

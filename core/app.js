@@ -195,19 +195,22 @@ async function applyInitialTheme() {
 
         const root = document.documentElement.style;
 
-        // التحقق من وجود "وضع ليلي مفروض" يدوياً من المستخدم
-        const isDarkMode = localStorage.getItem('theme') === 'dark';
-
-        if (!isDarkMode) {
-            root.setProperty('--primary', themeMap['theme_primary'] || '#940f31');
-            root.setProperty('--sidebar-bg-color', themeMap['theme_sidebar'] || '#2b2b44');
-            root.setProperty('--bg-color', themeMap['theme_bg'] || '#f4f7fa');
-            root.setProperty('--card-bg', themeMap['theme_card_bg'] || '#ffffff');
-            root.setProperty('--text-color', themeMap['theme_text'] || '#333333');
-        } else {
-            // في الوضع الليلي، نستخدم تدرجات داكنة ولكن نحافظ على الهوية (Primary)
-            root.setProperty('--primary', themeMap['theme_primary'] || '#940f31');
+        // تطبيق الألوان من قاعدة البيانات دائماً
+        root.setProperty('--primary', themeMap['theme_primary'] || '#ff4757');
+        
+        // حساب توهج للون الرئيسي
+        const hexToRgb = (hex) => {
+            let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+            return `${r}, ${g}, ${b}`;
+        };
+        if (themeMap['theme_primary']) {
+            root.setProperty('--primary-glow', `rgba(${hexToRgb(themeMap['theme_primary'])}, 0.4)`);
         }
+
+        root.setProperty('--sidebar-bg-color', themeMap['theme_sidebar'] || '#0f172a');
+        root.setProperty('--bg-color', themeMap['theme_bg'] || '#09121a');
+        root.setProperty('--card-bg', themeMap['theme_card_bg'] || 'rgba(255, 255, 255, 0.04)');
+        root.setProperty('--text-color', themeMap['theme_text'] || '#ffffff');
 
         document.querySelectorAll('.brand span').forEach(el => el.innerText = themeMap['system_name'] || 'SabaPost');
     }
