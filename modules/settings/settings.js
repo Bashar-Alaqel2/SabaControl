@@ -10,7 +10,7 @@ window.SettingsModule = {
         if (window.currentUserRole === 'admin') {
             const usersSection = document.getElementById('adminUsersSection');
             const sessionsSection = document.getElementById('adminSessionsSection');
-            const settingsTicker = document.getElementById('adminSettingsTicker');
+            const settingsTickerContainer = document.getElementById('settingsTickerContainer');
 
             if (usersSection) {
                 usersSection.style.display = 'block';
@@ -22,7 +22,9 @@ window.SettingsModule = {
                 this.fetchSessions();
             }
 
-            if (settingsTicker) settingsTicker.style.display = 'block';
+            if (settingsTickerContainer) {
+                window.TickerModule.render('settingsTickerContainer');
+            }
         }
     },
 
@@ -33,13 +35,7 @@ window.SettingsModule = {
         const themeMap = {};
         data.forEach(item => themeMap[item.key] = item.value);
 
-        // تحديث المدخلات في الواجهة
-        const isShowing = themeMap['show_ticker'] === 'true';
-        if (document.getElementById('settingsTickerToggle')) document.getElementById('settingsTickerToggle').checked = isShowing;
-        if (document.getElementById('settingsNewsInput')) document.getElementById('settingsNewsInput').value = themeMap['news_ticker'] || '';
-
-        const showId = themeMap['show_device_id'] === 'true';
-        if (document.getElementById('showDeviceIdToggle')) document.getElementById('showDeviceIdToggle').checked = showId;
+        // Removed old ticker settings parsing since it's now dynamically fetched from tickers table
 
         // الشعار (Fallback)
         if (themeMap['fallback_image']) {
@@ -181,33 +177,7 @@ window.SettingsModule = {
         this.fetchSessions();
     },
 
-    async saveAdvancedTicker() {
-        const text = document.getElementById('settingsNewsInput')?.value || '';
-        const bgColor = document.getElementById('settingsTickerBgColor')?.value || '#000000';
-        const txtColor = document.getElementById('settingsTickerTextColor')?.value || '#ffffff';
-        const speed = document.getElementById('settingsTickerSpeed')?.value || '50';
-
-        try {
-            const isTickerOn = document.getElementById('settingsTickerToggle')?.checked ? 'true' : 'false';
-            const isIdOn = document.getElementById('showDeviceIdToggle')?.checked ? 'true' : 'false';
-
-            await window.sb.from('settings').upsert([
-                { key: 'news_ticker', value: text },
-                { key: 'ticker_bg', value: bgColor },
-                { key: 'ticker_color', value: txtColor },
-                { key: 'ticker_speed', value: speed },
-                { key: 'show_ticker', value: isTickerOn },
-                { key: 'show_device_id', value: isIdOn }
-            ]);
-
-            // 🚀 إرسال أمر بث فوري لتحديث شريط الأخبار والإعدادات
-            window.broadcastCommand('SYNC_TICKER', 'all');
-            window.broadcastCommand('SYNC_SETTINGS', 'all');
-
-            alert('تم البث بنجاح 📡');
-        } catch (err) { alert('خطأ في البث'); }
-    },
-
+    // -- Advanced Ticker Functions moved to core/ticker.js --
     async uploadFallbackImage() {
         const fileInput = document.getElementById('fallbackInput');
         const file = fileInput?.files[0];

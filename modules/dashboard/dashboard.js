@@ -12,12 +12,11 @@ window.DashboardModule = {
         this.fetchAndRenderAll();
 
         // 🟢 الحماية البرمجية: إظهار وجلب بيانات شريط الأخبار للمدير فقط
-        if (window.currentUserRole === 'admin') {
-            const dashboardTicker = document.getElementById('adminDashboardTicker');
-            if (dashboardTicker) dashboardTicker.style.display = 'block';
+            if (dashboardTicker) {
+                dashboardTicker.style.display = 'block';
+                window.TickerModule.render('dashboardTickerContainer');
+            }
 
-            this.populateTickerTargetSelect();
-            this.fetchLastActiveTicker();
             this.fetchTickerHistory();
         }
 
@@ -38,122 +37,7 @@ window.DashboardModule = {
         this.renderScreensTable(screens, myUserId, myRole);
     },
 
-    attachEventListeners() {
-        const tickerToggle = document.getElementById('tickerToggle');
-        if (tickerToggle) {
-            tickerToggle.addEventListener('change', (e) => this.handleTickerToggle(e));
-        }
-    },
-
-    async handleTickerToggle(e) {
-        const isVisible = e.target.checked;
-        const targetId = document.getElementById('tickerTargetScreen')?.value || 'all';
-        const message = document.getElementById('newsInput')?.value || "تحديث حالة الشريط";
-
-        try {
-            const { error } = await window.sb.from('tickers').insert([{
-                message: message,
-                show_ticker: isVisible,
-                target_screen_id: targetId,
-                bg_color: document.getElementById('tickerBgColor')?.value || '#000000',
-                text_color: document.getElementById('tickerTextColor')?.value || '#ffffff',
-                speed: parseInt(document.getElementById('tickerSpeed')?.value || '50')
-            }]);
-
-            if (error) throw error;
-            console.log("✅ تم تحديث حالة الشريط");
-            
-            // 🚀 إرسال أمر بث فوري للشاشات
-            window.broadcastCommand('SYNC_TICKER', targetId);
-        } catch (err) {
-            console.error("خطأ في التحديث:", err.message);
-            e.target.checked = !isVisible;
-        }
-    },
-
-    async fetchLastActiveTicker() {
-        const data = await window.api.fetchLastActiveTicker();
-        if (data) {
-            if (document.getElementById('newsInput')) document.getElementById('newsInput').value = data.message;
-            if (document.getElementById('tickerToggle')) document.getElementById('tickerToggle').checked = data.show_ticker;
-            if (document.getElementById('tickerBgColor')) document.getElementById('tickerBgColor').value = data.bg_color;
-            if (document.getElementById('tickerTextColor')) document.getElementById('tickerTextColor').value = data.text_color;
-            if (document.getElementById('tickerSpeed')) document.getElementById('tickerSpeed').value = data.speed;
-        }
-    },
-
-    async populateTickerTargetSelect() {
-        const screens = await window.api.fetchScreens();
-        const select = document.getElementById('tickerTargetScreen');
-        if (!select || !screens) return;
-
-        select.innerHTML = '<option value="all">بث لجميع الشاشات (موحد)</option>';
-        screens.forEach(s => {
-            const name = s.screen_name || `شاشة (${s.device_id})`;
-            select.innerHTML += `<option value="${s.device_id}">${name}</option>`;
-        });
-    },
-
-    async loadSpecificScreenTicker() {
-        const targetId = document.getElementById('tickerTargetScreen')?.value || 'all';
-        const data = await window.api.fetchLastActiveTicker(targetId);
-        
-        if (data) {
-            document.getElementById('newsInput').value = data.message;
-            document.getElementById('tickerToggle').checked = data.show_ticker;
-            document.getElementById('tickerBgColor').value = data.bg_color;
-            document.getElementById('tickerTextColor').value = data.text_color;
-            document.getElementById('tickerSpeed').value = data.speed;
-        } else if (targetId === 'all') {
-            this.fetchLastActiveTicker();
-        } else {
-            document.getElementById('newsInput').value = '';
-        }
-    },
-
-    async updateAdvancedTickerDashboard() {
-        const btn = document.querySelector('button[onclick="DashboardModule.updateAdvancedTickerDashboard()"]');
-        const newsInput = document.getElementById('newsInput');
-        const tickerToggle = document.getElementById('tickerToggle');
-        const targetId = document.getElementById('tickerTargetScreen')?.value || 'all';
-
-        const text = newsInput?.value.trim() || '';
-        if (!text) return alert("الرجاء كتابة نص الخبر أولاً!");
-
-        const isVisible = tickerToggle?.checked || false;
-        if (!isVisible) return alert("⚠️ يرجى تفعيل 'إظهار شريط الأخبار' أولاً.");
-
-        try {
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري المعالجة...';
-            }
-
-            const { error } = await window.sb.from('tickers').insert([{
-                message: text,
-                bg_color: document.getElementById('tickerBgColor')?.value || '#000000',
-                text_color: document.getElementById('tickerTextColor')?.value || '#ffffff',
-                speed: parseInt(document.getElementById('tickerSpeed')?.value || '50'),
-                show_ticker: isVisible,
-                target_screen_id: targetId
-            }]);
-
-            if (error) throw error;
-            alert(`تم بث الخبر بنجاح! 📡`);
-
-            // 🚀 إرسال أمر بث فوري للشاشات
-            window.broadcastCommand('SYNC_TICKER', targetId);
-
-            newsInput.value = '';
-        } catch (err) {
-            alert('حدث خطأ: ' + err.message);
-        } finally {
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = 'تحديث وبث الأخبار';
-            }
-        }
-    },
+    // -- Functions extracted to core/ticker.js --
 
     async fetchTickerHistory() {
         const data = await window.api.fetchTickerHistory(10);
@@ -237,15 +121,15 @@ window.DashboardModule = {
         const statsHTML = `
             <div class="stats-grid">
                 <div class="stat-card-glass">
-                    <div class="stat-icon-wrapper"><i class="fa-solid fa-tv"></i></div>
+                    <div class="stat-icon-wrapper"><img src="images/Total_screens.png" style="width:32px; height:32px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));" alt="Total"></div>
                     <div class="stat-content"><h4 class="totalScreensVal">0</h4><span>إجمالي الشاشات</span></div>
                 </div>
                 <div class="stat-card-glass" style="--primary: #10b981; --primary-glow: rgba(16, 185, 129, 0.4);">
-                    <div class="stat-icon-wrapper"><i class="fa-solid fa-wifi"></i></div>
+                    <div class="stat-icon-wrapper"><img src="images/cat_connect.png" style="width:32px; height:32px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));" alt="Online"></div>
                     <div class="stat-content"><h4 class="onlineScreensVal">0</h4><span>نشطة الآن</span></div>
                 </div>
                 <div class="stat-card-glass" style="--primary: #ef4444; --primary-glow: rgba(239, 68, 68, 0.4);">
-                    <div class="stat-icon-wrapper"><i class="fa-solid fa-plug-circle-xmark"></i></div>
+                    <div class="stat-icon-wrapper"><img src="images/Separated_screens.png" style="width:32px; height:32px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));" alt="Offline"></div>
                     <div class="stat-content"><h4 class="offlineScreensVal">0</h4><span>غير متصلة</span></div>
                 </div>
             </div>

@@ -229,7 +229,9 @@ function toggleTheme() {
 function updateThemeIcon(isDark) {
     const btn = document.getElementById('theme-toggle');
     if (!btn) return;
-    btn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    btn.innerHTML = isDark 
+        ? '<img src="images/sunny.png" alt="Light Mode" style="width:24px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));">'
+        : '<img src="images/bedtime_2.png" alt="Dark Mode" style="width:24px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));">';
 }
 
 function initTheme() {
@@ -269,8 +271,8 @@ function renderSidebarFooter(profile) {
         </div>
         
         <button class="premium-logout-btn" onclick="Auth.logout()">
-            <i class="fa-solid fa-power-off"></i> 
             <span>تسجيل الخروج</span>
+            <img src="images/logout_2.png" style="width:20px; height:20px;" alt="logout">
         </button>
     `;
 }

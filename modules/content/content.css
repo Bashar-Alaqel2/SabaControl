@@ -32,64 +32,103 @@
 .media-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 15px;
+    gap: 20px;
     margin-top: 15px;
 }
 
 .media-card {
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
     overflow: hidden;
-    background: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    transition: 0.3s;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2), 0 10px 30px rgba(0,0,0,0.3);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.media-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0;
+    transition: 0.4s;
+    z-index: 2;
 }
 
 .media-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px) scale(1.02);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1), 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.media-card:hover::before {
+    opacity: 1;
 }
 
 .media-thumb {
-    height: 140px;
-    background: #000;
+    height: 160px;
+    background: rgba(0, 0, 0, 0.8);
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+    overflow: hidden;
 }
 
 .media-thumb img, .media-thumb video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.8;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.media-card:hover .media-thumb img, 
+.media-card:hover .media-thumb video {
+    opacity: 1;
 }
 
 .media-type-icon {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.6);
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
     color: white;
-    padding: 5px 8px;
-    border-radius: 5px;
-    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .media-info {
-    padding: 12px;
+    padding: 15px;
     font-size: 13px;
+    background: rgba(0,0,0,0.2);
+    flex-grow: 1;
+}
+
+.media-info strong {
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 5px;
+    display: block;
 }
 
 .media-actions {
     display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    border-top: 1px solid #eee;
-    background: #fafafa;
+    justify-content: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* المعاينة المباشرة (استخدمت أيضاً في الإعدادات) */

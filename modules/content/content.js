@@ -34,7 +34,7 @@ window.ContentModule = {
 
     async upload() {
         const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0];
+        let file = fileInput.files[0];
         if (!file) return alert('الرجاء اختيار ملف!');
 
         const startsInput = document.getElementById('startsAt').value;
@@ -79,6 +79,12 @@ window.ContentModule = {
             if (progressContainer) progressContainer.style.display = 'block';
             if (progressText) progressText.style.display = 'block';
             if (progressBar) progressBar.style.width = '0%';
+
+            if (type === 'image') {
+                statusLabel.innerText = '⚙️ جاري ضغط الصورة محلياً لضمان سرعة الرفع...';
+                file = await this.compressImageLocally(file);
+                // تحديث اسم الملف لاحقاً لأنه قد يكون بصيغة مختلفة
+            }
 
             const fileName = `media_${Date.now()}.${file.name.split('.').pop()}`;
 
@@ -179,6 +185,7 @@ window.ContentModule = {
                     gallery.innerHTML += `
                         <div class="media-card">
                             <div class="media-thumb">
+                                <span class="media-type-icon">${item.type === 'image' ? '<i class="fa-solid fa-image text-info"></i> صورة' : '<i class="fa-solid fa-film text-warning"></i> فيديو'}</span>
                                 ${item.type === 'image' ? `<img src="${item.url}">` : `<video src="${item.url}"></video>`}
                             </div>
                             <div class="media-info">
@@ -204,16 +211,16 @@ window.ContentModule = {
 
     async delete(id) {
         if (!confirm('هل أنت متأكد من الحذف؟')) return;
-        
+
         // جلب المعرف قبل الحذف لإبلاغ الشاشة
         const { data: item } = await window.sb.from('playlist').select('target_screen_id').eq('id', id).single();
-        
+
         await window.sb.from('playlist').delete().eq('id', id);
-        
+
         if (item) {
             window.broadcastCommand('SYNC_PLAYLIST', item.target_screen_id);
         }
-        
+
         this.fetchPlaylist();
     },
 
@@ -238,6 +245,49 @@ window.ContentModule = {
         if (!file) return;
         const fileURL = URL.createObjectURL(file);
         this.preview(fileURL, file.type.startsWith('image/') ? 'image' : 'video');
+    },
+
+    async compressImageLocally(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1080;
+                    const MAX_HEIGHT = 1080;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(blob => {
+                        const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        });
+                        resolve(newFile);
+                    }, 'image/jpeg', 0.65); // ضغط بنسبة 65% لتقليل الحجم بشكل مذهل مع الحفاظ على الجودة
+                };
+            };
+        });
     }
 };
 
