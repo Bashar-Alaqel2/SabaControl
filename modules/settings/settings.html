@@ -51,6 +51,39 @@
                         <span class="color-hex-text" id="textColorHex">#ffffff</span>
                     </div>
                 </div>
+
+                <!-- ألوان خلفية النظام -->
+                <div class="premium-color-control">
+                    <div class="color-preview-circle" id="bgColorCircle">
+                        <input type="color" id="bgColor" value="#0c111b" style="position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; cursor: pointer; border: none; background: none;">
+                    </div>
+                    <div class="color-info">
+                        <label>خلفية النظام</label>
+                        <span class="color-hex-text" id="bgColorHex">#0c111b</span>
+                    </div>
+                </div>
+
+                <!-- ألوان الكروت -->
+                <div class="premium-color-control">
+                    <div class="color-preview-circle" id="cardBgColorCircle">
+                        <input type="color" id="cardBgColor" value="#1e293b" style="position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; cursor: pointer; border: none; background: none;">
+                    </div>
+                    <div class="color-info">
+                        <label>ألوان الكروت</label>
+                        <span class="color-hex-text" id="cardBgColorHex">#1e293b</span>
+                    </div>
+                </div>
+
+                <!-- ألوان الزرارات -->
+                <div class="premium-color-control">
+                    <div class="color-preview-circle" id="btnColorCircle">
+                        <input type="color" id="btnColor" value="#f59e0b" style="position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; cursor: pointer; border: none; background: none;">
+                    </div>
+                    <div class="color-info">
+                        <label>ألوان الأزرار</label>
+                        <span class="color-hex-text" id="btnColorHex">#f59e0b</span>
+                    </div>
+                </div>
             </div>
 
             <button class="premium-save-btn mt-4" onclick="SettingsModule.saveTheme()">
@@ -67,30 +100,36 @@
     <!-- الجانب الأيسر: الشعار والجلسات -->
     <div class="settings-sidebar-flow">
         
-        <!-- كرت: الشعار -->
-        <div class="premium-glass-card">
-            <div class="settings-header">
-                <i class="fa-solid fa-image" style="color: #2196f3; box-shadow: 0 0 15px rgba(33, 150, 243, 0.3);"></i>
-                <h3>شعار المؤسسة</h3>
-            </div>
-
-            <div class="branding-preview-area">
-                <img id="currentFallbackPreview" src="" style="display: none;">
-                <div id="fallbackPlaceholder" class="text-center text-muted">
-                    <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2" style="color: var(--primary);"></i>
-                    <p class="small">لم يتم رفع شعار رسمي</p>
+        <!-- كرت: الشعار (Logo Brand) -->
+        <div class="premium-glass-card" style="border-top: 4px solid #3b82f6;">
+            <div class="flex-between mb-4">
+                <div>
+                    <h3 class="mb-1" style="font-size: 1.3rem; font-weight: 900; color: #fff;">
+                        <i class="fa-solid fa-fingerprint me-2" style="color: #3b82f6; filter: drop-shadow(0 0 10px rgba(59,130,246,0.5));"></i> شعار النظام (Master Logo)
+                    </h3>
+                    <p class="text-muted small mb-0">واجهة الانتظار للعملاء والشعار المركزي للنظام</p>
                 </div>
             </div>
 
-            <div class="form-group mb-4">
-                <input type="file" id="fallbackInput" accept="image/*" class="premium-input w-100" style="font-size: 12px; border-style: dashed;">
+            <div class="glass-neon-zone mb-4" onclick="document.getElementById('fallbackInput').click()" 
+                 style="position: relative; height: 180px; background: rgba(0,0,0,0.4); border: 2px dashed rgba(255,255,255,0.15); border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                 
+                <img id="currentFallbackPreview" src="" style="display: none; width: 100%; height: 100%; object-fit: contain; z-index: 2; padding: 10px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1));">
+                
+                <div id="fallbackPlaceholder" class="text-center" style="z-index: 1;">
+                    <i class="fa-brands fa-connectdevelop fa-3x mb-3" style="color: #3b82f6; opacity: 0.8;"></i>
+                    <h5 style="color: #fff; font-weight: 800;">اضغط لاستعراض الشعار الاحترافي</h5>
+                    <p class="small text-muted m-0">يدعم PNG (بخلفية شفافة) أو JPG</p>
+                </div>
             </div>
 
-            <div class="d-flex gap-2">
-                <button class="neon-btn flex-fill" style="background: var(--primary); font-weight: 800;" onclick="SettingsModule.uploadFallbackImage()">
-                    <i class="fa-solid fa-upload"></i> رفع الشعار
+            <input type="file" id="fallbackInput" accept="image/*" class="d-none" onchange="SettingsModule.previewFallbackLocally(event)">
+
+            <div class="d-flex gap-3 mt-2">
+                <button class="neon-btn flex-fill py-3" style="background: #3b82f6; font-weight: 900; font-size: 15px;" onclick="SettingsModule.uploadFallbackImage()">
+                    <i class="fa-solid fa-cloud-arrow-up me-2"></i> رفع وتطبيق الشعار
                 </button>
-                <button class="action-btn delete" onclick="SettingsModule.deleteFallbackImage()" title="حذف الشعار الحالي">
+                <button class="action-btn delete" style="width: 55px; height: auto; border-radius: 12px; flex-shrink: 0;" onclick="SettingsModule.deleteFallbackImage()" title="إزالة الشعار والعودة للافتراضي">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
             </div>

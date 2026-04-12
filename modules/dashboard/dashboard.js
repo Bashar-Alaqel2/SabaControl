@@ -12,6 +12,8 @@ window.DashboardModule = {
         this.fetchAndRenderAll();
 
         // 🟢 الحماية البرمجية: إظهار وجلب بيانات شريط الأخبار للمدير فقط
+        if (window.currentUserRole === 'admin') {
+            const dashboardTicker = document.getElementById('dashboardTickerContainer');
             if (dashboardTicker) {
                 dashboardTicker.style.display = 'block';
                 window.TickerModule.render('dashboardTickerContainer');

@@ -211,6 +211,7 @@ async function applyInitialTheme() {
         root.setProperty('--bg-color', themeMap['theme_bg'] || '#09121a');
         root.setProperty('--card-bg', themeMap['theme_card_bg'] || 'rgba(255, 255, 255, 0.04)');
         root.setProperty('--text-color', themeMap['theme_text'] || '#ffffff');
+        root.setProperty('--btn-color', themeMap['theme_btn_color'] || '#ff4757');
 
         document.querySelectorAll('.brand span').forEach(el => el.innerText = themeMap['system_name'] || 'SabaPost');
     }

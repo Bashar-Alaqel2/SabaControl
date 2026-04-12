@@ -40,20 +40,23 @@ window.SettingsModule = {
         // الشعار (Fallback)
         if (themeMap['fallback_image']) {
             const preview = document.getElementById('currentFallbackPreview');
+            const placeholder = document.getElementById('fallbackPlaceholder');
             if (preview) {
                 preview.src = themeMap['fallback_image'];
                 preview.style.display = 'block';
             }
+            if (placeholder) placeholder.style.display = 'none';
         }
 
         // تطبيق الألوان
         const root = document.documentElement.style;
         const colors = {
-            'primaryColor': themeMap['theme_primary'] || '#940f31',
-            'sidebarColor': themeMap['theme_sidebar'] || '#2b2b44',
-            'bgColor': themeMap['theme_bg'] || '#f4f7fa',
-            'cardBgColor': themeMap['theme_card_bg'] || '#ffffff',
-            'textColor': themeMap['theme_text'] || '#333333'
+            'primaryColor': themeMap['theme_primary'] || '#ff4757',
+            'sidebarColor': themeMap['theme_sidebar'] || '#0f172a',
+            'bgColor': themeMap['theme_bg'] || '#0c111b',
+            'cardBgColor': themeMap['theme_card_bg'] || '#1e293b',
+            'textColor': themeMap['theme_text'] || '#ffffff',
+            'btnColor': themeMap['theme_btn_color'] || '#ff4757'
         };
 
         Object.entries(colors).forEach(([id, val]) => {
@@ -74,7 +77,8 @@ window.SettingsModule = {
             { key: 'theme_sidebar', value: document.getElementById('sidebarColor').value },
             { key: 'theme_bg', value: document.getElementById('bgColor').value },
             { key: 'theme_card_bg', value: document.getElementById('cardBgColor').value },
-            { key: 'theme_text', value: document.getElementById('textColor').value }
+            { key: 'theme_text', value: document.getElementById('textColor').value },
+            { key: 'theme_btn_color', value: document.getElementById('btnColor').value }
         ];
 
         try {
@@ -208,14 +212,30 @@ window.SettingsModule = {
             window.broadcastCommand('SYNC_SETTINGS', 'all');
 
             const preview = document.getElementById('currentFallbackPreview');
+            const placeholder = document.getElementById('fallbackPlaceholder');
             if (preview) { preview.src = ''; preview.style.display = 'none'; }
+            if (placeholder) placeholder.style.display = 'block';
 
             alert('تم حذف الشعار بنجاح!');
         } catch (err) { alert("خطأ في الحذف"); }
     },
 
+    previewFallbackLocally(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const preview = document.getElementById('currentFallbackPreview');
+        const placeholder = document.getElementById('fallbackPlaceholder');
+
+        if (preview && placeholder) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        }
+    },
+
     attachColorListeners() {
-        const ids = ['primaryColor', 'sidebarColor', 'bgColor', 'cardBgColor', 'textColor'];
+        const ids = ['primaryColor', 'sidebarColor', 'bgColor', 'cardBgColor', 'textColor', 'btnColor'];
         ids.forEach(id => {
             const picker = document.getElementById(id);
             if (picker) {
@@ -227,7 +247,12 @@ window.SettingsModule = {
                     if (circle) circle.style.backgroundColor = val;
                     if (hexText) hexText.innerText = val.toUpperCase();
 
-                    const cssVar = id === 'primaryColor' ? '--primary' : (id === 'sidebarColor' ? '--sidebar-bg-color' : (id === 'bgColor' ? '--bg-color' : (id === 'cardBgColor' ? '--card-bg' : '--text-color')));
+                    const cssVar = id === 'primaryColor' ? '--primary' :
+                        (id === 'sidebarColor' ? '--sidebar-bg-color' :
+                            (id === 'bgColor' ? '--bg-color' :
+                                (id === 'cardBgColor' ? '--card-bg' :
+                                    (id === 'btnColor' ? '--btn-color' : '--text-color'))));
+
                     document.documentElement.style.setProperty(cssVar, val);
                 });
             }
