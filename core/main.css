@@ -1,16 +1,17 @@
 :root {
-    /* الألوان الأساسية والهوية (Grand Redesign Palette) */
-    --primary: #ff4757;
-    --primary-glow: rgba(255, 71, 87, 0.4);
-    --bg-color: #0c111b; /* خلفية داكنة جداً للعمق */
-    --card-bg: rgba(255, 255, 255, 0.04);
-    --text-color: rgba(255, 255, 255, 0.7);
-    --text-dark: #ffffff;
+    /* الألوان الأساسية والهوية (Eye Friendly Design) */
+    --primary: #3b82f6; 
+    --primary-glow: rgba(59, 130, 246, 0.15);
+    --bg-color: #0f172a; /* خلفية صلبة هادئة للعين */
+    --card-bg: #1e293b; /* كرت بلون صلب يريح العين */
+    --text-color: #94a3b8;
+    --text-dark: #f8fafc;
     
-    /* نظام الزجاج (Glassmorphism) */
-    --glass-blur: blur(25px);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    /* نظام الكروت الهادئ (Eye Comfort Cards) */
+    --glass-blur: none;
+    --glass-border: rgba(255, 255, 255, 0.05); /* إطار خفيف جداً للتحديد */
+    --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
     
     /* ألوان القائمة الجانبية */
     --sidebar-bg-color: rgba(15, 23, 42, 0.8);
@@ -22,39 +23,15 @@ body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-color);
-    background-image: linear-gradient(-45deg, rgba(0,0,0,0.6), rgba(0,0,0,0.1), rgba(0,0,0,0.5), rgba(0,0,0,0.8));
-    background-size: 400% 400%;
-    animation: dashboardGradient 20s ease infinite;
     color: var(--text-dark);
     min-height: 100vh;
     overflow-x: hidden;
+    transition: background-color 0.3s ease;
 }
 
-@keyframes dashboardGradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* كرات الإضاءة العائمة (Grand Atmosphere) */
+/* إيقاف التشويش الحركي للحفاظ على العين */
 body::before, body::after {
-    content: '';
-    position: fixed;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    filter: blur(150px);
-    z-index: -1;
-    pointer-events: none;
-    animation: floatOrbs 15s ease-in-out infinite alternate;
-}
-
-body::before { background: var(--primary-glow); top: -200px; right: -100px; }
-body::after { background: var(--primary-glow); bottom: -200px; left: -100px; animation-delay: -7s; opacity: 0.6; }
-
-@keyframes floatOrbs {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(50px, 100px) scale(1.2); }
+    display: none;
 }
 
 .main-content {
@@ -133,11 +110,9 @@ body::after { background: var(--primary-glow); bottom: -200px; left: -100px; ani
     justify-content: space-between;
     align-items: center;
     margin-bottom: 40px;
-    padding: 25px 35px;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: 24px;
+    padding: 20px 30px;
+    background: var(--card-bg);
+    border-radius: 16px;
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
 }
@@ -240,16 +215,15 @@ body::after { background: var(--primary-glow); bottom: -200px; left: -100px; ani
     transform: translateY(-2px);
 }
 
-/* كروت الزجاج الفاخرة (Grand Glass - Global) المطابقة لشاشة الدخول */
+/* كروت صلبة هادئة للحفاظ على العين المطابقة لشاشة الدخول */
 .premium-glass-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: var(--glass-blur);
+    background: var(--card-bg); /* لون صلب للكرت */
     border: 1px solid var(--glass-border);
-    border-radius: 30px;
+    border-radius: 20px;
     padding: 40px;
     margin-bottom: 35px;
-    box-shadow: var(--glass-shadow);
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: var(--glass-shadow); /* ظل خفيف وناعم جداً */
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
@@ -258,15 +232,15 @@ body::after { background: var(--primary-glow); bottom: -200px; left: -100px; ani
     content: '';
     position: absolute;
     top: 0; right: 0;
-    width: 100%; height: 4px;
-    background: linear-gradient(90deg, transparent, var(--primary), transparent);
-    opacity: 0.5;
+    width: 100%; height: 3px;
+    background: var(--primary);
+    opacity: 0.8;
 }
 
 .premium-glass-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* ظل أنعم عند التمرير */
 }
 
 /* جداول الزجاج المطابقة للإعدادات */
